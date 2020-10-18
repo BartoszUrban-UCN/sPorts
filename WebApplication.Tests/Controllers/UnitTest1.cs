@@ -1,4 +1,3 @@
-using System;
 using Xunit;
 
 namespace WebApplicationTests
@@ -8,7 +7,6 @@ namespace WebApplicationTests
         [Fact]
         public void Test1()
         {
-
         }
     }
 }
