@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
+using System.Reflection;
 using WebApplication.Data;
 
 namespace WebApplication
@@ -43,6 +47,14 @@ namespace WebApplication
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Swagger configuration
+            app.UseSwagger();
+
+            app.UseSwaggerUI(swagger =>
+            {
+                swagger.SwaggerEndpoint("v1/swagger.json", "sPorts API v1");
+            });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -50,7 +62,37 @@ namespace WebApplication
         {
             services.AddControllersWithViews();
 
+            //Configure DbContext, connect to the LocalDB
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalDB")));
+
+            //Swagger service
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Version = "v1",
+                        Title = "sPorts API",
+                        Description = "The API for the sPorts distributed system",
+                        //TermsOfService = new Uri(""),
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Group 1",
+                            Email = string.Empty,
+                            //Url = new Uri(""),
+                        },
+                        License = new OpenApiLicense
+                        {
+                            Name = "Use under LICX",
+                            //Url = new Uri(""),
+                        }
+                    });
+
+                //Point swagger to the generated xml file
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                swagger.IncludeXmlComments(xmlPath);
+            });
         }
     }
 }
