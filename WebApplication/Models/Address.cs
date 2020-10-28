@@ -1,8 +1,11 @@
-﻿namespace WebApplication.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebApplication.Models
 {
     public class Address
     {
-        public int ID { get; set; }
+        [Key]
+        public int AddressId { get; set; }
         public string Street { get; set; }
 
         public string City { get; set; }

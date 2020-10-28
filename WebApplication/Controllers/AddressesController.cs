@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -34,7 +31,7 @@ namespace WebApplication.Controllers
             }
 
             var address = await _context.Addresses
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.AddressId == id);
             if (address == null)
             {
                 return NotFound();
@@ -88,7 +85,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Street")] Address address)
         {
-            if (id != address.ID)
+            if (id != address.AddressId)
             {
                 return NotFound();
             }
@@ -102,7 +99,7 @@ namespace WebApplication.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AddressExists(address.ID))
+                    if (!AddressExists(address.AddressId))
                     {
                         return NotFound();
                     }
@@ -125,7 +122,7 @@ namespace WebApplication.Controllers
             }
 
             var address = await _context.Addresses
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.AddressId == id);
             if (address == null)
             {
                 return NotFound();
@@ -147,7 +144,7 @@ namespace WebApplication.Controllers
 
         private bool AddressExists(int id)
         {
-            return _context.Addresses.Any(e => e.ID == id);
+            return _context.Addresses.Any(e => e.AddressId == id);
         }
     }
 }

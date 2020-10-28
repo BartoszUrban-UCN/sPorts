@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication.Models
 {
     public class BookingLine
     {
-        public int Id { get; set; }
+        [Key]
+        public int BookingLineId { get; set; }
 
         public double OriginalTotalPrice { get; set; }
 
@@ -17,6 +20,17 @@ namespace WebApplication.Models
         public DateTime EndDate { get; set; }
 
         public bool Confirmed { get; set; }
+
+        [ForeignKey("Booking")]
+        public int BookingId { get; set; }
+
+        [ForeignKey("Spot")]
+        public int SpotId { get; set; }
+
+        [ForeignKey("Boat")]
+        public int BoatId { get; set; }
+
+        public Booking Booking { get; set; }
 
         public Spot Spot { get; set; }
 

@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -48,7 +46,7 @@ namespace WebApplication.Controllers.Rest
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAddress(int id, Address address)
         {
-            if (id != address.ID)
+            if (id != address.AddressId)
             {
                 return BadRequest();
             }
@@ -83,7 +81,7 @@ namespace WebApplication.Controllers.Rest
             _context.Addresses.Add(address);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAddress", new { id = address.ID }, address);
+            return CreatedAtAction("GetAddress", new { id = address.AddressId }, address);
         }
 
         // DELETE: api/Addresses/5
@@ -104,7 +102,7 @@ namespace WebApplication.Controllers.Rest
 
         private bool AddressExists(int id)
         {
-            return _context.Addresses.Any(e => e.ID == id);
+            return _context.Addresses.Any(e => e.AddressId == id);
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication.Models
 {
     public class Person
     {
-        public int Id { get; set; }
+        [Key]
+        public int PersonId { get; set; }
 
         public string FirstName { get; set; }
 
@@ -16,9 +18,10 @@ namespace WebApplication.Models
 
         public string Password { get; set; }
 
-        public Address Address { get; set; }
+        [ForeignKey("Address")]
+        public int AddressId { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public Address Address { get; set; }
 
         public void AddRole(Role _role)
         {

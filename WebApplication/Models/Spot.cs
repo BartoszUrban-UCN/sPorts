@@ -1,8 +1,12 @@
-﻿namespace WebApplication.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WebApplication.Models
 {
     public class Spot
     {
-        public int Id { get; set; }
+        [Key]
+        public int SpotId { get; set; }
 
         public int SpotNumber { get; set; }
 
@@ -15,6 +19,9 @@
         public double MaxDepth { get; set; }
 
         public double Price { get; set; }
+
+        [ForeignKey("Marina")]
+        public int MarinaId { get; set; }
 
         public Marina Marina { get; set; }
     }
