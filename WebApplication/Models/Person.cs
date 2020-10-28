@@ -20,5 +20,18 @@ namespace WebApplication.Models
 
         public List<Role> Roles { get; set; }
 
+        public void AddRole(Role _role)
+        {
+            if (Roles == null)
+            {
+                Roles = new List<Role>();
+            }
+            Roles.Add(_role);
+        }
+
+        public void RemoveRole(Role _role)
+        {
+            Roles.Remove(_role);
+        }
     }
 }
