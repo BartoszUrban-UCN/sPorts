@@ -24,9 +24,12 @@ namespace WebApplication.Data
         {
             modelBuilder.Entity<Address>().ToTable("Address");
             modelBuilder.Entity<Person>().ToTable("Person");
-            modelBuilder.Entity<BoatOwner>().ToTable("BoatOwner").HasOne(bo => bo.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<BoatOwner>().ToTable("BoatOwner");
+            modelBuilder.Entity<BoatOwner>().HasOne(bO => bO.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<Boat>().ToTable("Boat");
-            modelBuilder.Entity<MarinaOwner>().ToTable("MarinaOwner").HasOne(mo => mo.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<MarinaOwner>().ToTable("MarinaOwner");
+            modelBuilder.Entity<MarinaOwner>().HasOne(mo => mo.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Marina>().ToTable("Marina");
             modelBuilder.Entity<Review>().ToTable("Review");
             modelBuilder.Entity<Spot>().ToTable("Spot");

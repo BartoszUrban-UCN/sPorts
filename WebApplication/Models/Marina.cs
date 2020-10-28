@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication.Models
 {
     public class Marina
     {
-        [Key]
-        public int MarinaId { get; set; }
+        public int Id { get; set; }
 
         public string Name { get; set; }
 
@@ -19,7 +17,7 @@ namespace WebApplication.Models
         public int MarinaOwnerId { get; set; }
 
         [ForeignKey("Address")]
-        public int AddressId { get; set; }
+        public int? AddressId { get; set; }
 
         public MarinaOwner MarinaOwner { get; set; }
 

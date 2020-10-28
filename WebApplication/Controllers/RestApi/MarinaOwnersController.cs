@@ -6,52 +6,52 @@ using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
 
-namespace WebApplication.Controllers.Rest
+namespace WebApplication.Controllers.RestApi
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AddressesController : ControllerBase
+    public class MarinaOwnersController : ControllerBase
     {
         private readonly SportsContext _context;
 
-        public AddressesController(SportsContext context)
+        public MarinaOwnersController(SportsContext context)
         {
             _context = context;
         }
 
-        // GET: api/Addresses
+        // GET: api/MarinaOwners
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Address>>> GetAddresses()
+        public async Task<ActionResult<IEnumerable<MarinaOwner>>> GetMarinaOwners()
         {
-            return await _context.Addresses.ToListAsync();
+            return await _context.MarinaOwners.Include(m => m.Marinas).ToListAsync();
         }
 
-        // GET: api/Addresses/5
+        // GET: api/MarinaOwners/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Address>> GetAddress(int id)
+        public async Task<ActionResult<MarinaOwner>> GetMarinaOwner(int id)
         {
-            var address = await _context.Addresses.FindAsync(id);
+            var marinaOwner = await _context.MarinaOwners.FindAsync(id);
 
-            if (address == null)
+            if (marinaOwner == null)
             {
                 return NotFound();
             }
 
-            return address;
+            return marinaOwner;
         }
 
-        // PUT: api/Addresses/5
+        // PUT: api/MarinaOwners/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAddress(int id, Address address)
+        public async Task<IActionResult> PutMarinaOwner(int id, MarinaOwner marinaOwner)
         {
-            if (id != address.AddressId)
+            if (id != marinaOwner.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(address).State = EntityState.Modified;
+            _context.Entry(marinaOwner).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +59,7 @@ namespace WebApplication.Controllers.Rest
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AddressExists(id))
+                if (!MarinaOwnerExists(id))
                 {
                     return NotFound();
                 }
@@ -72,37 +72,37 @@ namespace WebApplication.Controllers.Rest
             return NoContent();
         }
 
-        // POST: api/Addresses
+        // POST: api/MarinaOwners
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Address>> PostAddress([FromBody] Address address)
+        public async Task<ActionResult<MarinaOwner>> PostMarinaOwner(MarinaOwner marinaOwner)
         {
-            _context.Addresses.Add(address);
+            _context.MarinaOwners.Add(marinaOwner);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAddress", new { id = address.AddressId }, address);
+            return CreatedAtAction("GetMarinaOwner", new { id = marinaOwner.Id }, marinaOwner);
         }
 
-        // DELETE: api/Addresses/5
+        // DELETE: api/MarinaOwners/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Address>> DeleteAddress(int id)
+        public async Task<ActionResult<MarinaOwner>> DeleteMarinaOwner(int id)
         {
-            var address = await _context.Addresses.FindAsync(id);
-            if (address == null)
+            var marinaOwner = await _context.MarinaOwners.FindAsync(id);
+            if (marinaOwner == null)
             {
                 return NotFound();
             }
 
-            _context.Addresses.Remove(address);
+            _context.MarinaOwners.Remove(marinaOwner);
             await _context.SaveChangesAsync();
 
-            return address;
+            return marinaOwner;
         }
 
-        private bool AddressExists(int id)
+        private bool MarinaOwnerExists(int id)
         {
-            return _context.Addresses.Any(e => e.AddressId == id);
+            return _context.MarinaOwners.Any(e => e.Id == id);
         }
     }
 }
