@@ -5,6 +5,12 @@
         public int ID { get; set; }
         public string Street { get; set; }
 
-        //TODO: Finish the Address model
+        public string City { get; set; }
+
+        public string State { get; set; }
+
+        public string PostalCode { get; set; }
+
+        public string Country { get; set; }
     }
 }
