@@ -1,4 +1,6 @@
-﻿namespace WebApplication.Models
+﻿using System.Collections.Generic;
+
+namespace WebApplication.Models
 {
     public class Person
     {
@@ -15,5 +17,8 @@
         public string Password { get; set; }
 
         public Address Address { get; set; }
+
+        public List<Role> Roles { get; set; }
+
     }
 }

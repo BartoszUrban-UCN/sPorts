@@ -2,7 +2,7 @@
 
 namespace WebApplication.Models
 {
-    public class BoatOwner : Person
+    public class BoatOwner : Role
     {
         public List<Boat> Boats { get; set; }
     }
