@@ -22,19 +22,5 @@ namespace WebApplication.Models
         public int AddressId { get; set; }
 
         public Address Address { get; set; }
-
-        public void AddRole(Role _role)
-        {
-            if (Roles == null)
-            {
-                Roles = new List<Role>();
-            }
-            Roles.Add(_role);
-        }
-
-        public void RemoveRole(Role _role)
-        {
-            Roles.Remove(_role);
-        }
     }
 }
