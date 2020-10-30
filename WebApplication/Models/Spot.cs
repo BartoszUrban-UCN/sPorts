@@ -6,7 +6,7 @@ namespace WebApplication.Models
     public class Spot
     {
         [Key]
-        public int SpotId { get; set; }
+        public int Id { get; set; }
 
         public int SpotNumber { get; set; }
 

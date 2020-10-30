@@ -7,7 +7,7 @@ namespace WebApplication.Models
     public class BookingLine
     {
         [Key]
-        public int BookingLineId { get; set; }
+        public int Id { get; set; }
 
         public double OriginalTotalPrice { get; set; }
 

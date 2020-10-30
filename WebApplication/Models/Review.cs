@@ -6,9 +6,9 @@ namespace WebApplication.Models
     public class Review
     {
         [Key]
-        public int ReviewId { get; set; }
+        public int Id { get; set; }
 
-        public byte Starts { get; set; }
+        public byte Stars { get; set; }
 
         public string Comment { get; set; }
 
