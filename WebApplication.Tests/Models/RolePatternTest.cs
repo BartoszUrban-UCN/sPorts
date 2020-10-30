@@ -4,9 +4,9 @@ using WebApplication.Models;
 namespace WebApplication.Tests.Models
 {
     [TestClass]
-    class RolePatternTest
+    internal class RolePatternTest
     {
-        private Person person;
+        //private Person person;
         //private Role marinaRole;
         //private Role boatRole;
 
