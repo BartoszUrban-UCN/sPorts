@@ -60,7 +60,10 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
 
             //Configure DbContext, connect to the LocalDB
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalDB")));
@@ -74,22 +77,22 @@ namespace WebApplication
                         Version = "v1",
                         Title = "sPorts API",
                         Description = "The API for the sPorts distributed system",
-                        //TermsOfService = new Uri(""),
-                        Contact = new OpenApiContact
+                            //TermsOfService = new Uri(""),
+                            Contact = new OpenApiContact
                         {
                             Name = "Group 1",
                             Email = string.Empty,
-                            //Url = new Uri(""),
-                        },
+                                //Url = new Uri(""),
+                            },
                         License = new OpenApiLicense
                         {
                             Name = "Use under LICX",
-                            //Url = new Uri(""),
-                        }
+                                //Url = new Uri(""),
+                            }
                     });
 
-                //Point swagger to the generated xml file
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    //Point swagger to the generated xml file
+                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 swagger.IncludeXmlComments(xmlPath);
             });
