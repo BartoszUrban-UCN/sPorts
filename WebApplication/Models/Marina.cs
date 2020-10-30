@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Bson;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication.Models
 {
@@ -13,6 +13,12 @@ namespace WebApplication.Models
 
         public string Facilities { get; set; }
 
+        [ForeignKey("MarinaOwner")]
+        public int MarinaOwnerId { get; set; }
+
+        [ForeignKey("Address")]
+        public int? AddressId { get; set; }
+
         public MarinaOwner MarinaOwner { get; set; }
 
         public Address Address { get; set; }
@@ -20,30 +26,5 @@ namespace WebApplication.Models
         public List<Review> Reviews { get; set; }
 
         public List<Spot> Spots { get; set; }
-
-        public void AddSpot(Spot s)
-        {
-            if(Spots == null)
-            {
-                Spots = new List<Spot>();
-                Spots.Add(s);
-            }
-            else
-            {
-                Spots.Add(s);
-            }
-        }
-        public void AddReview(Review r)
-        {
-            if (Reviews == null)
-            {
-                Reviews = new List<Review>();
-                Reviews.Add(r);
-            }
-            else
-            {
-                Reviews.Add(r);
-            }
-        }
     }
 }
