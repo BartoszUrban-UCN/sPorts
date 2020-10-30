@@ -48,7 +48,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBoatOwner(int id, BoatOwner boatOwner)
         {
-            if (id != boatOwner.Id)
+            if (id != boatOwner.BoatOwnerId)
             {
                 return BadRequest();
             }
@@ -83,7 +83,7 @@ namespace WebApplication.Controllers.RestApi
             _context.BoatOwners.Add(boatOwner);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBoatOwner", new { id = boatOwner.Id }, boatOwner);
+            return CreatedAtAction("GetBoatOwner", new { id = boatOwner.BoatOwnerId }, boatOwner);
         }
 
         // DELETE: api/BoatOwners/5
@@ -104,7 +104,7 @@ namespace WebApplication.Controllers.RestApi
 
         private bool BoatOwnerExists(int id)
         {
-            return _context.BoatOwners.Any(e => e.Id == id);
+            return _context.BoatOwners.Any(e => e.BoatOwnerId == id);
         }
     }
 }
