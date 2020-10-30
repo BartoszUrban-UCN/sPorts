@@ -10,11 +10,11 @@ namespace WebApplication.Controllers.RestApi
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MarinaOwnersController : ControllerBase
+    public class MarinaOwnerController : ControllerBase
     {
         private readonly SportsContext _context;
 
-        public MarinaOwnersController(SportsContext context)
+        public MarinaOwnerController(SportsContext context)
         {
             _context = context;
         }

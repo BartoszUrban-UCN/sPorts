@@ -11,41 +11,48 @@ namespace WebApplication.Data
 
             //TODO: Add seeded data or use NMockaroo
 
-            //Insert data into the database if there aren't any Addresses
+            //Insert data into the database if there aren't any in the specific table
             if (!context.Addresses.Any())
             {
                 var addresses = new Address[]
                 {
-                new Address{Street="Amazing Drive"},
-                new Address{Street="Not so Amazing Drive"},
+                    new Address{Street="Amazing Drive"},
+                    new Address{Street="Not so Amazing Drive"},
                 };
 
-                foreach (Address address in addresses)
-                {
-                    context.Addresses.Add(address);
-                }
-
+                context.Addresses.AddRange(addresses);
                 context.SaveChanges();
+            }
 
+            if (!context.Persons.Any())
+            {
                 var persons = new Person[]
                 {
                     new Person{FirstName="Bartosz"},
                     new Person{FirstName="Dragos"},
+                    new Person{FirstName="Peter"},
+                    new Person{FirstName="Zach"},
                 };
 
-                persons.ToList<Person>().ForEach(p => context.Persons.Add(p));
+                context.Persons.AddRange(persons);
                 context.SaveChanges();
+            }
 
+            if (!context.MarinaOwners.Any())
+            {
                 var marinaOwners = new MarinaOwner[]
                 {
-                    new MarinaOwner{Person=persons[0] },
-                    new MarinaOwner{Person=persons[1] },
+                    new MarinaOwner{PersonId=1 },
+                    new MarinaOwner{PersonId=2 },
                 };
 
-                marinaOwners.ToList<MarinaOwner>().ForEach(mO => context.MarinaOwners.Add(mO));
+                context.MarinaOwners.AddRange(marinaOwners);
                 context.SaveChanges();
+            }
 
-                var marinas1 = new Marina[]
+            if (!context.Marinas.Any())
+            {
+                var marinas = new Marina[]
                 {
                     new Marina{Name="Hello", MarinaOwnerId=1 },
                     new Marina{Name="Rocky Bay", MarinaOwnerId=1 },
@@ -53,7 +60,31 @@ namespace WebApplication.Data
                     new Marina{Name="ROCKY BAY", MarinaOwnerId=2 }
                 };
 
-                marinas1.ToList<Marina>().ForEach(m => context.Marinas.Add(m));
+                context.Marinas.AddRange(marinas);
+                context.SaveChanges();
+            }
+
+            if (!context.BoatOwners.Any())
+            {
+                var boatOwners = new BoatOwner[]
+                {
+                    new BoatOwner{PersonId=3},
+                    new BoatOwner{PersonId=4},
+                };
+
+                context.BoatOwners.AddRange(boatOwners);
+                context.SaveChanges();
+            }
+
+            if (!context.Boats.Any())
+            {
+                var boats = new Boat[]
+                {
+                    new Boat{Name="Thunderlord", BoatOwnerId=1},
+                    new Boat{Name="Wave Destroyer", BoatOwnerId=2},
+                };
+
+                context.Boats.AddRange(boats);
                 context.SaveChanges();
             }
         }
