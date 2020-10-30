@@ -21,6 +21,13 @@ namespace WebApplication
             var host = CreateHostBuilder(args).Build();
 
             //Application startup - connect to the DB
+            ConnectDb(host);
+
+            host.Run();
+        }
+
+        public static void ConnectDb(IHost host)
+        {
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -35,8 +42,6 @@ namespace WebApplication
                     logger.LogError(ex, "An error occurred while seeding the database.");
                 }
             }
-
-            host.Run();
         }
     }
 }

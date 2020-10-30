@@ -59,6 +59,8 @@ namespace WebApplication.Business_Logic
                 rowsAffected = context.SaveChanges();
             }
 
+            // send an email to boatOwner's email
+
             return rowsAffected > 0;
         }
 
