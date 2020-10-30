@@ -47,10 +47,10 @@ namespace WebApplication.Data
 
                 var marinas1 = new Marina[]
                 {
-                    new Marina{Name="Hello", MarinaOwnerId=0 },
-                    new Marina{Name="Rocky Bay", MarinaOwnerId=0 },
-                    new Marina{Name="HELLO", MarinaOwnerId=1 },
-                    new Marina{Name="ROCKY BAY", MarinaOwnerId=1 }
+                    new Marina{Name="Hello", MarinaOwnerId=1 },
+                    new Marina{Name="Rocky Bay", MarinaOwnerId=1 },
+                    new Marina{Name="HELLO", MarinaOwnerId=2 },
+                    new Marina{Name="ROCKY BAY", MarinaOwnerId=2 }
                 };
 
                 marinas1.ToList<Marina>().ForEach(m => context.Marinas.Add(m));
