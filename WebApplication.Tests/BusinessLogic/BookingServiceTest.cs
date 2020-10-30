@@ -4,7 +4,7 @@ using WebApplication.Data;
 using WebApplication.Models;
 using Xunit;
 
-namespace WebApplication.Tests.Business_Logic
+namespace WebApplication.Tests.BusinessLogic
 {
     public class BookingServiceTest
     {
@@ -56,7 +56,6 @@ namespace WebApplication.Tests.Business_Logic
         [Fact]
         public void TestDbConnection()
         {
-
         }
     }
 }
