@@ -7,9 +7,12 @@ namespace WebApplication.Data
     {
         public static void InitializeDB(SportsContext context)
         {
+            //TODO: Remove in Release :)
+            //context.Database.EnsureDeleted();
+
             context.Database.EnsureCreated();
 
-            //TODO: Add seeded data or use NMockaroo
+            //TODO: Add seed data or use NMockaroo
 
             //Insert data into the database if there aren't any in the specific table
             if (!context.Addresses.Any())
@@ -28,10 +31,10 @@ namespace WebApplication.Data
             {
                 var persons = new Person[]
                 {
-                    new Person{FirstName="Bartosz"},
-                    new Person{FirstName="Dragos"},
-                    new Person{FirstName="Peter"},
-                    new Person{FirstName="Zach"},
+                    new Person{FirstName="Bartosz", LastName="Urban", Email="valid@email.com", Password="123456", AddressId=1},
+                    new Person{FirstName="Dragos", LastName="Ionescu", Email="valid2@email.com", Password="123456", AddressId=1},
+                    new Person{FirstName="Peter", LastName="Boelt", Email="valid3@email.com", Password="123456", AddressId=2},
+                    new Person{FirstName="Zach", LastName="Horatau", Email="valid4@email.com", Password="123456", AddressId=2},
                 };
 
                 context.Persons.AddRange(persons);

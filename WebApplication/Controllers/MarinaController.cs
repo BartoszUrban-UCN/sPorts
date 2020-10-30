@@ -11,12 +11,11 @@ namespace WebApplication.Controllers
         //Create
         public void Create()
         {
-
         }
+
         //Read
         public void Get(int Id)
         {
-
         }
 
         //public IEnumerable<Marina> GetAll()
@@ -30,7 +29,6 @@ namespace WebApplication.Controllers
 
         public void Delete()
         {
-
         }
     }
 }

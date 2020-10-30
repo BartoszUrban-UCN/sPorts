@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -13,14 +15,16 @@ namespace WebApplication.Business_Logic
             _context = context;
         }
 
-        public bool CreatePerson(Person person)
+        public async Task<bool> CreatePerson(Person person)
         {
             var success = false;
-
-            if (_context.Persons.Find(person.PersonId) != null)
+            if (_context.Persons.AsQueryable().Any(p => p.Email.Equals(person.Email)))
             {
-                throw new ArgumentException("Do not specify idenity");
+                throw new ArgumentException("A person with this email already exists");
             }
+
+            _context.Persons.Add(person);
+            success = await _context.SaveChangesAsync() > 0;
 
             return success;
         }

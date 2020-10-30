@@ -11,14 +11,23 @@ namespace WebApplication.Models
 
         public int? AddressId { get; set; }
 
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
+        [Required]
+        //[RegularExpression("\\p{L}")]
         public string FirstName { get; set; }
 
+        [Required]
+        //[RegularExpression("\\p{L}")]
         public string LastName { get; set; }
 
+        [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public string Phone { get; set; }
+        [Phone]
+        public string PhoneNumber { get; set; }
     }
 }
