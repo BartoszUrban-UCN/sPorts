@@ -5,12 +5,10 @@ namespace WebApplication.Models
 {
     public class Person
     {
-        [Key]
-        public int Id { get; set; }
+        public int PersonId { get; set; }
 
         public Address Address { get; set; }
 
-        [ForeignKey("Address")]
         public int? AddressId { get; set; }
 
         public string Email { get; set; }

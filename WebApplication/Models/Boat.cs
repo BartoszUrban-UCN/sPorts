@@ -5,8 +5,7 @@ namespace WebApplication.Models
 {
     public class Boat
     {
-        [Key]
-        public int Id { get; set; }
+        public int BoatId { get; set; }
 
         public string Name { get; set; }
 
@@ -20,7 +19,6 @@ namespace WebApplication.Models
 
         public string Type { get; set; }
 
-        [ForeignKey("BoatOwner")]
         public int BoatOwnerId { get; set; }
 
         public BoatOwner BoatOwner { get; set; }

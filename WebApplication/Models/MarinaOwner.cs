@@ -6,14 +6,12 @@ namespace WebApplication.Models
 {
     public class MarinaOwner
     {
-        [Key]
-        public int Id { get; set; }
+        public int MarinaOwnerId { get; set; }
 
-        [ForeignKey("Person")]
         public int PersonId { get; set; }
 
         public Person Person { get; set; }
 
-        public List<Marina> Marinas { get; set; }
+        public List<Spot> Spots { get; set; }
     }
 }

@@ -6,8 +6,7 @@ namespace WebApplication.Models
 {
     public class BookingLine
     {
-        [Key]
-        public int Id { get; set; }
+        public int BookingLineId { get; set; }
 
         public double OriginalTotalPrice { get; set; }
 
@@ -21,13 +20,10 @@ namespace WebApplication.Models
 
         public bool Confirmed { get; set; }
 
-        [ForeignKey("Booking")]
         public int BookingId { get; set; }
 
-        [ForeignKey("Spot")]
         public int SpotId { get; set; }
 
-        [ForeignKey("Boat")]
         public int BoatId { get; set; }
 
         public Booking Booking { get; set; }

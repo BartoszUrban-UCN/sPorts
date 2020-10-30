@@ -23,7 +23,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MarinaOwner>>> GetMarinaOwners()
         {
-            return await _context.MarinaOwners.Include(m => m.Marinas).ToListAsync();
+            return await _context.MarinaOwners.Include(m => m.Spots).ToListAsync();
         }
 
         // GET: api/MarinaOwners/5
@@ -46,7 +46,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMarinaOwner(int id, MarinaOwner marinaOwner)
         {
-            if (id != marinaOwner.Id)
+            if (id != marinaOwner.MarinaOwnerId)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace WebApplication.Controllers.RestApi
             _context.MarinaOwners.Add(marinaOwner);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMarinaOwner", new { id = marinaOwner.Id }, marinaOwner);
+            return CreatedAtAction("GetMarinaOwner", new { id = marinaOwner.MarinaOwnerId }, marinaOwner);
         }
 
         // DELETE: api/MarinaOwners/5
@@ -102,7 +102,7 @@ namespace WebApplication.Controllers.RestApi
 
         private bool MarinaOwnerExists(int id)
         {
-            return _context.MarinaOwners.Any(e => e.Id == id);
+            return _context.MarinaOwners.Any(e => e.MarinaOwnerId == id);
         }
     }
 }

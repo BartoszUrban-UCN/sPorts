@@ -6,10 +6,8 @@ namespace WebApplication.Models
 {
     public class BoatOwner
     {
-        [Key]
-        public int Id { get; set; }
+        public int BoatOwnerId { get; set; }
 
-        [ForeignKey("Person")]
         public int PersonId { get; set; }
 
         public Person Person { get; set; }

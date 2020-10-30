@@ -5,8 +5,7 @@ namespace WebApplication.Models
 {
     public class Booking
     {
-        [Key]
-        public int Id { get; set; }
+        public int BookingId { get; set; }
 
         public int BookingReferenceNo { get; set; }
 

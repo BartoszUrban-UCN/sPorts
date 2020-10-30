@@ -18,7 +18,7 @@ namespace WebApplication.Tests.Business_Logic
 
         private static Boat boat = new Boat();
         private static BoatOwner boatOwner = new BoatOwner();
-        private static Marina marina = new Marina { Id = 1 };
+        private static Marina marina = new Marina { MarinaId = 1 };
 
         private static Dictionary<Marina, DateTime[]> marinaStayDates = new Dictionary<Marina, DateTime[]> {
             { marina, new DateTime[2] { new DateTime(), new DateTime()} }

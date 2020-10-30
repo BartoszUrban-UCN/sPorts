@@ -5,8 +5,7 @@ namespace WebApplication.Models
 {
     public class Spot
     {
-        [Key]
-        public int Id { get; set; }
+        public int SpotId { get; set; }
 
         public int SpotNumber { get; set; }
 
@@ -20,8 +19,7 @@ namespace WebApplication.Models
 
         public double Price { get; set; }
 
-        [ForeignKey("Marina")]
-        public int MarinaId { get; set; }
+        public int? MarinaId { get; set; }
 
         public Marina Marina { get; set; }
     }
