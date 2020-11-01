@@ -90,6 +90,19 @@ namespace WebApplication.Data
                 context.Boats.AddRange(boats);
                 context.SaveChanges();
             }
+
+            if (!context.Spots.Any())
+            {
+                var spots = new Spot[]
+                {
+                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00},
+                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 40.00},
+                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 30.00}
+                };
+
+                context.Spots.AddRange(spots);
+                context.SaveChanges();
+            }
         }
     }
 }
