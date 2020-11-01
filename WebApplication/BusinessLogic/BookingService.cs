@@ -22,7 +22,7 @@ namespace WebApplication.Business_Logic
         {
             int rowsAffected = 0;
             // create booking lines based on the information from the form
-            List<BookingLine> bookingLines = createBookingLines(boat, marinaStayDates, marinaPrices, marinaSpots);
+            List<BookingLine> bookingLines = CreateBookingLines(boat, marinaStayDates, marinaPrices, marinaSpots);
 
             if (bookingLines.Count > 0)
             {
@@ -35,10 +35,10 @@ namespace WebApplication.Business_Logic
 
                 // associate booking lines & totalPrice with newly created booking class
                 Booking booking = new Booking();
-                initBooking(ref booking, bookingLines, totalPrice);
+                InitBooking(ref booking, bookingLines, totalPrice);
 
                 // store booking class & booking lines in the db
-                rowsAffected = await storeBookingInDb(booking);
+                rowsAffected = await StoreBookingInDb(booking);
 
                 // send an email to boatOwner's email
             }
@@ -47,7 +47,7 @@ namespace WebApplication.Business_Logic
         }
 
         #region Create booking lines based on data from the form
-        private List<BookingLine> createBookingLines(Boat boat, Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots)
+        private List<BookingLine> CreateBookingLines(Boat boat, Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots)
         {
             List<BookingLine> bookingLines = new List<BookingLine>();
 
@@ -72,7 +72,7 @@ namespace WebApplication.Business_Logic
         #endregion
 
         #region Create booking class with booking lines & totalPrice
-        private Booking initBooking(ref Booking booking, List<BookingLine> bookingLines, double totalPrice)
+        private Booking InitBooking(ref Booking booking, List<BookingLine> bookingLines, double totalPrice)
         {
             booking = new Booking
             {
@@ -87,7 +87,7 @@ namespace WebApplication.Business_Logic
         #endregion
 
         #region Store booking class & associated booking lines in db
-        private async Task<int> storeBookingInDb(Booking booking)
+        private async Task<int> StoreBookingInDb(Booking booking)
         {
             int rowsAffected = 0;
 
@@ -131,7 +131,7 @@ namespace WebApplication.Business_Logic
                 SmtpServer.Send(mail);
                 success = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 success = false;
                 throw;
