@@ -1,61 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
+using WebApplication.Business_Logic;
 using WebApplication.Data;
-using WebApplication.Models;
+using WebApplication.Tests.Utils;
 using Xunit;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class BookingServiceTest
+    public class BookingServiceTest : SportsContextTest
     {
-        private readonly SportsContext _context;
-
-        public BookingServiceTest(SportsContext context)
+        [Fact]
+        public async void CreateBooking_NoParameters_Fail()
         {
-            Program.ConnectDb(Program.CreateHostBuilder(null).Build());
-            _context = context;
+            using (SportsContext context = new SportsContext(ContextOptions))
+            {
+                BookingService bookingService = new BookingService(context);
+                bool expected = true;
+                bool actual = await bookingService.CreateBooking(null, null, null, null, null);
+
+                Assert.Equal(expected, actual);
+            }
         }
 
-        private static Boat boat = new Boat();
-        private static BoatOwner boatOwner = new BoatOwner();
-        private static Marina marina = new Marina { MarinaId = 1 };
+        [Fact]
+        public async void CreateBooking_ValidValues_Pass()
+        {
+            using (SportsContext context = new SportsContext(ContextOptions))
+            {
+                BookingService bookingService = new BookingService(context);
+                bool expected = true;
+                bool actual = await bookingService.CreateBooking(null, null, null, null, null);
 
-        private static Dictionary<Marina, DateTime[]> marinaStayDates = new Dictionary<Marina, DateTime[]> {
-            { marina, new DateTime[2] { new DateTime(), new DateTime()} }
-        };
+                Assert.Equal(expected, actual);
+            }
+        }
 
-        private static Dictionary<Marina, double[]> marinaPrices = new Dictionary<Marina, double[]> {
-            {marina, new double[3] { 15, 5, 10} }
-        };
+        //BoatOwner boatOwner, Boat boat, Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots
 
-        private static Dictionary<Marina, Spot> marinaSpots = new Dictionary<Marina, Spot> {
-            {marina, new Spot() }
-        };
+        [Fact]
+        public void SendEmail_WrongPassword_Fail()
+        {
+            bool result = BookingService.SendEmail(password: "Tester1234");
 
-        //[Fact]
-        //public void CreateBooking_NoParameters_Fail()
-        //{
-        //    bool expected = true;
-        //    bool actual = false;
+            Assert.False(result);
+            Assert.Throws<Exception>(() => result);
+        }
 
-        //    Assert.Equal(expected, actual);
-        //}
+        [Fact]
+        public void SendEmail_CorrectPassword_Pass()
+        {
+            bool result = BookingService.SendEmail(password: "Tester123");
 
-        //[Fact]
-        //public void CreateBooking_ValidValues_Pass()
-        //{
-        //    //Program.ConnectDb(Program.CreateHostBuilder(null).Build());
-        //    //BookingService bookingService = new BookingService(new SportsContext());
-
-        //    //bool expected = true;
-        //    //bool actual = bookingService.CreateBooking(boatOwner, boat, marinaStayDates, marinaPrices, marinaSpots);
-
-        //    //Assert.Equal(expected, actual);
-        //}
-
-        //[Fact]
-        //public void TestDbConnection()
-        //{
-        //}
+            Assert.True(result);
+        }
     }
 }
