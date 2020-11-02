@@ -50,22 +50,5 @@ namespace WebApplication.Tests.BusinessLogic
                 Assert.Equal(expected, actual);
             }
         }
-
-        [Fact]
-        public void SendEmail_WrongPassword_Fail()
-        {
-            bool result = BookingService.SendEmail(password: "Tester1234");
-
-            Assert.False(result);
-            Assert.Throws<Exception>(() => result);
-        }
-
-        [Fact]
-        public void SendEmail_CorrectPassword_Pass()
-        {
-            bool result = BookingService.SendEmail(password: "Tester123");
-
-            Assert.True(result);
-        }
     }
 }

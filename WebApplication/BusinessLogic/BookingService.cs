@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
@@ -41,6 +39,7 @@ namespace WebApplication.Business_Logic
                 rowsAffected = await StoreBookingInDb(booking);
 
                 // send an email to boatOwner's email
+                //SendEmail(mailTo: boatOwner.Person.Email);
             }
 
             return rowsAffected > 0;
@@ -102,43 +101,6 @@ namespace WebApplication.Business_Logic
             return rowsAffected;
         }
         #endregion
-
-        public static bool SendEmail(string mailFrom = "tester6543@yandex.com", string mailTo = "tester7654@yandex.com", string username = "Tester6543", string password = "Tester123")
-        {
-            bool success = false;
-
-            try
-            {
-                var credentials = new NetworkCredential(mailFrom, password);
-                SmtpClient SmtpServer = new SmtpClient()
-                {
-                    Port = 587,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = false,
-                    Host = "smtp.yandex.com",
-                    EnableSsl = true,
-                    Credentials = credentials
-                };
-
-                MailMessage mail = new MailMessage(mailFrom, mailTo);
-                mail.Subject = "Test Mail Attachement";
-                mail.Body = "This is test mail with attachement using smtp.";
-
-                Attachment attachment;
-                attachment = new Attachment(@"c:\temp\test.txt");
-                mail.Attachments.Add(attachment);
-
-                SmtpServer.Send(mail);
-                success = true;
-            }
-            catch (Exception)
-            {
-                success = false;
-                throw;
-            }
-
-            return success;
-        }
 
         #region Assign random marina spot based on boat's size & availability
         public static Spot AssignSpotInMarina(Marina marina, Boat boat)
