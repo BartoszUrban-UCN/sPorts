@@ -6,11 +6,15 @@ namespace WebApplication.Tests.Utils
     public class SportsContextTest
     {
         protected DbContextOptions<SportsContext> ContextOptions { get; }
-
         protected SportsContextTest()
         {
-            //Local DB sPortsTest instead of normal
+            // Replace username and password
+            // var linuxconnectionString = "Server=localhost;Database=sPortsTest;User Id=sa;Password=Password123;Trusted_Connection=False;MultipleActiveResultSets=true";
+
+            // Local DB sPortsTest instead of normal
             var connectionString = "Server=(localdb)\\mssqllocaldb;Database=sPortsTest;Trusted_Connection=True;MultipleActiveResultSets=true";
+            
+            // Replace connectionString
             ContextOptions = new DbContextOptionsBuilder<SportsContext>().UseSqlServer(connectionString).Options;
 
             Seed();
@@ -23,6 +27,7 @@ namespace WebApplication.Tests.Utils
                 context.Database.EnsureDeleted();
                 DbInitializer.InitializeDB(context);
             }
+
         }
     }
 }

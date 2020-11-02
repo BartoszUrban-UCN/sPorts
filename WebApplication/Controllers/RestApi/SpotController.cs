@@ -11,32 +11,32 @@ namespace WebApplication.Controllers.RestApi
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MarinasController : ControllerBase
+    public class SpotsController : ControllerBase
     {
         private readonly SportsContext _context;
 
-        public MarinasController(SportsContext context)
+        public SpotsController(SportsContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Marina>>> GetMarinas()
+        public async Task<ActionResult<IEnumerable<Spot>>> GetSpots()
         {
-            return await _context.Marinas.ToListAsync();
+            return await _context.Spots.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<MarinaOwner>> GetMarina(int id)
+        public async Task<ActionResult<Spot>> GetSpots(int id)
         {
-            var marina = await _context.MarinaOwners.FindAsync(id);
+            var spot = await _context.Spots.FindAsync(id);
 
-            if (marina == null)
+            if (spot == null)
             {
                 return NotFound();
             }
 
-            return marina;
+            return spot;
         }
     }
 }

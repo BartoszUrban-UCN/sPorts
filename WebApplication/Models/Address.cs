@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebApplication.Models
+﻿namespace WebApplication.Models
 {
     public class Address
     {
