@@ -26,7 +26,6 @@ namespace WebApplication.Data
             modelBuilder.Entity<Person>().ToTable("Person");
             modelBuilder.Entity<BoatOwner>().ToTable("BoatOwner");
             modelBuilder.Entity<BoatOwner>().HasOne(bO => bO.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
-
             modelBuilder.Entity<Boat>().ToTable("Boat");
             modelBuilder.Entity<MarinaOwner>().ToTable("MarinaOwner");
             modelBuilder.Entity<MarinaOwner>().HasOne(mo => mo.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
