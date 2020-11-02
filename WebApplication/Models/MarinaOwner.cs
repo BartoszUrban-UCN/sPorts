@@ -7,7 +7,6 @@ namespace WebApplication.Models
         public int MarinaOwnerId { get; set; }
 
         public int PersonId { get; set; }
-
         public Person Person { get; set; }
 
         public List<Spot> Spots { get; set; }

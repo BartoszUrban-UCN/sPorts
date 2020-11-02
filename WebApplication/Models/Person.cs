@@ -6,10 +6,6 @@ namespace WebApplication.Models
     {
         public int PersonId { get; set; }
 
-        public Address Address { get; set; }
-
-        public int? AddressId { get; set; }
-
         [Required]
         [EmailAddress]
         public string Email { get; set; }
@@ -28,5 +24,10 @@ namespace WebApplication.Models
 
         [Phone]
         public string PhoneNumber { get; set; }
+        
+
+        public Address Address { get; set; }
+
+        public int? AddressId { get; set; }
     }
 }
