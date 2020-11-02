@@ -1,0 +1,24 @@
+@model IEnumerable<WebApplication.Models.Marina>
+
+@{
+    ViewData["Title"] = "Marina";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/marina.css"/>
+}
+
+<div class="container-fluid">
+    <div class="card-columns">
+        @foreach(var marina in Model)
+        {
+            <div class="card test-white">
+                <img class="card-img" src="~/img/1.webp">
+                <div class="card-body">
+                    <h5 class="card-title">@marina.Name</h5>
+                    <p class="card-text">@marina.Description</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,24 @@
+@model IEnumerable<WebApplication.Models.Spot>
+
+@{
+    ViewData["Title"] = "Spots";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/marina.css"/>
+}
+
+<div class="container-fluid">
+    <div class="card-columns">
+        @foreach(var spot in Model)
+        {
+            <div class="card test-white">
+                <img class="card-img" src="~/img/1.webp">
+                <div class="card-body">
+                    <h5 class="card-title">@spot.Price</h5>
+                    <p class="card-text">@spot.SpotId</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

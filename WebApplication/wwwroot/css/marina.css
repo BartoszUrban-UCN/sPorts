@@ -1,0 +1,14 @@
+.card-columns .card-body {
+    height: 100px;
+  }
+  
+  .card-columns .card-img {
+    height: 330px;
+    vertical-align: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .card-img {
+      padding: 1rem;
+  }

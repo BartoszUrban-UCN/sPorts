@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,19 +11,20 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
-    public class MarinaController : Controller
+    public class SpotController : Controller
     {
         private readonly SportsContext _context;
 
-        public MarinaController(SportsContext context)
+        public SpotController(SportsContext context)
         {
             _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            List<Marina> marinas = await _context.Marinas.ToListAsync();
-            return View(marinas);
+            List<Spot> spots = await _context.Spots.ToListAsync();
+            return View(spots);
         }
     }
 }
+
