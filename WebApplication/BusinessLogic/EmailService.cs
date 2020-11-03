@@ -30,8 +30,12 @@ namespace WebApplication.BusinessLogic
                 Attachment attachment;
                 attachment = new Attachment($@"c:\temp\{bookingReference}.pdf");
                 mail.Attachments.Add(attachment);
+                attachment = new Attachment($@"c:\temp\{bookingReference}.txt");
+                mail.Attachments.Add(attachment);
 
                 SmtpServer.Send(mail);
+                mail.Dispose();
+                SmtpServer.Dispose();
                 success = true;
             }
             catch (Exception)

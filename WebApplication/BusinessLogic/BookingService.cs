@@ -2,6 +2,7 @@
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
@@ -45,7 +46,10 @@ namespace WebApplication.Business_Logic
                 CreateBookingPdfFile(booking);
 
                 // send an email to boatOwner's email
-                SendEmail(mailTo: boatOwner.Person.Email, bookingReference: booking.BookingReferenceNo);
+                SendEmail(bookingReference: booking.BookingReferenceNo);
+
+                File.Delete($@"c:\temp\{booking.BookingReferenceNo}.pdf");
+                File.Delete($@"c:\temp\{booking.BookingReferenceNo}.txt");
             }
 
             return rowsAffected > 0;
@@ -115,35 +119,65 @@ namespace WebApplication.Business_Logic
             pdf.Info.Title = booking.BookingReferenceNo.ToString();
             PdfPage page = pdf.AddPage();
             XGraphics graph = XGraphics.FromPdfPage(page);
-            XFont font = new XFont("Verdana", 20, XFontStyle.Bold);
+            XFont fontTitle = new XFont("Verdana", 14, XFontStyle.Bold);
+            XFont font = new XFont("Verdana", 12, XFontStyle.Regular);
 
-            string bookingData = $@"Booking - {booking.BookingReferenceNo}\n
-                                    Boat Owner - {booking.Boat?.BoatOwner?.Person?.Email}\n
-                                    Boat - {booking.Boat?.Name}\n
-                                    Payment Status - {booking.PaymentStatus}\n
-                                    Total Price: {booking.TotalPrice}\n";
+            string bookingData = $"Booking - {booking.BookingReferenceNo}\n" +
+                                    $"Boat Owner - {booking.Boat?.BoatOwner?.Person?.Email}\n" +
+                                    $"Boat - {booking.Boat?.Name}\n" +
+                                    $"Payment Status - {booking.PaymentStatus}\n" +
+                                    $"Total Price: {booking.TotalPrice}\n";
             string bookingLinesData = "";
             // add marina & marina address & marina owner
-            booking.BookingLines.ForEach(bookingLine => bookingLinesData += ($@"\nItem #{bookingLine.BookingLineId}\n
-                                                                                Marina Owner - {bookingLine.Spot?.Marina?.MarinaOwner?.Person?.Email}\n
-                                                                                Marina - {bookingLine.Spot?.Marina?.Name}\n
-                                                                                Marina Address - {bookingLine.Spot?.Marina?.Address}\n
-                                                                                Spot - {bookingLine.Spot?.SpotNumber}\n
-                                                                                Start Date - {bookingLine.StartDate}\n
-                                                                                End Date - {bookingLine.EndDate}\n
-                                                                                Original Price - {bookingLine.OriginalTotalPrice}\n
-                                                                                Applied Discounts - {bookingLine.AppliedDiscounts}\n
-                                                                                Final Price - {bookingLine.DiscountedTotalPrice}\n
-                                                                                Confirmed - {bookingLine.Confirmed}\n
-                                                                                --------------------------------------------------------"));
+            booking.BookingLines.ForEach(bookingLine => bookingLinesData += ($"Item #{bookingLine.BookingLineId}\n" +
+                                                                                $"Marina Owner - {bookingLine.Spot?.Marina?.MarinaOwner?.Person?.Email}\n" +
+                                                                                $"Marina - {bookingLine.Spot?.Marina?.Name}\n" +
+                                                                                $"Marina Address - {bookingLine.Spot?.Marina?.Address}\n" +
+                                                                                $"Spot - {bookingLine.Spot?.SpotNumber}\n" +
+                                                                                $"Start Date - {bookingLine.StartDate}\n" +
+                                                                                $"End Date - {bookingLine.EndDate}\n" +
+                                                                                $"Original Price - {bookingLine.OriginalTotalPrice}\n" +
+                                                                                $"Applied Discounts - {bookingLine.AppliedDiscounts}\n" +
+                                                                                $"Final Price - {bookingLine.DiscountedTotalPrice}\n" +
+                                                                                $"Confirmed - {bookingLine.Confirmed}\n" +
+                                                                                "--------------------------------------------------------\n"));
 
-            graph.DrawString($"Booking - {booking.BookingReferenceNo}", font, XBrushes.Black, new XRect(0, 0, page.Width.Point, page.Height.Point), XStringFormats.BaseLineCenter);
-            graph.DrawString(bookingData, font, XBrushes.Black, new XRect(0, 0, page.Width.Point, page.Height.Point), XStringFormats.BaseLineLeft);
-            graph.DrawString(bookingLinesData, font, XBrushes.Black, new XRect(0, 0, page.Width.Point, page.Height.Point), XStringFormats.BaseLineLeft);
+            using (StreamWriter file = new StreamWriter($@"C:\temp\{booking.BookingReferenceNo}.txt", true))
+            {
+                file.WriteLine(bookingData);
+                file.WriteLine(bookingLinesData);
+            }
+
+            StreamReader readFile = new StreamReader($@"C:\temp\{booking.BookingReferenceNo}.txt");
+
+            graph.DrawString($"Booking - {booking.BookingReferenceNo}", fontTitle, XBrushes.Black, new XRect(0, 20, page.Width.Point, page.Height.Point), XStringFormats.TopCenter);
+
+            int yPoint = 50;
+            string line = null;
+
+            while (true)
+            {
+                line = readFile.ReadLine();
+                if (line == null)
+                {
+                    break;
+                }
+                else
+                {
+                    graph.DrawString(line, font, XBrushes.Black, new XRect(20, yPoint, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
+                    yPoint += 20;
+                }
+            }
+
+            //graph.DrawString(bookingData, font, XBrushes.Black, new XRect(0, 0, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
+            //graph.DrawString(bookingLinesData, font, XBrushes.Black, new XRect(0, 0, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
+
+            readFile.Close();
+            readFile = null;
 
             string pdfFileName = booking.BookingReferenceNo.ToString();
-            pdf.Save($@"c:\temp\{pdfFileName}");
-
+            pdf.Save($@"c:\temp\{pdfFileName}.pdf");
+            pdf.Close();
         }
         #endregion
 
