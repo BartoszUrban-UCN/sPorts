@@ -46,6 +46,11 @@ namespace WebApplication
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "listing",
+                    defaults: new {action = "Index"},
+                    pattern: "{controller}/{id?}/{action}"
+                );
             });
 
             //Swagger configuration

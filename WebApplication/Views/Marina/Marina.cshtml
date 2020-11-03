@@ -1,31 +1,28 @@
-@model IEnumerable<WebApplication.Models.Spot>
+@model WebApplication.Models.Marina
 
 @{
-    ViewData["Title"] = "Spots";
+    ViewData["Title"] = "Marina";
 }
 
 @section Styles{
     <link rel="stylesheet" href="~/css/marina.css"/>
 }
 
-@if (Model.Count() > 0)
+@if (Model != null)
 {
 <div class="container-fluid">
     <div class="card-columns">
-        @foreach(var spot in Model)
-        {
             <div class="card test-white">
                 <img class="card-img" src="~/img/1.webp">
                 <div class="card-body">
-                    <h5 class="card-title">@spot.Price</h5>
-                    <p class="card-text">@spot.SpotId</p>
+                    <h5 class="card-title">@Model.Name</h5>
+                    <p class="card-text">@Model.MarinaId</p>
                 </div>
             </div>
-        }
     </div>
 </div>
 }
 else
 {
-    <h1>No spots found</h1>
+    <h1>No marina found</h1>
 }

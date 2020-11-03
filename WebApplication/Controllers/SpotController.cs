@@ -25,6 +25,24 @@ namespace WebApplication.Controllers
             List<Spot> spots = await _context.Spots.ToListAsync();
             return View(spots);
         }
+
+        [Route("spot/{id}")]
+        public async Task<IActionResult> Spot(int? id)
+        {
+            var spot = _context.Spots.FindAsync(id);
+            return View(await spot);
+        }
+
+        public async Task<IActionResult> Marina(int id)
+        {
+            var spotsWithMarina = await _context.Spots.Include(s => s.Marina).ToListAsync();
+            var spot = spotsWithMarina.Find(spot => spot.SpotId == id);
+
+            if (spot != null)
+            {
+                return View("~/Views/Marina/Marina.cshtml", spot.Marina);            
+            }
+            return View("Error");
+        }
     }
 }
-
