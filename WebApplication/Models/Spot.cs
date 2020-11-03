@@ -1,4 +1,6 @@
-﻿namespace WebApplication.Models
+﻿using System.Collections.Generic;
+
+namespace WebApplication.Models
 {
     public class Spot
     {
@@ -19,5 +21,7 @@
         public int? MarinaId { get; set; }
 
         public Marina Marina { get; set; }
+
+        public List<BookingLine> BookingLines { get; set; }
     }
 }
