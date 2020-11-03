@@ -8,7 +8,7 @@ namespace WebApplication.Data
         public static void InitializeDb(SportsContext context)
         {
             //TODO: Remove in Release :)
-            //context.Database.EnsureDeleted();
+            context.Database.EnsureDeleted();
 
             context.Database.EnsureCreated();
 
