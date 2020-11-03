@@ -9,7 +9,7 @@ using WebApplication.Tests.Utils;
 
 namespace WebApplication.Tests.Controllers
 {
-    public class MarinaControllerTest : SportsContextTest
+    public class MarinaControllerTest : SingleDatabaseSetup
     {
     }
 }

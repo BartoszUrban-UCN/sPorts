@@ -3,10 +3,10 @@ using WebApplication.Data;
 
 namespace WebApplication.Tests.Utils
 {
-    public class SportsContextTest
+    public class SingleDatabaseSetup
     {
         protected DbContextOptions<SportsContext> ContextOptions { get; }
-        protected SportsContextTest()
+        protected SingleDatabaseSetup()
         {
             // Replace username and password
             // var linuxconnectionString = "Server=localhost;Database=sPortsTest;User Id=sa;Password=Password123;Trusted_Connection=False;MultipleActiveResultSets=true";
