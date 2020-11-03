@@ -34,7 +34,7 @@ namespace WebApplication
                 try
                 {
                     var context = services.GetRequiredService<SportsContext>();
-                    DbInitializer.InitializeDB(context);
+                    DbInitializer.InitializeDb(context);
                 }
                 catch (Exception ex)
                 {

@@ -5,7 +5,7 @@ namespace WebApplication.Data
 {
     public class DbInitializer
     {
-        public static void InitializeDB(SportsContext context)
+        public static void InitializeDb(SportsContext context)
         {
             //TODO: Remove in Release :)
             //context.Database.EnsureDeleted();

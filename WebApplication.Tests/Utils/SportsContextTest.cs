@@ -25,7 +25,7 @@ namespace WebApplication.Tests.Utils
             using (var context = new SportsContext(ContextOptions))
             {
                 context.Database.EnsureDeleted();
-                DbInitializer.InitializeDB(context);
+                DbInitializer.InitializeDb(context);
             }
 
         }
