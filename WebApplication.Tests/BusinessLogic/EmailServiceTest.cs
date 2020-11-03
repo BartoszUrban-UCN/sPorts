@@ -9,10 +9,7 @@ namespace WebApplication.Tests.BusinessLogic
         [Fact]
         public void SendEmail_WrongPassword_Fail()
         {
-            bool result = SendEmail(password: "Tester1234", bookingReference: -1);
-
-            Assert.ThrowsAny<Exception>(() => result);
-            Assert.False(result);
+            Assert.ThrowsAny<Exception>(() => (SendEmail(password: "Tester1234", bookingReference: -1)));
         }
 
         [Fact]
