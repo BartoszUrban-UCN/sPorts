@@ -137,7 +137,6 @@ namespace WebApplication.Business_Logic
                                     $"Payment Status - {booking.PaymentStatus}\n" +
                                     $"Total Price: {booking.TotalPrice}\n";
             string bookingLinesData = "";
-            // add marina & marina address & marina owner
             booking.BookingLines.ForEach(bookingLine => bookingLinesData += ($"Item #{bookingLine.BookingLineId}\n" +
                                                                                 $"Marina Owner - {bookingLine.Spot?.Marina?.MarinaOwner?.Person?.Email}\n" +
                                                                                 $"Marina - {bookingLine.Spot?.Marina?.Name}\n" +
@@ -178,14 +177,9 @@ namespace WebApplication.Business_Logic
                 }
             }
 
-            //graph.DrawString(bookingData, font, XBrushes.Black, new XRect(0, 0, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
-            //graph.DrawString(bookingLinesData, font, XBrushes.Black, new XRect(0, 0, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
-
-            readFile.Close();
-            readFile = null;
-
             string pdfFileName = booking.BookingReferenceNo.ToString();
             pdf.Save($@"c:\temp\{pdfFileName}.pdf");
+            readFile.Close();
             pdf.Close();
         }
 

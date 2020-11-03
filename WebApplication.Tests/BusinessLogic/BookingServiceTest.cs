@@ -17,7 +17,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (SportsContext context = new SportsContext(ContextOptions))
             {
                 BookingService bookingService = new BookingService(context);
-                bool expected = true;
+                bool expected = false;
                 bool actual = await bookingService.CreateBooking(null, null, null, null, null);
 
                 Assert.Equal(expected, actual);

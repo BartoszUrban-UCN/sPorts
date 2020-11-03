@@ -23,15 +23,20 @@ namespace WebApplication.BusinessLogic
                     Credentials = credentials
                 };
 
+
                 MailMessage mail = new MailMessage(mailFrom, mailTo);
                 mail.Subject = $"Booking - {bookingReference}";
                 mail.Body = "Document with information about your booking.";
 
-                Attachment attachment;
-                attachment = new Attachment($@"c:\temp\{bookingReference}.pdf");
-                mail.Attachments.Add(attachment);
-                attachment = new Attachment($@"c:\temp\{bookingReference}.txt");
-                mail.Attachments.Add(attachment);
+                if (bookingReference > 0)
+                {
+                    Attachment attachment;
+                    attachment = new Attachment($@"c:\temp\{bookingReference}.pdf");
+                    mail.Attachments.Add(attachment);
+                    attachment = new Attachment($@"c:\temp\{bookingReference}.txt");
+                    mail.Attachments.Add(attachment);
+                }
+
 
                 SmtpServer.Send(mail);
                 mail.Dispose();
@@ -40,7 +45,6 @@ namespace WebApplication.BusinessLogic
             }
             catch (Exception)
             {
-                success = false;
                 throw;
             }
 
