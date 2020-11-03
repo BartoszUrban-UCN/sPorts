@@ -50,8 +50,8 @@ namespace WebApplication.Business_Logic
                 SendEmail(bookingReference: booking.BookingReferenceNo);
 
                 // delete files create in CreateBookingPdfFile
-                File.Delete($@"c:\temp\{booking.BookingReferenceNo}.pdf");
-                File.Delete($@"c:\temp\{booking.BookingReferenceNo}.txt");
+                File.Delete($@"\{booking.BookingReferenceNo}.pdf");
+                File.Delete($@"\{booking.BookingReferenceNo}.txt");
             }
 
             return rowsAffected > 0;
@@ -150,13 +150,13 @@ namespace WebApplication.Business_Logic
                                                                                 $"Confirmed - {bookingLine.Confirmed}\n" +
                                                                                 "--------------------------------------------------------\n"));
 
-            using (StreamWriter file = new StreamWriter($@"C:\temp\{booking.BookingReferenceNo}.txt", true))
+            using (StreamWriter file = new StreamWriter($@"\{booking.BookingReferenceNo}.txt", true))
             {
                 file.WriteLine(bookingData);
                 file.WriteLine(bookingLinesData);
             }
 
-            StreamReader readFile = new StreamReader($@"C:\temp\{booking.BookingReferenceNo}.txt");
+            StreamReader readFile = new StreamReader($@"\{booking.BookingReferenceNo}.txt");
 
             graph.DrawString($"Booking - {booking.BookingReferenceNo}", fontTitle, XBrushes.Black, new XRect(0, 20, page.Width.Point, page.Height.Point), XStringFormats.TopCenter);
 
@@ -178,7 +178,7 @@ namespace WebApplication.Business_Logic
             }
 
             string pdfFileName = booking.BookingReferenceNo.ToString();
-            pdf.Save($@"c:\temp\{pdfFileName}.pdf");
+            pdf.Save($@"\{pdfFileName}.pdf");
             readFile.Close();
             pdf.Close();
         }
