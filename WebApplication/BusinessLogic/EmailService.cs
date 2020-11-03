@@ -6,7 +6,7 @@ namespace WebApplication.BusinessLogic
 {
     public static class EmailService
     {
-        public static bool SendEmail(string mailFrom = "tester6543@yandex.com", string mailTo = "tester7654@yandex.com", string username = "Tester6543", string password = "Tester123")
+        public static bool SendEmail(int bookingReference, string mailFrom = "tester6543@yandex.com", string mailTo = "tester7654@yandex.com", string username = "Tester6543", string password = "Tester123")
         {
             bool success = false;
 
@@ -24,12 +24,12 @@ namespace WebApplication.BusinessLogic
                 };
 
                 MailMessage mail = new MailMessage(mailFrom, mailTo);
-                mail.Subject = "Test Mail Attachement";
-                mail.Body = "This is test mail with attachement using smtp.";
+                mail.Subject = $"Booking - {bookingReference}";
+                mail.Body = "Document with information about your booking.";
 
-                //Attachment attachment;
-                //attachment = new Attachment(@"c:\temp\test.txt");
-                //mail.Attachments.Add(attachment);
+                Attachment attachment;
+                attachment = new Attachment($@"c:\temp\{bookingReference}.pdf");
+                mail.Attachments.Add(attachment);
 
                 SmtpServer.Send(mail);
                 success = true;

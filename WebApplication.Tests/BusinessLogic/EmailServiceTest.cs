@@ -9,7 +9,7 @@ namespace WebApplication.Tests.BusinessLogic
         [Fact]
         public void SendEmail_WrongPassword_Fail()
         {
-            bool result = SendEmail(password: "Tester1234");
+            bool result = SendEmail(password: "Tester1234", bookingReference: 1);
 
             Assert.False(result);
             Assert.Throws<Exception>(() => result);
@@ -18,7 +18,7 @@ namespace WebApplication.Tests.BusinessLogic
         [Fact]
         public void SendEmail_CorrectPassword_Pass()
         {
-            bool result = SendEmail(password: "Tester123");
+            bool result = SendEmail(password: "Tester123", bookingReference: 1);
 
             Assert.True(result);
         }

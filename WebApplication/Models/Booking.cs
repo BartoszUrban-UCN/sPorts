@@ -13,5 +13,9 @@ namespace WebApplication.Models
         public string PaymentStatus { get; set; }
 
         public List<BookingLine> BookingLines { get; set; }
+
+        public int BoatId { get; set; }
+
+        public Boat Boat { get; set; }
     }
 }

@@ -22,12 +22,8 @@ namespace WebApplication.Models
 
         public int SpotId { get; set; }
 
-        public int BoatId { get; set; }
-
         public Booking Booking { get; set; }
 
         public Spot Spot { get; set; }
-
-        public Boat Boat { get; set; }
     }
 }
