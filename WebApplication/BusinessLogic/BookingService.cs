@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
 using static WebApplication.BusinessLogic.EmailService;
@@ -57,6 +58,7 @@ namespace WebApplication.Business_Logic
         }
 
         #region Create booking lines based on data from the form
+
         private List<BookingLine> CreateBookingLines(Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots)
         {
             List<BookingLine> bookingLines = new List<BookingLine>();
@@ -78,9 +80,11 @@ namespace WebApplication.Business_Logic
 
             return bookingLines;
         }
-        #endregion
+
+        #endregion Create booking lines based on data from the form
 
         #region Create booking class with booking lines & totalPrice
+
         private Booking InitBooking(ref Booking booking, List<BookingLine> bookingLines, double totalPrice, Boat boat)
         {
             booking = new Booking
@@ -94,9 +98,11 @@ namespace WebApplication.Business_Logic
 
             return booking;
         }
-        #endregion
+
+        #endregion Create booking class with booking lines & totalPrice
 
         #region Store booking class & associated booking lines in db
+
         private async Task<int> StoreBookingInDb(Booking booking)
         {
             int rowsAffected = 0;
@@ -111,9 +117,11 @@ namespace WebApplication.Business_Logic
 
             return rowsAffected;
         }
-        #endregion
+
+        #endregion Store booking class & associated booking lines in db
 
         #region Create pdf file with information about booking
+
         private void CreateBookingPdfFile(Booking booking)
         {
             PdfDocument pdf = new PdfDocument();
@@ -180,15 +188,17 @@ namespace WebApplication.Business_Logic
             pdf.Save($@"c:\temp\{pdfFileName}.pdf");
             pdf.Close();
         }
-        #endregion
+
+        #endregion Create pdf file with information about booking
 
         #region Assign random marina spot based on boat's size & availability
-        public static Spot AssignSpotInMarina(Marina marina, Boat boat)
+
+        public static Spot AssignSpotInMarina(Marina marina, Boat boat, DateTime startDate, DateTime endDate)
         {
-            List<Spot> availableSpots = marina.Spots.Where(s => s.Available).ToList();
-            Spot firstValidSpot = availableSpots.Find(s => s.MaxWidth > boat.Width && s.MaxLength > boat.Length && s.MaxDepth > boat.Depth);
-            return firstValidSpot;
+            BookingFormService bookingFormService = new BookingFormService();
+            return bookingFormService.GetFirstAvailableSpot(marina, boat, startDate, endDate);
         }
-        #endregion
+
+        #endregion Assign random marina spot based on boat's size & availability
     }
 }
