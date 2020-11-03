@@ -48,6 +48,7 @@ namespace WebApplication.Business_Logic
                 // send an email to boatOwner's email
                 SendEmail(bookingReference: booking.BookingReferenceNo);
 
+                // delete files create in CreateBookingPdfFile
                 File.Delete($@"c:\temp\{booking.BookingReferenceNo}.pdf");
                 File.Delete($@"c:\temp\{booking.BookingReferenceNo}.txt");
             }
