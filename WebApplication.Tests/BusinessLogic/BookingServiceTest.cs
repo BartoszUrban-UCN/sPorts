@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using WebApplication.Business_Logic;
-using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.Tests.Utils;
 using Xunit;

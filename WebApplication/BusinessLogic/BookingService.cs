@@ -109,10 +109,20 @@ namespace WebApplication.Business_Logic
 
             using (SportsContext context = _context)
             {
-                context.Bookings.Add(booking);
-                booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
+                using (var transaction = context.Database.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        context.Bookings.Add(booking);
+                        booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
 
-                rowsAffected = await context.SaveChangesAsync();
+                        rowsAffected = await context.SaveChangesAsync();
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
             }
 
             return rowsAffected;
@@ -150,7 +160,7 @@ namespace WebApplication.Business_Logic
                                                                                 $"Confirmed - {bookingLine.Confirmed}\n" +
                                                                                 "--------------------------------------------------------\n"));
 
-            using (StreamWriter file = new StreamWriter($@"\{booking.BookingReferenceNo}.txt", true))
+            using (StreamWriter file = new StreamWriter($@"\{booking.BookingReferenceNo}.txt", false))
             {
                 file.WriteLine(bookingData);
                 file.WriteLine(bookingLinesData);
