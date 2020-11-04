@@ -109,6 +109,7 @@ namespace WebApplication.Business_Logic
 
             using (SportsContext context = _context)
             {
+                // using (var transaction = await context.Database.BeginTransactionAsync())
                 using (var transaction = context.Database.BeginTransaction())
                 {
                     try
@@ -117,10 +118,12 @@ namespace WebApplication.Business_Logic
                         booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
 
                         rowsAffected = await context.SaveChangesAsync();
+                        //transaction.CommitAsync();
                         transaction.Commit();
                     }
                     catch (Exception)
                     {
+                        //transaction.RollbackAsync();
                         transaction.Rollback();
                         throw;
                     }
