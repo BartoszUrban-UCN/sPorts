@@ -71,7 +71,10 @@ namespace WebApplication
             });
 
             //Configure DbContext, connect to the LocalDB
-            services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalDB")));
+            string dbString;
+            dbString = "LocalDb";
+            //dbString = "DragosDb";
+            services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbString)));
 
             //Swagger service
             services.AddSwaggerGen(swagger =>

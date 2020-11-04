@@ -1,28 +1,10 @@
-@model WebApplication.Models.Marina
+@model Marina
 
 @{
+    var url = $"/marina/{Model.MarinaId}/spots";
     ViewData["Title"] = "Marina";
 }
 
-@section Styles{
-    <link rel="stylesheet" href="~/css/marina.css"/>
-}
-
-@if (Model != null)
-{
-<div class="container-fluid">
-    <div class="card-columns">
-            <div class="card test-white">
-                <img class="card-img" src="~/img/1.webp">
-                <div class="card-body">
-                    <h5 class="card-title">@Model.Name</h5>
-                    <p class="card-text">@Model.MarinaId</p>
-                </div>
-            </div>
-    </div>
-</div>
-}
-else
-{
-    <h1>No marina found</h1>
-}
+<h5 class="card-title text-left">@Model.Name</h5>
+<p class="card-text text-left">@Model.MarinaId</p>
+<a href=@url class="btn btn-success">Buy now</a>

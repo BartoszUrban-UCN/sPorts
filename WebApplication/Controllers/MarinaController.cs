@@ -22,15 +22,19 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> Index()
         {
+            ViewData["ViewName"] = "Marina";
             List<Marina> marinas = await _context.Marinas.ToListAsync();
-            return View(marinas);
+            return View("_ListLayout", marinas);
         }
 
         [Route("marina/{id}")]
         public async Task<IActionResult> Marina(int? id)
         {
+            ViewData["ViewName"] = "Marina";
             var marina = _context.Marinas.FindAsync(id);
-            return View(await marina);
+            List<Marina> marinaList = new List<Marina>();
+            marinaList.Add(await marina);
+            return View("_ListLayout", marinaList);
         }
 
         public async Task<IActionResult> Spots(int id)
@@ -39,9 +43,10 @@ namespace WebApplication.Controllers
             var marina = marinaWithSpots.Find(marina => marina.MarinaId == id);
             var spots = marina.Spots;
 
+            ViewData["ViewName"] = "~/Views/Spot/Spot.cshtml";
             if (marina != null)
             {
-                return View("~/Views/Spot/Index.cshtml", spots);            
+                return View("_ListLayout", spots);            
             }
             return View("Error");
         }

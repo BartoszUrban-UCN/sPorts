@@ -21,11 +21,10 @@ namespace WebApplication.Controllers
             _context = context;
         }
 
-
         //GET: Spots
         public async Task<IActionResult> Index()
         {
-            var sportsContext = _context.Spots.Include(s => s.MarinaId);
+            var sportsContext = _context.Spots.Include(spot => spot.Marina);
             return View(await sportsContext.ToListAsync());
         }
 
@@ -160,8 +159,11 @@ namespace WebApplication.Controllers
         [Route("spot/{id}")]
         public async Task<IActionResult> Spot(int? id)
         {
+            ViewData["ViewName"] = "Spot";
             var spot = _context.Spots.FindAsync(id);
-            return View(await spot);
+            List<Spot> spotList = new List<Spot>();
+            spotList.Add(await spot);
+            return View("_ListLayout", spotList);
         }
 
         public async Task<IActionResult> Marina(int id)

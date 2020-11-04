@@ -1,28 +1,19 @@
-@model WebApplication.Models.Spot
+@model Spot
 
 @{
-    ViewData["Title"] = "Spot";
+    ViewData["Title"] = "Spots";
+    var available = "text-success";
+    var unavailable = "text-available";
 }
 
-@section Styles{
-    <link rel="stylesheet" href="~/css/marina.css"/>
-}
+<h5 class="card-title text-left">@Model.Price</h5>
+<p class="card-text text-left">@Model.SpotId</p>
 
-@if (Model != null)
+@if (Model.Available)
 {
-<div class="container-fluid">
-    <div class="card-columns">
-            <div class="card test-white">
-                <img class="card-img" src="~/img/1.webp">
-                <div class="card-body">
-                    <h5 class="card-title">@Model.Price</h5>
-                    <p class="card-text">@Model.SpotId</p>
-                </div>
-            </div>
-    </div>
-</div>
+    <p class="card-text @available text-left">Available</p>
 }
 else
 {
-    <h1>No spot found</h1>
+    <p class="card-text @unavailable text-left">Unavailable</p>
 }
