@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using WebApplication.Data;
 
 namespace WebApplication
@@ -48,7 +49,7 @@ namespace WebApplication
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute(
                     name: "listing",
-                    defaults: new {action = "Index"},
+                    defaults: new { action = "Index" },
                     pattern: "{controller}/{id?}/{action}"
                 );
             });
@@ -71,9 +72,12 @@ namespace WebApplication
             });
 
             //Configure DbContext, connect to the LocalDB
-            string dbString;
-            dbString = "LocalDb";
-            //dbString = "DragosDb";
+            string dbString = "LocalDb";
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                dbString = "DragosDb"; // @Dragos there you go (i hope it works)
+            }
+
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbString)));
 
             //Swagger service
