@@ -117,11 +117,11 @@ namespace WebApplication.Business_Logic
                         booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
 
                         rowsAffected = await context.SaveChangesAsync();
-                        await transaction.CommitAsync();
+                        transaction.Commit();
                     }
                     catch (Exception)
                     {
-                        await transaction.RollbackAsync();
+                        transaction.Rollback();
                         throw;
                     }
                 }
