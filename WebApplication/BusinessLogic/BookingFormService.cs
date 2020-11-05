@@ -11,22 +11,20 @@ namespace WebApplication.BusinessLogic
     {
         public Spot GetFirstAvailableSpot(Marina marina, Boat boat, DateTime startDate, DateTime endDate)
         {
-            //var isAnySpotAvailable = false;
-            //Spot foundSpot = null;
-
             foreach (Spot spot in marina.Spots)
             {
-                var isSpotGood = true;
-
-                // Check whether the boat "fits"
-                isSpotGood = DoesSpotFitBoat(boat, spot);
-
-                if (isSpotGood)
+                if (DoesSpotFitBoat(boat, spot))
                 {
-                    foreach (BookingLine bookingLine in spot.BookingLines)
+                    // Only go through Booking Lines that end later than "Now" - does not go through
+                    // past bookings
+                    foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
                     {
-                        if (!DateRangeIntersects(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
+                        if (!DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
                         {
+                            // Basically returns first found spot that
+                            // 1. Fits the boat
+                            // 2. Has NO date intersects with any existing bookings with no
+                            // optimizations in mind whatsoever 🙂
                             return spot;
                         }
                     }
@@ -46,16 +44,16 @@ namespace WebApplication.BusinessLogic
             return doesSpotFit;
         }
 
-        public static bool DateRangeIntersects(DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd)
+        public static bool DoesDateRangeInsersect(DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd)
         {
-            var intersects = false;
+            var doesDateRangeIntersect = false;
 
             if (aStart < bEnd && bStart < aEnd)
             {
-                intersects = true;
+                doesDateRangeIntersect = true;
             }
 
-            return intersects;
+            return doesDateRangeIntersect;
         }
     }
 }

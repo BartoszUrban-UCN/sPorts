@@ -106,7 +106,7 @@ namespace WebApplication.Tests.BusinessLogic
             DateTime bEnd = DateTime.Now.AddDays(5);
 
             // Act
-            var result = BookingFormService.DateRangeIntersects(
+            var result = BookingFormService.DoesDateRangeInsersect(
                 aStart,
                 aEnd,
                 bStart,
@@ -127,7 +127,7 @@ namespace WebApplication.Tests.BusinessLogic
             DateTime bEnd = DateTime.Now.AddDays(10);
 
             // Act
-            var result = BookingFormService.DateRangeIntersects(
+            var result = BookingFormService.DoesDateRangeInsersect(
                 aStart,
                 aEnd,
                 bStart,
