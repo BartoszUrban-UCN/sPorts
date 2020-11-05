@@ -13,7 +13,6 @@ namespace WebApplication.Controllers
 {
     public class SpotController : Controller
     {
-
         private readonly SportsContext _context;
 
         public SpotController(SportsContext context)
@@ -21,15 +20,30 @@ namespace WebApplication.Controllers
             _context = context;
         }
 
-        //GET: Spots
         public async Task<IActionResult> Index()
         {
+            ViewData["ViewName"] = "Spot";
+
             var sportsContext = _context.Spots.Include(spot => spot.Marina);
-            return View(await sportsContext.ToListAsync());
+            var spots = sportsContext.ToListAsync();
+
+            return View("_ListLayout", await spots);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSpots()
+        {
+            ViewData["ViewName"] = "Spot";
+
+            var sportsContext = _context.Spots.Include(spot => spot.Marina);
+            var spots = sportsContext.ToListAsync();
+
+            return View("_ListLayout", await spots);
         }
 
         //GET: Spots/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet]
+        public async Task<IActionResult> GetDetails(int? id)
         {
             if (id == null)
             {
@@ -57,12 +71,9 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 _context.Add(spot);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-
-
             }
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId,", spot.MarinaId);
             return View(spot);
@@ -140,13 +151,10 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-
             var spot = await _context.Spots.FindAsync(id);
             _context.Spots.Remove(spot);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-
-
         }
 
 
@@ -156,24 +164,28 @@ namespace WebApplication.Controllers
             return _context.Spots.Any(s => s.SpotId == id);
         }
 
+        [HttpGet]
         [Route("spot/{id}")]
-        public async Task<IActionResult> Spot(int? id)
+        public async Task<IActionResult> GetSpot(int id)
         {
             ViewData["ViewName"] = "Spot";
+
             var spot = _context.Spots.FindAsync(id);
-            List<Spot> spotList = new List<Spot>();
+            var spotList = new List<Spot>();
             spotList.Add(await spot);
+
             return View("_ListLayout", spotList);
         }
 
-        public async Task<IActionResult> Marina(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetMarina(int id)
         {
             var spotsWithMarina = await _context.Spots.Include(s => s.Marina).ToListAsync();
             var spot = spotsWithMarina.Find(spot => spot.SpotId == id);
 
             if (spot != null)
             {
-                return View("~/Views/Marina/Marina.cshtml", spot.Marina);            
+                return View("~/Views/Marina/Marina.cshtml", spot.Marina);
             }
             return View("Error");
         }

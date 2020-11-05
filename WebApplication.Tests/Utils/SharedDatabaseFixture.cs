@@ -1,7 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System.Runtime.InteropServices;
 using System.Data.Common;
+using System;
+
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+
 using WebApplication.Data;
 
 namespace WebApplication.Tests.Utils
@@ -15,13 +18,12 @@ namespace WebApplication.Tests.Utils
 
         public SharedDatabaseFixture()
         {
-            // Replace username and password
-            // var linuxconnectionString = "Server=localhost;Database=sPortsTest;User Id=sa;Password=Password123;Trusted_Connection=False;MultipleActiveResultSets=true";
-
             // Local DB sPortsTest instead of normal
             var connectionString = "Server=(localdb)\\mssqllocaldb;Database=sPortsTest;Trusted_Connection=True;MultipleActiveResultSets=true";
-
-            // Replace connectionString
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                connectionString = "Server=localhost;Database=sPortsTest;User Id=sa;Password=Password123;Trusted_Connection=False;MultipleActiveResultSets=true";
+            }
             //ContextOptions = new DbContextOptionsBuilder<SportsContext>().UseSqlServer(connectionString).Options;
 
             Connection = new SqlConnection(connectionString);

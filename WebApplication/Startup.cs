@@ -59,7 +59,7 @@ namespace WebApplication
 
             app.UseSwaggerUI(swagger =>
             {
-                swagger.SwaggerEndpoint("v1/swagger.json", "sPorts API v1");
+                swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "sPorts API v1");
             });
         }
 
@@ -89,17 +89,14 @@ namespace WebApplication
                         Version = "v1",
                         Title = "sPorts API",
                         Description = "The API for the sPorts distributed system",
-                        //TermsOfService = new Uri(""),
                         Contact = new OpenApiContact
                         {
                             Name = "Group 1",
                             Email = string.Empty,
-                            //Url = new Uri(""),
                         },
                         License = new OpenApiLicense
                         {
                             Name = "Use under LICX",
-                            //Url = new Uri(""),
                         }
                     });
 

@@ -21,23 +21,25 @@ namespace WebApplication.Controllers.RestApi
 
         // GET: api/MarinaOwners
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MarinaOwner>>> GetMarinaOwners()
+        public async Task<IActionResult> GetMarinaOwners()
         {
-            return await _context.MarinaOwners.Include(m => m.Spots).ToListAsync();
+            var marinaOwnersWithSpots = _context.MarinaOwners.Include(m => m.Spots);
+            var marinaOwnersList = marinaOwnersWithSpots.ToListAsync();
+
+            return Ok(await marinaOwnersList);
         }
 
         // GET: api/MarinaOwners/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MarinaOwner>> GetMarinaOwner(int id)
+        public async Task<IActionResult> GetMarinaOwner(int id)
         {
             var marinaOwner = await _context.MarinaOwners.FindAsync(id);
 
             if (marinaOwner == null)
             {
-                return NotFound();
+                return Ok(marinaOwner);
             }
-
-            return marinaOwner;
+            return NotFound();
         }
 
         // PUT: api/MarinaOwners/5

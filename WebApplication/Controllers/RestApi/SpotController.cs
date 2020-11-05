@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using WebApplication.Models;
 using WebApplication.Data;
-using System.Linq;
-using System;
 
 namespace WebApplication.Controllers.RestApi
 {
@@ -24,24 +23,23 @@ namespace WebApplication.Controllers.RestApi
 
         //GET: api/Spots
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Spot>>> GetSpots()
+        public async Task<IActionResult> GetSpots()
         {
-            return await _context.Spots.ToListAsync();
+            var spotsList =  _context.Spots.ToListAsync();
+            return Ok(await spotsList);
         }
 
         //Get: api/Spots/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Spot>> GetSpots(int id)
+        public async Task<IActionResult> GetSpot(int id)
         {
             var spot = await _context.Spots.FindAsync(id);
 
-            if (spot == null)
+            if (spot != null)
             {
-                return NotFound();
+                return Ok(spot);
             }
-
-            return spot;
-
+            return NotFound();
         }
 
         //PUT: api/Spots/5
@@ -76,7 +74,7 @@ namespace WebApplication.Controllers.RestApi
 
         //POST: api/Spots
         [HttpPost]
-        public async Task<ActionResult<Spot>> PostSpot(Spot spot)
+        public async Task<IActionResult> PostSpot(Spot spot)
         {
             _context.Spots.Add(spot);
             await _context.SaveChangesAsync();
@@ -86,7 +84,7 @@ namespace WebApplication.Controllers.RestApi
 
         // DELETE: api/Spots/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Spot>> DeleteSpot(int id)
+        public async Task<IActionResult> DeleteSpot(int id)
         {
             var spot = await _context.Spots.FindAsync(id);
             if (spot == null)
@@ -97,7 +95,7 @@ namespace WebApplication.Controllers.RestApi
             _context.Spots.Remove(spot);
             await _context.SaveChangesAsync();
 
-            return spot;
+            return Ok(spot);
         }
         private bool SpotExists(int id)
         {

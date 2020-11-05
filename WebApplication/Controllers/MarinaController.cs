@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApplication.Business_Logic;
+
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -23,30 +21,52 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["ViewName"] = "Marina";
-            List<Marina> marinas = await _context.Marinas.ToListAsync();
-            return View("_ListLayout", marinas);
+
+            var marinas = _context.Marinas.ToListAsync();
+
+            return View("_ListLayout", await marinas);
         }
 
-        [Route("marina/{id}")]
-        public async Task<IActionResult> Marina(int? id)
+        [HttpGet]
+        public async Task<IActionResult> GetMarinas()
         {
             ViewData["ViewName"] = "Marina";
-            var marina = _context.Marinas.FindAsync(id);
-            List<Marina> marinaList = new List<Marina>();
-            marinaList.Add(await marina);
-            return View("_ListLayout", marinaList);
+
+            var marinas = _context.Marinas.ToListAsync();
+
+            return View("_ListLayout", await marinas);
         }
 
-        public async Task<IActionResult> Spots(int id)
+        [HttpGet]
+        [Route("marina/{id}")]
+        public async Task<IActionResult> GetMarina(int id)
+        {
+            ViewData["ViewName"] = "Marina";
+
+            var marina = await _context.Marinas.FindAsync(id);
+
+            if (marina != null)
+            {
+                var marinaList = new List<Marina>();
+                marinaList.Add(marina);
+                return View("_ListLayout", marinaList);
+            }
+            return View("Error");
+        }
+
+
+        [HttpGet]
+        [Route("{id}/spots")]
+        public async Task<IActionResult> GetMarinaSpots(int id)
         {
             var marinaWithSpots = await _context.Marinas.Include(s => s.Spots).ToListAsync();
-            var marina = marinaWithSpots.Find(marina => marina.MarinaId == id);
-            var spots = marina.Spots;
+            var marina = marinaWithSpots.Find(m => m.MarinaId == id);
 
             ViewData["ViewName"] = "~/Views/Spot/Spot.cshtml";
             if (marina != null)
             {
-                return View("_ListLayout", spots);            
+                var spots = marina.Spots;
+                return View("_ListLayout", spots);
             }
             return View("Error");
         }
