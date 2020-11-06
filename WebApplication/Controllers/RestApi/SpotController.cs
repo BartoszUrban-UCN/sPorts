@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -20,7 +21,7 @@ namespace WebApplication.Controllers.RestApi
 
         //GET: api/Spots
         [HttpGet]
-        public async Task<IActionResult> GetSpots()
+        public async Task<ActionResult<IEnumerable<Spot>>> GetSpots()
         {
             var spotsList = _context.Spots.ToListAsync();
             return Ok(await spotsList);
@@ -28,7 +29,7 @@ namespace WebApplication.Controllers.RestApi
 
         //Get: api/Spots/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetSpot(int id)
+        public async Task<ActionResult<Spot>> GetSpot(int id)
         {
             var spot = await _context.Spots.FindAsync(id);
 

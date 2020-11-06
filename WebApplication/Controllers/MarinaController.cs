@@ -9,6 +9,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class MarinaController : Controller
     {
         private readonly SportsContext _context;
@@ -27,8 +28,7 @@ namespace WebApplication.Controllers
             return View("_ListLayout", await marinas);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMarinas()
+        public async Task<IActionResult> Marinas()
         {
             ViewData["ViewName"] = "Marina";
 
@@ -37,9 +37,8 @@ namespace WebApplication.Controllers
             return View("_ListLayout", await marinas);
         }
 
-        [HttpGet]
         [Route("marina/{id}")]
-        public async Task<IActionResult> GetMarina(int id)
+        public async Task<IActionResult> Marina(int id)
         {
             ViewData["ViewName"] = "Marina";
 
@@ -54,10 +53,8 @@ namespace WebApplication.Controllers
             return View("Error");
         }
 
-
-        [HttpGet]
         [Route("{id}/spots")]
-        public async Task<IActionResult> GetMarinaSpots(int id)
+        public async Task<IActionResult> MarinaSpots(int id)
         {
             var marinaWithSpots = await _context.Marinas.Include(s => s.Spots).ToListAsync();
             var marina = marinaWithSpots.Find(m => m.MarinaId == id);

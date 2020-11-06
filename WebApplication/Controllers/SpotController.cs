@@ -11,6 +11,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class SpotController : Controller
     {
         private readonly SportsContext _context;
@@ -30,8 +31,7 @@ namespace WebApplication.Controllers
             return View("_ListLayout", await spots);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetSpots()
+        public async Task<IActionResult> Spots()
         {
             ViewData["ViewName"] = "Spot";
 
@@ -42,8 +42,7 @@ namespace WebApplication.Controllers
         }
 
         //GET: Spots/Details/5
-        [HttpGet]
-        public async Task<IActionResult> GetDetails(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -164,9 +163,8 @@ namespace WebApplication.Controllers
             return _context.Spots.Any(s => s.SpotId == id);
         }
 
-        [HttpGet]
         [Route("spot/{id}")]
-        public async Task<IActionResult> GetSpot(int id)
+        public async Task<IActionResult> Spot(int id)
         {
             ViewData["ViewName"] = "Spot";
 
@@ -177,8 +175,7 @@ namespace WebApplication.Controllers
             return View("_ListLayout", spotList);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMarina(int id)
+        public async Task<IActionResult> Marina(int id)
         {
             var spotsWithMarina = await _context.Spots.Include(s => s.Marina).ToListAsync();
             var spot = spotsWithMarina.Find(spot => spot.SpotId == id);

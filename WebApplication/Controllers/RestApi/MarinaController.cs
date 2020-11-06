@@ -21,6 +21,7 @@ namespace WebApplication.Controllers.RestApi
         /// <summary>
         /// Gets all the marinas in the database
         /// </summary>
+        [Produces("application/json")] 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Marina>>> GetMarinas()
         {
@@ -30,8 +31,9 @@ namespace WebApplication.Controllers.RestApi
             return await _context.Marinas.ToListAsync();
         }
 
+        [Produces("application/json")] 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetMarina(int id)
+        public async Task<ActionResult<Marina>> GetMarina(int id)
         {
             var marina = await _context.Marinas.FindAsync(id);
 
@@ -41,9 +43,10 @@ namespace WebApplication.Controllers.RestApi
             }
             return NotFound();
         }
-        [Produces("application/json")]
+
+        [Produces("application/json")] 
         [HttpGet("{id}/spots")]
-        public async Task<IActionResult> GetMarinaSpots(int id)
+        public async Task<ActionResult<IEnumerable<Spot>>> GetMarinaSpots(int id)
         {
             var marinaWithSpots = _context.Marinas.Include(s => s.Spots);
             var marinaList = await marinaWithSpots.ToListAsync();
