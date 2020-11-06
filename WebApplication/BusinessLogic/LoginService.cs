@@ -28,5 +28,39 @@ namespace WebApplication.Business_Logic
 
             return success;
         }
+
+        public async Task<bool> MakePersonBoatOwner(Person person)
+        {
+            var success = false;
+
+            if (_context.BoatOwners.AsQueryable().Any(p => p.PersonId.Equals(person.PersonId)))
+            {
+                throw new ArgumentException("You are already registered as a boat owner!");
+            }
+
+            var boatOwner = new BoatOwner { PersonId = person.PersonId };
+
+            _context.BoatOwners.Add(boatOwner);
+            success = await _context.SaveChangesAsync() > 0;
+
+            return success;
+        }
+
+        public async Task<bool> MakePersonMarinaOwner(Person person)
+        {
+            var success = false;
+
+            if (_context.MarinaOwners.AsQueryable().Any(p => p.PersonId.Equals(person.PersonId)))
+            {
+                throw new ArgumentException("You are already registered as a marina owner!");
+            }
+
+            var marinaOwner = new MarinaOwner { PersonId = person.PersonId };
+
+            _context.MarinaOwners.Add(marinaOwner);
+            success = await _context.SaveChangesAsync() > 0;
+
+            return success;
+        }
     }
 }

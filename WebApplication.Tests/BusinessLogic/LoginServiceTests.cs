@@ -68,5 +68,57 @@ namespace WebApplication.Tests.BusinessLogic
                 }
             }
         }
+
+        [Fact]
+        public async void MakePersonBoatOwnerSuccessAndFail()
+        {
+            using (var transaction = Fixture.Connection.BeginTransaction())
+            {
+                using (var context = Fixture.CreateContext(transaction))
+                {
+                    // Arrange
+                    var service = new LoginService(context);
+                    var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid100@email.com", Password = "123456" };
+
+                    // Act
+                    await service.CreatePerson(person);
+                    person = context.Persons.AsQueryable().First(p => p.Email.Equals("valid100@email.com"));
+
+                    var success = await service.MakePersonBoatOwner(person);
+
+                    // Assert
+                    Assert.True(success);
+                    Assert.True(context.BoatOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
+
+                    await Assert.ThrowsAsync<ArgumentException>(() => service.MakePersonBoatOwner(person));
+                }
+            }
+        }
+
+        [Fact]
+        public async void MakePersonMarinaOwnerSuccessAndFail()
+        {
+            using (var transaction = Fixture.Connection.BeginTransaction())
+            {
+                using (var context = Fixture.CreateContext(transaction))
+                {
+                    // Arrange
+                    var service = new LoginService(context);
+                    var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid100@email.com", Password = "123456" };
+
+                    // Act
+                    await service.CreatePerson(person);
+                    person = context.Persons.AsQueryable().First(p => p.Email.Equals("valid100@email.com"));
+
+                    var success = await service.MakePersonMarinaOwner(person);
+
+                    // Assert
+                    Assert.True(success);
+                    Assert.True(context.MarinaOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
+
+                    await Assert.ThrowsAsync<ArgumentException>(() => service.MakePersonMarinaOwner(person));
+                }
+            }
+        }
     }
 }

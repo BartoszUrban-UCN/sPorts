@@ -136,5 +136,33 @@ namespace WebApplication.Tests.BusinessLogic
             // Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public void AreDatesValid_True()
+        {
+            // Arrange
+            var startDate = DateTime.Now;
+            var endDate = DateTime.Now.AddDays(3);
+
+            // Act
+            var areDatesValid = BookingFormService.AreDatesValid(startDate, endDate);
+
+            // Assert
+            Assert.True(areDatesValid);
+        }
+
+        [Fact]
+        public void AreDatesValid_False()
+        {
+            // Arrange
+            var startDate = DateTime.Now;
+            var endDate = DateTime.Now.AddDays(3);
+
+            // Act
+            var areDatesValid = BookingFormService.AreDatesValid(endDate, startDate);
+
+            // Assert
+            Assert.False(areDatesValid);
+        }
     }
 }
