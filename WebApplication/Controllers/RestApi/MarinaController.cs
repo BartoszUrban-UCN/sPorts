@@ -1,9 +1,9 @@
-using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebApplication.Data;
+using WebApplication.Models;
 
 namespace WebApplication.Controllers.RestApi
 {
@@ -18,15 +18,16 @@ namespace WebApplication.Controllers.RestApi
             _context = context;
         }
 
-        /// <sumary>
+        /// <summary>
         /// Gets all the marinas in the database
-        /// </sumary>
+        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetMarinas()
+        public async Task<ActionResult<IEnumerable<Marina>>> GetMarinas()
         {
-            var marinaList = _context.Marinas.ToListAsync();
+            //var marinaList = _context.Marinas.ToListAsync();
 
-            return Ok(await marinaList);
+            //return Ok(await marinaList);
+            return await _context.Marinas.ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -40,7 +41,7 @@ namespace WebApplication.Controllers.RestApi
             }
             return NotFound();
         }
-        [Produces("application/json")] 
+        [Produces("application/json")]
         [HttpGet("{id}/spots")]
         public async Task<IActionResult> GetMarinaSpots(int id)
         {

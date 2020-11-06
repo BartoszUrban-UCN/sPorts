@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
-using WebApplication.Models;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApplication.Data;
+using WebApplication.Models;
 
 namespace WebApplication.Controllers.RestApi
 {
@@ -25,7 +22,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet]
         public async Task<IActionResult> GetSpots()
         {
-            var spotsList =  _context.Spots.ToListAsync();
+            var spotsList = _context.Spots.ToListAsync();
             return Ok(await spotsList);
         }
 
