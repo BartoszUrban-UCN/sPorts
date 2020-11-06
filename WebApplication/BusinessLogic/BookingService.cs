@@ -21,7 +21,7 @@ namespace WebApplication.Business_Logic
             _context = context;
         }
 
-        public async Task<bool> CreateBooking(BoatOwner boatOwner, Boat boat, Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots, bool test)
+        public async Task<bool> CreateBooking(BoatOwner boatOwner, Boat boat, Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots)
         {
             int rowsAffected = 0;
             // create booking lines based on the information from the form
@@ -41,7 +41,7 @@ namespace WebApplication.Business_Logic
                 InitBooking(ref booking, bookingLines, totalPrice, boat);
 
                 // store booking class & booking lines in the db
-                rowsAffected = await StoreBookingInDb(booking, test);
+                rowsAffected = await StoreBookingInDb(booking);
 
                 // create pdf file with info about the booking
                 CreateBookingPdfFile(booking);
@@ -103,7 +103,7 @@ namespace WebApplication.Business_Logic
 
         #region Store booking class & associated booking lines in db
 
-        private async Task<int> StoreBookingInDb(Booking booking, bool test)
+        private async Task<int> StoreBookingInDb(Booking booking)
         {
             int rowsAffected = 0;
 
@@ -119,10 +119,7 @@ namespace WebApplication.Business_Logic
 
                         rowsAffected = await context.SaveChangesAsync();
                         //transaction.CommitAsync();
-                        if (!test)
-                        {
-                            transaction.Commit();
-                        }
+                        transaction.Commit();
                     }
                     catch (Exception)
                     {

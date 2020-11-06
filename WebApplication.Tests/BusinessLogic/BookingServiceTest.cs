@@ -8,7 +8,7 @@ using Xunit;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class BookingServiceTest : IClassFixture<SharedDatabaseFixture>
+    public class BookingServiceTest : IClassFixture<SharedDatabaseFixture>, IDisposable
     {
         public BookingServiceTest(SharedDatabaseFixture fixture) => Fixture = fixture;
 
@@ -21,7 +21,7 @@ namespace WebApplication.Tests.BusinessLogic
             {
                 BookingService bookingService = new BookingService(context);
                 bool expected = false;
-                bool actual = await bookingService.CreateBooking(null, null, null, null, null, true);
+                bool actual = await bookingService.CreateBooking(null, null, null, null, null);
 
                 Assert.Equal(expected, actual);
             }
@@ -49,10 +49,27 @@ namespace WebApplication.Tests.BusinessLogic
                     { marina, spot }
                 };
 
-                bool actual = await bookingService.CreateBooking(boatOwner, boat, marinaStayDates, marinaPrices, marinaSpots, true);
+                bool actual = await bookingService.CreateBooking(boatOwner, boat, marinaStayDates, marinaPrices, marinaSpots);
 
                 Assert.Equal(expected, actual);
+                //Assert.True(DeleteBooking());
             }
+        }
+
+        private bool DeleteBooking()
+        {
+            using (var context = Fixture.CreateContext())
+            {
+                Booking booking = context.Bookings.Where(b => b.BookingId == 1).FirstOrDefault();
+
+                context.Bookings.Remove(booking);
+                return context.SaveChanges() > 0;
+            }
+        }
+
+        public void Dispose()
+        {
+            DeleteBooking();
         }
     }
 }
