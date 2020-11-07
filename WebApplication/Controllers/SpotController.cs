@@ -41,7 +41,7 @@ namespace WebApplication.Controllers
             return View("_ListLayout", await spots);
         }
 
-        //GET: Spots/Details/5
+        //GET: Spot/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -58,14 +58,14 @@ namespace WebApplication.Controllers
             return View(Spot);
         }
 
-        //GET: Spots/Create
+        //GET: Spot/Create
         public IActionResult Create()
         {
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId");
             return View();
         }
 
-        //POST: Spots/Create
+        //POST: Spot/Create
         public async Task<IActionResult> Create([Bind("SpotId,SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId")] Spot spot)
         {
             if (ModelState.IsValid)
@@ -95,7 +95,7 @@ namespace WebApplication.Controllers
             return View(spot);
         }
 
-        //POST: Spots/Edit/5
+        //POST: Spot/Edit/5
         public async Task<IActionResult> Edit(int id, [Bind("SpotId,SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId")] Spot spot)
         {
             if (id != spot.SpotId)
@@ -128,7 +128,7 @@ namespace WebApplication.Controllers
             return View(spot);
         }
 
-        //GET: Spots/Delete/5
+        //GET: Spot/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -146,7 +146,7 @@ namespace WebApplication.Controllers
             return View(spot);
         }
 
-        //POST: Spots/Delete
+        //POST: Spot/Delete
 
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

@@ -19,7 +19,7 @@ namespace WebApplication.Controllers.RestApi
             _context = context;
         }
 
-        //GET: api/Spots
+        //GET: api/Spot
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Spot>>> GetSpots()
         {
@@ -27,7 +27,7 @@ namespace WebApplication.Controllers.RestApi
             return Ok(await spotsList);
         }
 
-        //Get: api/Spots/5
+        //Get: api/Spot/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Spot>> GetSpot(int id)
         {
@@ -40,7 +40,7 @@ namespace WebApplication.Controllers.RestApi
             return NotFound();
         }
 
-        //PUT: api/Spots/5
+        //PUT: api/Spot/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSpot(int id, Spot spot)
         {
@@ -70,7 +70,7 @@ namespace WebApplication.Controllers.RestApi
             return NoContent();
         }
 
-        //POST: api/Spots
+        //POST: api/Spot
         [HttpPost]
         public async Task<IActionResult> PostSpot(Spot spot)
         {
@@ -80,7 +80,7 @@ namespace WebApplication.Controllers.RestApi
             return CreatedAtAction("GetSpot", new { id = spot.SpotId }, spot);
         }
 
-        // DELETE: api/Spots/5
+        // DELETE: api/Spot/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSpot(int id)
         {
