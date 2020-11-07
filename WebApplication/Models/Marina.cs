@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models
 {
     public class Marina
     {
         public int MarinaId { get; set; }
+        
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         public string Facilities { get; set; }

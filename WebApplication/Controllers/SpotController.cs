@@ -1,17 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApplication.Business_Logic;
 using WebApplication.Data;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)]
     public class SpotController : Controller
     {
         private readonly SportsContext _context;
@@ -21,51 +19,44 @@ namespace WebApplication.Controllers
             _context = context;
         }
 
+        // GET: Spot
         public async Task<IActionResult> Index()
         {
-            ViewData["ViewName"] = "Spot";
-
-            var sportsContext = _context.Spots.Include(spot => spot.Marina);
-            var spots = sportsContext.ToListAsync();
-
-            return View("_ListLayout", await spots);
+            var sportsContext = _context.Spots.Include(s => s.Marina);
+            return View(await sportsContext.ToListAsync());
         }
 
-        public async Task<IActionResult> Spots()
-        {
-            ViewData["ViewName"] = "Spot";
-
-            var sportsContext = _context.Spots.Include(spot => spot.Marina);
-            var spots = sportsContext.ToListAsync();
-
-            return View("_ListLayout", await spots);
-        }
-
-        //GET: Spot/Details/5
+        // GET: Spot/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var Spot = await _context.Spots
-                        .Include(s => s.MarinaId)
-                        .FirstOrDefaultAsync(s => s.SpotId == id);
-            if (Spot == null)
+
+            var spot = await _context.Spots
+                .Include(s => s.Marina)
+                .FirstOrDefaultAsync(m => m.SpotId == id);
+            if (spot == null)
             {
                 return NotFound();
             }
-            return View(Spot);
+
+            return View(spot);
         }
 
-        //GET: Spot/Create
+        // GET: Spot/Create
         public IActionResult Create()
         {
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId");
             return View();
         }
 
-        //POST: Spot/Create
+        // POST: Spot/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SpotId,SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId")] Spot spot)
         {
             if (ModelState.IsValid)
@@ -74,11 +65,11 @@ namespace WebApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId,", spot.MarinaId);
+            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 
-        //GET: Spots/Edit/5
+        // GET: Spot/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -95,13 +86,18 @@ namespace WebApplication.Controllers
             return View(spot);
         }
 
-        //POST: Spot/Edit/5
+        // POST: Spot/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SpotId,SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId")] Spot spot)
         {
             if (id != spot.SpotId)
             {
                 return NotFound();
             }
+
             if (ModelState.IsValid)
             {
                 try
@@ -109,7 +105,6 @@ namespace WebApplication.Controllers
                     _context.Update(spot);
                     await _context.SaveChangesAsync();
                 }
-
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!SpotExists(spot.SpotId))
@@ -120,7 +115,6 @@ namespace WebApplication.Controllers
                     {
                         throw;
                     }
-
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -128,7 +122,7 @@ namespace WebApplication.Controllers
             return View(spot);
         }
 
-        //GET: Spot/Delete/5
+        // GET: Spot/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,16 +132,18 @@ namespace WebApplication.Controllers
 
             var spot = await _context.Spots
                 .Include(s => s.Marina)
-                .FirstOrDefaultAsync(r => r.SpotId == id);
+                .FirstOrDefaultAsync(m => m.SpotId == id);
             if (spot == null)
             {
                 return NotFound();
             }
+
             return View(spot);
         }
 
-        //POST: Spot/Delete
-
+        // POST: Spot/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var spot = await _context.Spots.FindAsync(id);
@@ -156,35 +152,9 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-        // Checking if a spot exist in the table
         private bool SpotExists(int id)
         {
-            return _context.Spots.Any(s => s.SpotId == id);
-        }
-
-        [Route("spot/{id}")]
-        public async Task<IActionResult> Spot(int id)
-        {
-            ViewData["ViewName"] = "Spot";
-
-            var spot = _context.Spots.FindAsync(id);
-            var spotList = new List<Spot>();
-            spotList.Add(await spot);
-
-            return View("_ListLayout", spotList);
-        }
-
-        public async Task<IActionResult> Marina(int id)
-        {
-            var spotsWithMarina = await _context.Spots.Include(s => s.Marina).ToListAsync();
-            var spot = spotsWithMarina.Find(spot => spot.SpotId == id);
-
-            if (spot != null)
-            {
-                return View("~/Views/Marina/Marina.cshtml", spot.Marina);
-            }
-            return View("Error");
+            return _context.Spots.Any(e => e.SpotId == id);
         }
     }
 }
