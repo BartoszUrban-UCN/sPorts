@@ -30,7 +30,6 @@ namespace WebApplication.Tests.BusinessLogic
         [Fact]
         public async void CreateBooking_ValidValues_Pass()
         {
-
             using (var context = Fixture.CreateContext())
             {
                 bool expected = true;
@@ -56,14 +55,16 @@ namespace WebApplication.Tests.BusinessLogic
             }
         }
 
-        private bool DeleteBooking()
+        private void DeleteBooking()
         {
             using (var context = Fixture.CreateContext())
             {
                 Booking booking = context.Bookings.Where(b => b.BookingId == 1).FirstOrDefault();
-
-                context.Bookings.Remove(booking);
-                return context.SaveChanges() > 0;
+                if (booking != null)
+                {
+                    context.Bookings.Remove(booking);
+                    context.SaveChanges();
+                }
             }
         }
 
