@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers.RestApi
 {
@@ -21,14 +22,14 @@ namespace WebApplication.Controllers.RestApi
             _context = context;
         }
 
-        // GET: api/BoatOwners
+        // GET: api/BoatOwner
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BoatOwner>>> GetBoatOwners()
         {
             return await _context.BoatOwners.ToListAsync();
         }
 
-        // GET: api/BoatOwners/5
+        // GET: api/BoatOwner/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BoatOwner>> GetBoatOwner(int id)
         {
@@ -42,7 +43,7 @@ namespace WebApplication.Controllers.RestApi
             return boatOwner;
         }
 
-        // PUT: api/BoatOwners/5
+        // PUT: api/BoatOwner/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
@@ -74,7 +75,7 @@ namespace WebApplication.Controllers.RestApi
             return NoContent();
         }
 
-        // POST: api/BoatOwners
+        // POST: api/BoatOwner
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
@@ -86,7 +87,7 @@ namespace WebApplication.Controllers.RestApi
             return CreatedAtAction("GetBoatOwner", new { id = boatOwner.BoatOwnerId }, boatOwner);
         }
 
-        // DELETE: api/BoatOwners/5
+        // DELETE: api/BoatOwner/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<BoatOwner>> DeleteBoatOwner(int id)
         {
@@ -101,6 +102,38 @@ namespace WebApplication.Controllers.RestApi
 
             return boatOwner;
         }
+
+        [HttpGet("{id}/bookings")]
+        public async Task<ActionResult<IEnumerable<Booking>>> GetAllBookings(int id)
+        {
+            var boatWithBooking = _context.Boats.Include(b => b.Bookings);
+            var boatList = await boatWithBooking.ToListAsync();
+            var boat = boatList.Find(b => b.BoatId == id);
+
+            if (boat != null)
+            {
+                var bookings = boat.Bookings;
+                return Ok(bookings);
+            }
+
+            return NotFound(boat);
+        }
+
+        [HttpGet("{id}/ongbookings")]
+        public async Task<ActionResult<IEnumerable<Booking>>> GetAllOngoingBookings(int id)
+        {
+            try
+            {
+                var ongoingBookings = await new BoatOwnerService(_context).OngoingBookings(id);
+                return Ok(ongoingBookings);
+            }
+            catch (System.ArgumentNullException)
+            {
+                return NotFound();
+            }
+        }
+
+        
 
         private bool BoatOwnerExists(int id)
         {

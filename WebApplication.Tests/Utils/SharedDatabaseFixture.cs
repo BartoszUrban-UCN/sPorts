@@ -28,9 +28,9 @@ namespace WebApplication.Tests.Utils
 
             Connection = new SqlConnection(connectionString);
 
-            Seed();
-
             Connection.Open();
+
+            Seed();
         }
 
         public SportsContext CreateContext(DbTransaction transaction = null)

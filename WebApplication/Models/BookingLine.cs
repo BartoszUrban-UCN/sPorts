@@ -22,6 +22,8 @@ namespace WebApplication.Models
 
         public int SpotId { get; set; }
 
+        public bool Ongoing { get; set; }
+
         public Booking Booking { get; set; }
 
         public Spot Spot { get; set; }

@@ -12,23 +12,23 @@ namespace WebApplication.Controllers.RestApi
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BoatsController : ControllerBase
+    public class BoatController : ControllerBase
     {
         private readonly SportsContext _context;
 
-        public BoatsController(SportsContext context)
+        public BoatController(SportsContext context)
         {
             _context = context;
         }
 
-        // GET: api/Boats
+        // GET: api/Boat
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Boat>>> GetBoats()
         {
             return await _context.Boats.ToListAsync();
         }
 
-        // GET: api/Boats/5
+        // GET: api/Boat/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Boat>> GetBoat(int id)
         {
@@ -42,7 +42,7 @@ namespace WebApplication.Controllers.RestApi
             return boat;
         }
 
-        // PUT: api/Boats/5
+        // PUT: api/Boat/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
@@ -74,7 +74,7 @@ namespace WebApplication.Controllers.RestApi
             return NoContent();
         }
 
-        // POST: api/Boats
+        // POST: api/Boat
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
@@ -86,7 +86,7 @@ namespace WebApplication.Controllers.RestApi
             return CreatedAtAction("GetBoat", new { id = boat.BoatId }, boat);
         }
 
-        // DELETE: api/Boats/5
+        // DELETE: api/Boat/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Boat>> DeleteBoat(int id)
         {

@@ -209,5 +209,7 @@ namespace WebApplication.Business_Logic
         }
 
         #endregion Assign random marina spot based on boat's size & availability
+
+
     }
 }

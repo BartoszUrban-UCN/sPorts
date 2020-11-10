@@ -25,9 +25,6 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Marina>>> GetMarinas()
         {
-            //var marinaList = _context.Marinas.ToListAsync();
-
-            //return Ok(await marinaList);
             return await _context.Marinas.ToListAsync();
         }
 

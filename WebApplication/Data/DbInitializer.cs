@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using WebApplication.Models;
+using System;
 
 namespace WebApplication.Data
 {
@@ -101,6 +102,32 @@ namespace WebApplication.Data
                 };
 
                 context.Spots.AddRange(spots);
+                context.SaveChanges();
+            }
+
+            if (!context.Bookings.Any())
+            {
+                var bookings = new Booking[]
+                {
+                    new Booking {BookingReferenceNo = 4325, TotalPrice = 12.5, PaymentStatus = "Paid", BoatId = 1},
+                    new Booking {BookingReferenceNo = 2145, TotalPrice = 84.5, PaymentStatus = "Paid", BoatId = 2}
+                };
+
+                context.Bookings.AddRange(bookings);
+                context.SaveChanges();
+            }
+
+            if (!context.BookingLines.Any())
+            {
+                var bookingLines = new BookingLine[]
+                {
+                    new BookingLine {OriginalTotalPrice = 5, AppliedDiscounts = 0, DiscountedTotalPrice = 5, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(3), Confirmed = true, Ongoing = true, BookingId = 1, SpotId = 1},
+                    new BookingLine {OriginalTotalPrice = 5, AppliedDiscounts = 0, DiscountedTotalPrice = 5, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(3), Confirmed = true, Ongoing = true, BookingId = 1, SpotId = 1},
+                    new BookingLine {OriginalTotalPrice = 2.5, AppliedDiscounts = 0, DiscountedTotalPrice = 5, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(3), Confirmed = true, Ongoing = false, BookingId = 2, SpotId = 2},
+                    new BookingLine {OriginalTotalPrice = 2.5, AppliedDiscounts = 0, DiscountedTotalPrice = 5, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(3), Confirmed = true, Ongoing = true, BookingId = 2, SpotId = 2}
+                };
+
+                context.BookingLines.AddRange(bookingLines);
                 context.SaveChanges();
             }
         }
