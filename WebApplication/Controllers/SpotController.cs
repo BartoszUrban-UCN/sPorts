@@ -10,6 +10,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class SpotController : Controller
     {
         private readonly SportsContext _context;
@@ -155,6 +156,30 @@ namespace WebApplication.Controllers
         private bool SpotExists(int id)
         {
             return _context.Spots.Any(e => e.SpotId == id);
+        }
+
+                [Route("spot/{id}")]
+        public async Task<IActionResult> Spot(int id)
+        {
+            ViewData["ViewName"] = "Spot";
+
+            var spot = _context.Spots.FindAsync(id);
+            var spotList = new List<Spot>();
+            spotList.Add(await spot);
+
+            return View("_ListLayout", spotList);
+        }
+
+        public async Task<IActionResult> Marina(int id)
+        {
+            var spotsWithMarina = await _context.Spots.Include(s => s.Marina).ToListAsync();
+            var spot = spotsWithMarina.Find(spot => spot.SpotId == id);
+
+            if (spot != null)
+            {
+                return View("~/Views/Marina/Marina.cshtml", spot.Marina);
+            }
+            return View("Error");
         }
     }
 }
