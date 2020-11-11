@@ -9,6 +9,6 @@ namespace WebApplication.Models
         public int PersonId { get; set; }
         public Person Person { get; set; }
 
-        public List<Spot> Spots { get; set; }
+        public List<Spot> Spots { get; set; } = new List<Spot>();
     }
 }

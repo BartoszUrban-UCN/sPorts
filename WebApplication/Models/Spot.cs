@@ -6,7 +6,7 @@ namespace WebApplication.Models
     public class Spot
     {
         public int SpotId { get; set; }
-        
+
         [Required]
         public int SpotNumber { get; set; }
 
@@ -14,7 +14,7 @@ namespace WebApplication.Models
         public bool Available { get; set; }
 
         [Required]
-        [Range(1,40,ErrorMessage = "Not a valid ranger. Valid range between 1 and 40 meters")]
+        [Range(1, 40, ErrorMessage = "Not a valid ranger. Valid range between 1 and 40 meters")]
         public double MaxWidth { get; set; }
 
         [Required]
@@ -32,6 +32,6 @@ namespace WebApplication.Models
 
         public Marina Marina { get; set; }
 
-        public List<BookingLine> BookingLines { get; set; }
+        public List<BookingLine> BookingLines { get; set; } = new List<BookingLine>();
     }
 }

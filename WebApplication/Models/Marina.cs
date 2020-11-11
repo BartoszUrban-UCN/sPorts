@@ -6,9 +6,10 @@ namespace WebApplication.Models
     public class Marina
     {
         public int MarinaId { get; set; }
-        
+
         [Required]
         public string Name { get; set; }
+
         public string Description { get; set; }
         public string Facilities { get; set; }
 
@@ -18,8 +19,8 @@ namespace WebApplication.Models
         public int? AddressId { get; set; }
         public Address Address { get; set; }
 
-        public List<Review> Reviews { get; set; }
+        public List<Review> Reviews { get; set; } = new List<Review>();
 
-        public List<Spot> Spots { get; set; }
+        public List<Spot> Spots { get; set; } = new List<Spot>();
     }
 }

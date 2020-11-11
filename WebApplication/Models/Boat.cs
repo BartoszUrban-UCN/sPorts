@@ -13,6 +13,6 @@ namespace WebApplication.Models
         public string Type { get; set; }
         public int BoatOwnerId { get; set; }
         public BoatOwner BoatOwner { get; set; }
-        public List<Booking> Bookings { get; set; }
+        public List<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

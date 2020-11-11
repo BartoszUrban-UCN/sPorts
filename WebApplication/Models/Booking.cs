@@ -12,7 +12,7 @@ namespace WebApplication.Models
 
         public string PaymentStatus { get; set; }
 
-        public List<BookingLine> BookingLines { get; set; }
+        public List<BookingLine> BookingLines { get; set; } = new List<BookingLine>();
 
         public int BoatId { get; set; }
 
