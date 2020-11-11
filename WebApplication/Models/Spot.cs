@@ -14,15 +14,15 @@ namespace WebApplication.Models
         public bool Available { get; set; }
 
         [Required]
-        [Range(1, 40, ErrorMessage = "Not a valid ranger. Valid range between 1 and 40 meters")]
+        [Range(1, 40, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public double MaxWidth { get; set; }
 
         [Required]
-        [Range(1, 40, ErrorMessage = "Not a valid ranger. Valid range between 1 and 40 meters")]
+        [Range(1, 40, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public double MaxLength { get; set; }
 
         [Required]
-        [Range(1, 40, ErrorMessage = "Not a valid ranger. Valid range between 1 and 40 meters")]
+        [Range(1, 40, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public double MaxDepth { get; set; }
 
         [Required]
