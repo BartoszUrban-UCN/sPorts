@@ -9,8 +9,8 @@ namespace WebApplication.Tests.BusinessLogic
 {
     public class BoatOwnerService_Should : IClassFixture<SharedDatabaseFixture>, IDisposable
     {
-        public BoatOwnerService_Should() => Fixture = new SharedDatabaseFixture();
-    
+        public BoatOwnerService_Should(SharedDatabaseFixture fixture) => Fixture = fixture;
+
         public SharedDatabaseFixture Fixture { get; }
 
         public BoatOwnerService boatOwnerService { get; }
@@ -22,6 +22,7 @@ namespace WebApplication.Tests.BusinessLogic
             {
                 // Arrange
                 var boatOwnerService = new BoatOwnerService(context);
+
                 var booking = new Booking();
 
                 booking.BookingLines.AddRange(new List<BookingLine>
@@ -30,7 +31,7 @@ namespace WebApplication.Tests.BusinessLogic
                     new BookingLine {Ongoing = false},
                     new BookingLine {Ongoing = true}
                 });
-            
+
                 bool result = false;
 
                 // Act
@@ -40,6 +41,7 @@ namespace WebApplication.Tests.BusinessLogic
                 Assert.True(result);
             }
         }
+
         [Fact]
         public void NotHaveOngoing()
         {
@@ -55,7 +57,7 @@ namespace WebApplication.Tests.BusinessLogic
                     new BookingLine {Ongoing = false},
                     new BookingLine {Ongoing = false}
                 });
-            
+
                 bool result = false;
 
                 // Act
@@ -68,7 +70,6 @@ namespace WebApplication.Tests.BusinessLogic
 
         public void Dispose()
         {
-
         }
     }
 }
