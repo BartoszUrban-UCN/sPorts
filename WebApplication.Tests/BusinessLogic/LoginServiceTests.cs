@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using WebApplication.Business_Logic;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.Tests.Utils;
@@ -43,7 +44,7 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid@email.com", Password = "123456" };
 
                     // Act Assert
-                    await Assert.ThrowsAsync<ArgumentException>(() => service.CreatePerson(person));
+                    await Assert.ThrowsAsync<BusinessException>(() => service.CreatePerson(person));
                 }
             }
         }
@@ -90,7 +91,7 @@ namespace WebApplication.Tests.BusinessLogic
                     Assert.True(success);
                     Assert.True(context.BoatOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
 
-                    await Assert.ThrowsAsync<ArgumentException>(() => service.MakePersonBoatOwner(person));
+                    await Assert.ThrowsAsync<BusinessException>(() => service.MakePersonBoatOwner(person));
                 }
             }
         }
@@ -116,7 +117,7 @@ namespace WebApplication.Tests.BusinessLogic
                     Assert.True(success);
                     Assert.True(context.MarinaOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
 
-                    await Assert.ThrowsAsync<ArgumentException>(() => service.MakePersonMarinaOwner(person));
+                    await Assert.ThrowsAsync<BusinessException>(() => service.MakePersonMarinaOwner(person));
                 }
             }
         }

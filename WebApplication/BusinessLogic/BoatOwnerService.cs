@@ -49,7 +49,7 @@ namespace WebApplication.BusinessLogic
 
         public bool HasOngoing(Booking booking)
         {
-            foreach(var bookingLine in booking.BookingLines)
+            foreach (var bookingLine in booking.BookingLines)
             {
                 if (bookingLine.Ongoing)
                     return true;

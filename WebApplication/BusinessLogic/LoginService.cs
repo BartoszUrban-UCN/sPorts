@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -20,10 +23,11 @@ namespace WebApplication.Business_Logic
             var success = false;
             if (_context.Persons.AsQueryable().Any(p => p.Email.Equals(person.Email)))
             {
-                throw new ArgumentException("A person with this email already exists");
+                throw new BusinessException("Email", "This email is already taken.");
             }
 
             _context.Persons.Add(person);
+
             success = await _context.SaveChangesAsync() > 0;
 
             return success;
@@ -35,7 +39,7 @@ namespace WebApplication.Business_Logic
 
             if (_context.BoatOwners.AsQueryable().Any(p => p.PersonId.Equals(person.PersonId)))
             {
-                throw new ArgumentException("You are already registered as a boat owner!");
+                throw new BusinessException("Email", "You are already registered as a boat owner!");
             }
 
             var boatOwner = new BoatOwner { PersonId = person.PersonId };
@@ -52,7 +56,7 @@ namespace WebApplication.Business_Logic
 
             if (_context.MarinaOwners.AsQueryable().Any(p => p.PersonId.Equals(person.PersonId)))
             {
-                throw new ArgumentException("You are already registered as a marina owner!");
+                throw new BusinessException("Email", "You are already registered as a marina owner!");
             }
 
             var marinaOwner = new MarinaOwner { PersonId = person.PersonId };

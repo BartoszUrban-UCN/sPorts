@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Business_Logic;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -55,9 +57,8 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        // POST: Person/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Person/Create To protect from overposting attacks, enable the specific properties
+        // you want to bind to, for more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("PersonId,AddressId,Email,FirstName,LastName,Password,PhoneNumber")] Person person)
@@ -69,9 +70,9 @@ namespace WebApplication.Controllers
                     await loginService.CreatePerson(person);
                     return RedirectToAction(nameof(Index));
                 }
-                catch (ArgumentException exception)
+                catch (BusinessException exception)
                 {
-                    ViewData["ErrorMessage"] = exception.Message;
+                    ModelState.TryAddModelError(exception.Key, exception.Message);
                 }
             }
             ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "AddressId", person.AddressId);
@@ -95,9 +96,8 @@ namespace WebApplication.Controllers
             return View(person);
         }
 
-        // POST: Person/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Person/Edit/5 To protect from overposting attacks, enable the specific properties
+        // you want to bind to, for more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PersonId,AddressId,Email,FirstName,LastName,Password,PhoneNumber")] Person person)
