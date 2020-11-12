@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using WebApplication.BusinessLogic;
 
 namespace WebApplication.BusinessLogic
 {
