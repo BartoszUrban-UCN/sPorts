@@ -14,7 +14,7 @@ steps:
   displayName: 'Build - $(buildConfiguration)'
 
 - task: NuGetCommand@2
-  displayName: 'Resote NuGet Packages'
+  displayName: 'Restore NuGet Packages'
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
