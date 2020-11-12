@@ -12,6 +12,8 @@ namespace WebApplication.BusinessLogic
         public static void AddBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IBookingFormService, BookingFormService>();
         }
     }
 }

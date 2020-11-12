@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
 using Xunit;
@@ -9,7 +10,7 @@ namespace WebApplication.Tests.BusinessLogic
     public class BookingFormServiceTests
     {
         [Fact]
-        public void GetFirstAvailableSpot_StateUnderTest_ExpectedBehavior()
+        public void GetAvailableSpots_FoundOne()
         {
             // Arrange
             var service = new BookingFormService();
@@ -42,7 +43,7 @@ namespace WebApplication.Tests.BusinessLogic
             DateTime endDate = DateTime.Now.AddDays(6);
 
             // Act
-            var result = service.GetFirstAvailableSpot(
+            var result = service.GetAvailableSpots(
                 marina,
                 boat,
                 startDate,
@@ -50,13 +51,16 @@ namespace WebApplication.Tests.BusinessLogic
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(3, result.SpotNumber);
+            //Assert.Single(result);
+            Assert.Equal(3, result.First().SpotNumber);
         }
 
         [Fact]
         public void DoesSpotFitBoat_True()
         {
             // Arrange
+            var service = new BookingFormService();
+
             Boat boat = new Boat { Depth = 30, Length = 30, Width = 30 };
             Spot spot = new Spot
             {
@@ -68,7 +72,7 @@ namespace WebApplication.Tests.BusinessLogic
             };
 
             // Act
-            var result = BookingFormService.DoesSpotFitBoat(boat, spot);
+            var result = service.DoesSpotFitBoat(boat, spot);
 
             // Assert
             Assert.True(result);
@@ -78,6 +82,8 @@ namespace WebApplication.Tests.BusinessLogic
         public void DoesSpotFitBoat_False()
         {
             // Arrange
+            var service = new BookingFormService();
+
             Boat boat = new Boat { Depth = 30, Length = 30, Width = 30 };
             Spot spot = new Spot
             {
@@ -89,7 +95,7 @@ namespace WebApplication.Tests.BusinessLogic
             };
 
             // Act
-            var result = BookingFormService.DoesSpotFitBoat(boat, spot);
+            var result = service.DoesSpotFitBoat(boat, spot);
 
             // Assert
             Assert.False(result);
@@ -106,7 +112,7 @@ namespace WebApplication.Tests.BusinessLogic
             DateTime bEnd = DateTime.Now.AddDays(5);
 
             // Act
-            var result = BookingFormService.DoesDateRangeInsersect(
+            var result = service.DoesDateRangeInsersect(
                 aStart,
                 aEnd,
                 bStart,
@@ -127,7 +133,7 @@ namespace WebApplication.Tests.BusinessLogic
             DateTime bEnd = DateTime.Now.AddDays(10);
 
             // Act
-            var result = BookingFormService.DoesDateRangeInsersect(
+            var result = service.DoesDateRangeInsersect(
                 aStart,
                 aEnd,
                 bStart,
@@ -141,11 +147,13 @@ namespace WebApplication.Tests.BusinessLogic
         public void AreDatesValid_True()
         {
             // Arrange
+            var service = new BookingFormService();
+
             var startDate = DateTime.Now;
             var endDate = DateTime.Now.AddDays(3);
 
             // Act
-            var areDatesValid = BookingFormService.AreDatesValid(startDate, endDate);
+            var areDatesValid = service.AreDatesValid(startDate, endDate);
 
             // Assert
             Assert.True(areDatesValid);
@@ -155,11 +163,13 @@ namespace WebApplication.Tests.BusinessLogic
         public void AreDatesValid_False()
         {
             // Arrange
+            var service = new BookingFormService();
+
             var startDate = DateTime.Now;
             var endDate = DateTime.Now.AddDays(3);
 
             // Act
-            var areDatesValid = BookingFormService.AreDatesValid(endDate, startDate);
+            var areDatesValid = service.AreDatesValid(endDate, startDate);
 
             // Assert
             Assert.False(areDatesValid);

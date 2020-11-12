@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingFormService
+    public class BookingFormService : IBookingFormService
     {
-        public Spot GetFirstAvailableSpot(Marina marina, Boat boat, DateTime startDate, DateTime endDate)
+        public IList<Spot> GetAvailableSpots(Marina marina, Boat boat, DateTime startDate, DateTime endDate)
         {
+            IList<Spot> availableSpots = new List<Spot>();
+
             // Dates are valid if endDate is later, or on the same day, as startDate and if they are
             // today or later
             if (AreDatesValid(startDate, endDate))
@@ -22,20 +25,21 @@ namespace WebApplication.BusinessLogic
                         {
                             if (!DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
                             {
-                                // Basically returns first found spot that
-                                // 1. Fits the boat
-                                // 2. Has NO date intersects with any existing bookings with no
+                                // Basically returns all spots that
+                                // 1. Fit the boat
+                                // 2. Have NO date intersects with any existing bookings with no
                                 // optimizations in mind whatsoever 🙂
-                                return spot;
+                                availableSpots.Add(spot);
                             }
                         }
                     }
                 }
             }
-            return null;
+
+            return availableSpots;
         }
 
-        public static bool DoesSpotFitBoat(Boat boat, Spot spot)
+        public bool DoesSpotFitBoat(Boat boat, Spot spot)
         {
             var doesSpotFit = true;
             if (spot.MaxDepth < boat.Depth || spot.MaxLength < boat.Length || spot.MaxWidth < boat.Width)
@@ -45,7 +49,7 @@ namespace WebApplication.BusinessLogic
             return doesSpotFit;
         }
 
-        public static bool DoesDateRangeInsersect(DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd)
+        public bool DoesDateRangeInsersect(DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd)
         {
             var doesDateRangeIntersect = false;
 
@@ -57,7 +61,7 @@ namespace WebApplication.BusinessLogic
             return doesDateRangeIntersect;
         }
 
-        public static bool AreDatesValid(DateTime startDate, DateTime endDate)
+        public bool AreDatesValid(DateTime startDate, DateTime endDate)
         {
             var areDatesValid = false;
 

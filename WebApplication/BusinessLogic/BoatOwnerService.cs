@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -27,7 +26,6 @@ namespace WebApplication.BusinessLogic
                                    from booking in boat.Bookings
                                    where HasOngoing(booking)
                                    select booking;
-
 
             return bookingsToReturn;
         }

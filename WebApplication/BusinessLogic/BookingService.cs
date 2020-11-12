@@ -1,18 +1,16 @@
-﻿using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
 using static WebApplication.BusinessLogic.EmailService;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingService
+    public class BookingService : IBookingService
     {
         private readonly SportsContext _context;
 
@@ -44,7 +42,8 @@ namespace WebApplication.BusinessLogic
                 rowsAffected = await StoreBookingInDb(booking);
 
                 // create pdf file with info about the booking
-                CreateBookingPdfFile(booking);
+                IPDFService<Booking> pdfService = new BookingPDFService();
+                pdfService.CreatePDFFile(booking);
 
                 // send an email to boatOwner's email
                 SendEmail(bookingReference: booking.BookingReferenceNo);
@@ -138,89 +137,22 @@ namespace WebApplication.BusinessLogic
 
         #endregion Store booking class & associated booking lines in db
 
-        #region Create pdf file with information about booking
-
-        public void CreateBookingPdfFile(Booking booking)
-        {
-            PdfDocument pdf = new PdfDocument();
-            pdf.Info.Title = booking.BookingReferenceNo.ToString();
-            PdfPage page = pdf.AddPage();
-            XGraphics graph = XGraphics.FromPdfPage(page);
-            XFont fontTitle = new XFont("Verdana", 14, XFontStyle.Bold);
-            XFont font = new XFont("Verdana", 12, XFontStyle.Regular);
-
-            string bookingData = $"Booking - {booking.BookingReferenceNo}\n" +
-                                    $"Boat Owner - {booking.Boat?.BoatOwner?.Person?.Email}\n" +
-                                    $"Boat - {booking.Boat?.Name}\n" +
-                                    $"Payment Status - {booking.PaymentStatus}\n" +
-                                    $"Total Price: {booking.TotalPrice}\n";
-            string bookingLinesData = "";
-            booking.BookingLines.ForEach(bookingLine => bookingLinesData += ($"Item #{bookingLine.BookingLineId}\n" +
-                                                                                $"Marina Owner - {bookingLine.Spot?.Marina?.MarinaOwner?.Person?.Email}\n" +
-                                                                                $"Marina - {bookingLine.Spot?.Marina?.Name}\n" +
-                                                                                $"Marina Address - {bookingLine.Spot?.Marina?.Address}\n" +
-                                                                                $"Spot - {bookingLine.Spot?.SpotNumber}\n" +
-                                                                                $"Start Date - {bookingLine.StartDate}\n" +
-                                                                                $"End Date - {bookingLine.EndDate}\n" +
-                                                                                $"Original Price - {bookingLine.OriginalTotalPrice}\n" +
-                                                                                $"Applied Discounts - {bookingLine.AppliedDiscounts}\n" +
-                                                                                $"Final Price - {bookingLine.DiscountedTotalPrice}\n" +
-                                                                                $"Confirmed - {bookingLine.Confirmed}\n" +
-                                                                                "--------------------------------------------------------\n"));
-
-            using (StreamWriter file = new StreamWriter($@"\{booking.BookingReferenceNo}.txt", false))
-            {
-                file.WriteLine(bookingData);
-                file.WriteLine(bookingLinesData);
-            }
-
-            StreamReader readFile = new StreamReader($@"\{booking.BookingReferenceNo}.txt");
-
-            graph.DrawString($"Booking - {booking.BookingReferenceNo}", fontTitle, XBrushes.Black, new XRect(0, 20, page.Width.Point, page.Height.Point), XStringFormats.TopCenter);
-
-            int yPoint = 50;
-            string line = null;
-
-            while (true)
-            {
-                line = readFile.ReadLine();
-                if (line == null)
-                {
-                    break;
-                }
-                else
-                {
-                    graph.DrawString(line, font, XBrushes.Black, new XRect(20, yPoint, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
-                    yPoint += 20;
-                }
-            }
-
-            string pdfFileName = booking.BookingReferenceNo.ToString();
-            pdf.Save($@"\{pdfFileName}.pdf");
-            readFile.Close();
-            pdf.Close();
-        }
-
-        #endregion Create pdf file with information about booking
-
         #region Delete booking files by referenceNo
+
         public void DeleteBookingFiles(int bookingReferenceNo)
         {
             File.Delete($@"\{bookingReferenceNo}.pdf");
             File.Delete($@"\{bookingReferenceNo}.txt");
         }
-        #endregion
 
-        #region Assign random marina spot based on boat's size & availability
-
-        public static Spot AssignSpotInMarina(Marina marina, Boat boat, DateTime startDate, DateTime endDate)
+        public async Task<IList<BookingLine>> GetBookingLines(int bookingId)
         {
-            BookingFormService bookingFormService = new BookingFormService();
-            return bookingFormService.GetFirstAvailableSpot(marina, boat, startDate, endDate);
+            var bookings = await _context.Bookings.Include(l => l.BookingLines).ToListAsync();
+            var booking = bookings.Find(b => b.BookingId == bookingId);
+
+            return booking?.BookingLines;
         }
 
-        #endregion Assign random marina spot based on boat's size & availability
-
-
+        #endregion Delete booking files by referenceNo
     }
 }

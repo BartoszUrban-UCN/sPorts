@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
+
 namespace WebApplication.Controllers.RestApi
 {
     [Route("api/[controller]")]
@@ -14,10 +13,12 @@ namespace WebApplication.Controllers.RestApi
     public class BookingController : ControllerBase
     {
         private readonly SportsContext _context;
+        private readonly IBookingService _bookingService;
 
-        public BookingController(SportsContext context)
+        public BookingController(SportsContext context, IBookingService bookingService)
         {
             _context = context;
+            _bookingService = bookingService;
         }
 
         [Produces("application/json")]
@@ -44,14 +45,10 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet("{id}/lines")]
         public async Task<ActionResult<IEnumerable<Booking>>> GetBookingLines(int id)
         {
-            var bookingWithBookingLines = _context.Bookings.Include(l => l.BookingLines);
-            var bookingList = await bookingWithBookingLines.ToListAsync();
-            var booking = bookingList.Find(b => b.BookingId == id);
+            var bookingLines = await _bookingService.GetBookingLines(id);
 
-            if (booking != null)
+            if (bookingLines != null)
             {
-                var bookingLines = booking.BookingLines;
-
                 return Ok(bookingLines);
             }
             return NotFound();
