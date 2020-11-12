@@ -3,9 +3,6 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-trigger:
-- master
-
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -14,14 +11,17 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'Build - $(buildConfiguration)'
+
 - task: NuGetCommand@2
+  displayName: 'Resote NuGet Packages'
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
     
 - task: DotNetCoreCLI@2
+  displayName: 'Run tests'
   inputs:
     command: test
     projects: '**/*Tests/*.csproj'
