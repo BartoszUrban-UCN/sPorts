@@ -7,16 +7,15 @@ using Xunit;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class BoatOwnerService_Should : IClassFixture<SharedDatabaseFixture>, IDisposable
+    public class BoatOwnerServiceTests : IClassFixture<SharedDatabaseFixture>, IDisposable
     {
-        public BoatOwnerService_Should(SharedDatabaseFixture fixture) => Fixture = fixture;
+        public BoatOwnerServiceTests(SharedDatabaseFixture fixture) => Fixture = fixture;
 
         public SharedDatabaseFixture Fixture { get; }
 
-        public BoatOwnerService boatOwnerService { get; }
-
         [Fact]
         public void HaveOngoing()
+
         {
             using (var context = Fixture.CreateContext())
             {
