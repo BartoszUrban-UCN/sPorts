@@ -4,7 +4,7 @@ using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
 
-namespace WebApplication.Business_Logic
+namespace WebApplication.BusinessLogic
 {
     public class LoginService : ILoginService
     {

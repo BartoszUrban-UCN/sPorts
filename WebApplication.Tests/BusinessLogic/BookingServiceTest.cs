@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication.Business_Logic;
+using WebApplication.BusinessLogic;
 using WebApplication.Models;
 using WebApplication.Tests.Utils;
 using Xunit;

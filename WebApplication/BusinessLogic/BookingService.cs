@@ -10,7 +10,7 @@ using WebApplication.Data;
 using WebApplication.Models;
 using static WebApplication.BusinessLogic.EmailService;
 
-namespace WebApplication.Business_Logic
+namespace WebApplication.BusinessLogic
 {
     public class BookingService
     {
