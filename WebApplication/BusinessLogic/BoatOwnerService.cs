@@ -15,32 +15,21 @@ namespace WebApplication.BusinessLogic
             _context = context;
         }
 
-        public async Task<IEnumerable<Booking>> OngoingBookings(int boatOwnerId)
+        public IEnumerable<Booking> OngoingBookings(BoatOwner boatOwner)
         {
-            var boatWithBooking = _context.Boats.Include(b => b.Bookings)
-                                                .ThenInclude(b => b.BookingLines);
-            var boatList = await boatWithBooking.ToListAsync();
-            var boat = boatList.Find(b => b.BoatId == boatOwnerId);
-
-            if (boat != null)
-            {
-                var bookingsToReturn = new List<Booking>();
-                var bookings = boat.Bookings;
-
-                foreach (var booking in bookings)
-                {
-                    if (HasOngoing(booking))
-                    {
-                        bookingsToReturn.Add(booking);
-                    }
-                }
-
-                return bookingsToReturn;
-            }
-            else
+            if (boatOwner == null)
             {
                 throw new System.ArgumentNullException();
             }
+
+            var boats = boatOwner.Boats;
+            var bookingsToReturn = from boat in boats
+                                   from booking in boat.Bookings
+                                   where HasOngoing(booking)
+                                   select booking;
+
+
+            return bookingsToReturn;
         }
 
         public bool HasOngoing(Booking booking)

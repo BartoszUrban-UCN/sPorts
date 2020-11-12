@@ -124,7 +124,11 @@ namespace WebApplication.Controllers.RestApi
         {
             try
             {
-                var ongoingBookings = await new BoatOwnerService(_context).OngoingBookings(id);
+                var boatOwnersWithBoatsAndBookings = _context.BoatOwners.Include(bo => bo.Boats)
+                                                            .ThenInclude(b => b.Bookings);
+                var boatOwner = await boatOwnersWithBoatsAndBookings.FirstAsync(b => b.BoatOwnerId == id);
+                var ongoingBookings = new BoatOwnerService(_context).OngoingBookings(boatOwner);
+                
                 return Ok(ongoingBookings);
             }
             catch (System.ArgumentNullException)

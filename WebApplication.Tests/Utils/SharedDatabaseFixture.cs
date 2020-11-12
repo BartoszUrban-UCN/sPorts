@@ -4,6 +4,7 @@ using System;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 
 using WebApplication.Data;
 
@@ -13,20 +14,25 @@ namespace WebApplication.Tests.Utils
     {
         private static readonly object _lock = new object();
         private static bool _databaseInitialized;
-
         public DbConnection Connection { get; }
 
         public SharedDatabaseFixture()
         {
-            // Local DB sPortsTest instead of normal
-            var connectionString = "Server=(localdb)\\mssqllocaldb;Database=sPortsTest;Trusted_Connection=True;MultipleActiveResultSets=true";
+            string connectionString;
+
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                connectionString = "Server=localhost;Database=sPortsTest;User Id=sa;Password=Password123;Trusted_Connection=False;MultipleActiveResultSets=true";
+                // Using Sqlite for linux here
+                connectionString = "Data Source=app.db";
+                Connection = new SqliteConnection(connectionString);
             }
-            //ContextOptions = new DbContextOptionsBuilder<SportsContext>().UseSqlServer(connectionString).Options;
+            else
+            {
+                connectionString = "Server=(localdb)\\mssqllocaldb;Database=sPortsTest;Trusted_Connection=True;MultipleActiveResultSets=true";
+                Connection = new SqlConnection(connectionString);
+            }
 
-            Connection = new SqlConnection(connectionString);
+            //ContextOptions = new DbContextOptionsBuilder<SportsContext>().UseSqlServer(connectionString).Options;
 
             Seed();
 
@@ -35,7 +41,17 @@ namespace WebApplication.Tests.Utils
 
         public SportsContext CreateContext(DbTransaction transaction = null)
         {
-            var context = new SportsContext(new DbContextOptionsBuilder<SportsContext>().UseSqlServer(Connection).Options);
+            SportsContext context;
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // Using Sqlite for linux here
+                context = new SportsContext(new DbContextOptionsBuilder<SportsContext>().UseSqlite(Connection).Options);
+            }
+            else
+            {
+                context = new SportsContext(new DbContextOptionsBuilder<SportsContext>().UseSqlServer(Connection).Options);
+            }
 
             if (transaction != null)
             {
