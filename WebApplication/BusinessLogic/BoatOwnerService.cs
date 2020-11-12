@@ -1,12 +1,8 @@
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication.BusinessLogic
 {

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApplication.Business_Logic;
 using WebApplication.Models;
 using WebApplication.Tests.Utils;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace WebApplication.Tests.BusinessLogic
 {
@@ -15,43 +17,109 @@ namespace WebApplication.Tests.BusinessLogic
         public SharedDatabaseFixture Fixture { get; }
 
         [Fact]
-        public async void CreateBooking_NoParameters_Fail()
+        public async void CreateBooking_NoParameters_Pass()
         {
             using (var context = Fixture.CreateContext())
             {
                 BookingService bookingService = new BookingService(context);
                 bool expected = false;
-                bool actual = await bookingService.CreateBooking(null, null, null, null, null);
+                bool actual = await bookingService.CreateBooking(null, null, null);
 
                 Assert.Equal(expected, actual);
             }
         }
 
         [Fact]
-        public async void CreateBooking_ValidValues_Pass()
+        public async void CreateBookingOneSpot_ValidValues_Pass()
         {
             using (var context = Fixture.CreateContext())
             {
                 bool expected = true;
+                bool actual = await CreateBookingWithOneSpot();
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public async void CreateBookingTwoSpots_ValidValues_Pass()
+        {
+            using (var context = Fixture.CreateContext())
+            {
+                bool expected = true;
+                bool actual = await CreateBookingWithTwoSpotsInSameMarina();
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public async void CreateBookingThreeSpots_ValidValues_Pass()
+        {
+            using (var context = Fixture.CreateContext())
+            {
+                bool expected = true;
+                bool actual = await CreateBookingWithThreeSpotsInDifferentMarinas();
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        public async Task<bool> CreateBookingWithOneSpot()
+        {
+            using (var context = Fixture.CreateContext())
+            {
                 BookingService bookingService = new BookingService(context);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
-                Marina marina = context.Marinas.Where(m => m.MarinaId == 1).FirstOrDefault();
                 Spot spot = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
-                Dictionary<Marina, DateTime[]> marinaStayDates = new Dictionary<Marina, DateTime[]>() {
-                    { marina, new DateTime[2] { new DateTime(), new DateTime().AddDays(1) } }
-                };
-                Dictionary<Marina, double[]> marinaPrices = new Dictionary<Marina, double[]>() {
-                    { marina, new double[3] { 50.00, 10.00, 40.00 } }
-                };
-                Dictionary<Marina, Spot> marinaSpots = new Dictionary<Marina, Spot>() {
-                    { marina, spot }
+
+                Dictionary<DateTime[], Spot> marinaSpotStayDates = new Dictionary<DateTime[], Spot>() {
+                    { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot }
                 };
 
-                bool actual = await bookingService.CreateBooking(boatOwner, boat, marinaStayDates, marinaPrices, marinaSpots);
+                return await bookingService.CreateBooking(boatOwner, boat, marinaSpotStayDates);
+            }
+        }
 
-                Assert.Equal(expected, actual);
-                //Assert.True(DeleteBooking());
+        public async Task<bool> CreateBookingWithTwoSpotsInSameMarina()
+        {
+            using (var context = Fixture.CreateContext())
+            {
+                BookingService bookingService = new BookingService(context);
+                BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
+                Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
+                Spot spot1 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
+                Spot spot2 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 2).FirstOrDefault();
+
+                Dictionary<DateTime[], Spot> marinaSpotStayDates = new Dictionary<DateTime[], Spot>() {
+                    { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot1 },
+                    { new DateTime[2] { DateTime.Now.AddDays(1), DateTime.Now.AddDays(2) }, spot2 }
+                };
+
+                return await bookingService.CreateBooking(boatOwner, boat, marinaSpotStayDates);
+            }
+        }
+
+        public async Task<bool> CreateBookingWithThreeSpotsInDifferentMarinas()
+        {
+            using (var context = Fixture.CreateContext())
+            {
+                BookingService bookingService = new BookingService(context);
+                BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
+                Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
+
+                Spot spot1 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
+                Spot spot2 = context.Spots.Where(s => s.MarinaId == 2 && s.SpotNumber == 4).FirstOrDefault();
+                Spot spot3 = context.Spots.Where(s => s.MarinaId == 3 && s.SpotNumber == 5).FirstOrDefault();
+
+                Dictionary<DateTime[], Spot> marinaSpotStayDates = new Dictionary<DateTime[], Spot>() {
+                    { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot1 },
+                    { new DateTime[2] { DateTime.Now.AddDays(1), DateTime.Now.AddDays(2) }, spot2 },
+                    { new DateTime[2] { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) }, spot3 }
+                };
+
+                return await bookingService.CreateBooking(boatOwner, boat, marinaSpotStayDates);
             }
         }
 
@@ -59,10 +127,10 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-                Booking booking = context.Bookings.Where(b => b.BookingId == 1).FirstOrDefault();
-                if (booking != null)
+                List<Booking> bookings = new List<Booking>(context.Bookings.ToList());
+                if (bookings.Count > 0)
                 {
-                    context.Bookings.Remove(booking);
+                    bookings.ForEach(b => context.Bookings.Remove(b));
                     context.SaveChanges();
                 }
             }

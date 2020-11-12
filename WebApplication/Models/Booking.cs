@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace WebApplication.Models
 {
@@ -11,6 +12,8 @@ namespace WebApplication.Models
         public double TotalPrice { get; set; }
 
         public string PaymentStatus { get; set; }
+
+        public DateTime CreationDate { get; set; }
 
         public List<BookingLine> BookingLines { get; set; } = new List<BookingLine>();
 

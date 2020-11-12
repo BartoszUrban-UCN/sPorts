@@ -21,11 +21,11 @@ namespace WebApplication.Business_Logic
             _context = context;
         }
 
-        public async Task<bool> CreateBooking(BoatOwner boatOwner, Boat boat, Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots)
+        public async Task<bool> CreateBooking(BoatOwner boatOwner, Boat boat, Dictionary<DateTime[], Spot> marinaSpotStayDates)
         {
             int rowsAffected = 0;
             // create booking lines based on the information from the form
-            List<BookingLine> bookingLines = CreateBookingLines(marinaStayDates, marinaPrices, marinaSpots);
+            List<BookingLine> bookingLines = CreateBookingLines(marinaSpotStayDates);
 
             if (bookingLines.Count > 0)
             {
@@ -50,8 +50,7 @@ namespace WebApplication.Business_Logic
                 SendEmail(bookingReference: booking.BookingReferenceNo);
 
                 // delete files create in CreateBookingPdfFile
-                File.Delete($@"\{booking.BookingReferenceNo}.pdf");
-                File.Delete($@"\{booking.BookingReferenceNo}.txt");
+                DeleteBookingFiles(booking.BookingReferenceNo);
             }
 
             return rowsAffected > 0;
@@ -59,21 +58,24 @@ namespace WebApplication.Business_Logic
 
         #region Create booking lines based on data from the form
 
-        private List<BookingLine> CreateBookingLines(Dictionary<Marina, DateTime[]> marinaStayDates, Dictionary<Marina, double[]> marinaPrices, Dictionary<Marina, Spot> marinaSpots)
+        private List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates)
         {
             List<BookingLine> bookingLines = new List<BookingLine>();
 
-            marinaSpots?.Keys.ToList().ForEach(marina =>
+            marinaSpotStayDates?.Keys.ToList().ForEach(date =>
             {
                 BookingLine bookingLine = new BookingLine
                 {
-                    Spot = marinaSpots[marina],
-                    OriginalTotalPrice = marinaPrices[marina][0],
-                    AppliedDiscounts = marinaPrices[marina][1],
-                    DiscountedTotalPrice = marinaPrices[marina][2],
-                    StartDate = marinaStayDates[marina][0],
-                    EndDate = marinaStayDates[marina][1],
+                    Spot = marinaSpotStayDates[date],
+                    StartDate = date[0],
+                    EndDate = date[1],
+                    Confirmed = false,
+                    Ongoing = false
                 };
+
+                bookingLine.OriginalTotalPrice = bookingLine.Spot.Price;
+                bookingLine.AppliedDiscounts = 0;
+                bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 
                 bookingLines.Add(bookingLine);
             });
@@ -93,7 +95,8 @@ namespace WebApplication.Business_Logic
                 BookingReferenceNo = new Random().Next(1, 1000),
                 Boat = boat,
                 TotalPrice = totalPrice,
-                PaymentStatus = "Not Paid"
+                PaymentStatus = "Not Paid",
+                CreationDate = DateTime.Now,
             };
 
             return booking;
@@ -137,7 +140,7 @@ namespace WebApplication.Business_Logic
 
         #region Create pdf file with information about booking
 
-        private void CreateBookingPdfFile(Booking booking)
+        public void CreateBookingPdfFile(Booking booking)
         {
             PdfDocument pdf = new PdfDocument();
             pdf.Info.Title = booking.BookingReferenceNo.ToString();
@@ -199,6 +202,14 @@ namespace WebApplication.Business_Logic
         }
 
         #endregion Create pdf file with information about booking
+
+        #region Delete booking files by referenceNo
+        public void DeleteBookingFiles(int bookingReferenceNo)
+        {
+            File.Delete($@"\{bookingReferenceNo}.pdf");
+            File.Delete($@"\{bookingReferenceNo}.txt");
+        }
+        #endregion
 
         #region Assign random marina spot based on boat's size & availability
 

@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using WebApplication.Models;
-using System;
 
 namespace WebApplication.Data
 {
@@ -97,8 +97,10 @@ namespace WebApplication.Data
                 var spots = new Spot[]
                 {
                     new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00},
-                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 40.00},
-                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 30.00}
+                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 50.00},
+                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 50.00},
+                    new Spot{ SpotNumber = 4, MarinaId = 2, Available = true, Price = 50.00},
+                    new Spot{ SpotNumber = 5, MarinaId = 3, Available = true, Price = 50.00},
                 };
 
                 context.Spots.AddRange(spots);
@@ -109,8 +111,8 @@ namespace WebApplication.Data
             {
                 var bookings = new Booking[]
                 {
-                    new Booking {BookingReferenceNo = 4325, TotalPrice = 12.5, PaymentStatus = "Paid", BoatId = 1},
-                    new Booking {BookingReferenceNo = 2145, TotalPrice = 84.5, PaymentStatus = "Paid", BoatId = 2}
+                    new Booking {BookingReferenceNo = 4325, TotalPrice = 12.5, PaymentStatus = "Paid", BoatId = 1, CreationDate = DateTime.Now},
+                    new Booking {BookingReferenceNo = 2145, TotalPrice = 84.5, PaymentStatus = "Paid", BoatId = 2, CreationDate = DateTime.Now}
                 };
 
                 context.Bookings.AddRange(bookings);
