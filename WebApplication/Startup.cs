@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using WebApplication.Business_Logic;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 
 namespace WebApplication
@@ -32,7 +34,8 @@ namespace WebApplication
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                // The default HSTS value is 30 days. You may want to change this for production
+                // scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
@@ -105,6 +108,9 @@ namespace WebApplication
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 swagger.IncludeXmlComments(xmlPath);
             });
+
+            // Adds all services in the Business Layer for dependency injection
+            services.AddBusinessServices();
         }
     }
 }

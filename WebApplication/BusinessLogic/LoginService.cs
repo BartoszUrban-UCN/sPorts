@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Data;
@@ -9,7 +6,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Business_Logic
 {
-    public class LoginService
+    public class LoginService : ILoginService
     {
         private readonly SportsContext _context;
 

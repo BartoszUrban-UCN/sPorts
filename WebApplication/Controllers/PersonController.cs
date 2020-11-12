@@ -16,12 +16,12 @@ namespace WebApplication.Controllers
     public class PersonController : Controller
     {
         private readonly SportsContext _context;
-        private readonly LoginService loginService;
+        private readonly ILoginService _loginService;
 
-        public PersonController(SportsContext context)
+        public PersonController(SportsContext context, ILoginService loginService)
         {
             _context = context;
-            loginService = new LoginService(_context);
+            _loginService = loginService;
         }
 
         // GET: Person
@@ -67,7 +67,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    await loginService.CreatePerson(person);
+                    await _loginService.CreatePerson(person);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (BusinessException exception)
