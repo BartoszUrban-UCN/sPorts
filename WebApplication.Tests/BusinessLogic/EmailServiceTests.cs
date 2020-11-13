@@ -4,7 +4,7 @@ using static WebApplication.BusinessLogic.EmailService;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class EmailServiceTest
+    public class EmailServiceTests
     {
         [Fact]
         public void SendEmail_WrongPassword_Fail()

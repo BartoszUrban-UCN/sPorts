@@ -111,25 +111,21 @@ namespace WebApplication.BusinessLogic
 
             using (SportsContext context = _context)
             {
-                // using (var transaction = await context.Database.BeginTransactionAsync())
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        context.Bookings.Add(booking);
-                        booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
+                context.Bookings.Add(booking);
+                booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
 
-                        rowsAffected = await context.SaveChangesAsync();
-                        //transaction.CommitAsync();
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        //transaction.RollbackAsync();
-                        transaction.Rollback();
-                        throw;
-                    }
+                rowsAffected = await context.SaveChangesAsync();
+
+                context.Entry(booking.Boat).Reference(b => b.BoatOwner).Load();
+                context.Entry(booking.Boat.BoatOwner).Reference(b => b.Person).Load();
+                booking.BookingLines.ForEach(bl =>
+                {
+                    context.Entry(bl.Spot).Reference(s => s.Marina).Load();
+                    context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
+                    context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
+                    context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
                 }
+                );
             }
 
             return rowsAffected;
@@ -145,6 +141,8 @@ namespace WebApplication.BusinessLogic
             File.Delete($@"\{bookingReferenceNo}.txt");
         }
 
+        #endregion Delete booking files by referenceNo
+
         public async Task<IList<BookingLine>> GetBookingLines(int bookingId)
         {
             var bookings = await _context.Bookings.Include(l => l.BookingLines).ToListAsync();
@@ -153,6 +151,6 @@ namespace WebApplication.BusinessLogic
             return booking?.BookingLines;
         }
 
-        #endregion Delete booking files by referenceNo
+
     }
 }

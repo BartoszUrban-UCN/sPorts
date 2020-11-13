@@ -10,9 +10,9 @@ using Assert = Xunit.Assert;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class BookingServiceTest : IClassFixture<SharedDatabaseFixture>, IDisposable
+    public class BookingServiceTests : IClassFixture<SharedDatabaseFixture>, IDisposable
     {
-        public BookingServiceTest(SharedDatabaseFixture fixture) => Fixture = fixture;
+        public BookingServiceTests(SharedDatabaseFixture fixture) => Fixture = fixture;
 
         public SharedDatabaseFixture Fixture { get; }
 
@@ -21,7 +21,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-                BookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context);
                 bool expected = false;
                 bool actual = await bookingService.CreateBooking(null, null, null);
 
@@ -69,7 +69,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-                BookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
                 Spot spot = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
@@ -86,7 +86,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-                BookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
                 Spot spot1 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
@@ -105,7 +105,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-                BookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
 

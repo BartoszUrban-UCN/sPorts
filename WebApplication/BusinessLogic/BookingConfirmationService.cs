@@ -5,7 +5,7 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingConfirmationService
+    public class BookingConfirmationService : IBookingConfirmationService
     {
         private readonly SportsContext _context;
 

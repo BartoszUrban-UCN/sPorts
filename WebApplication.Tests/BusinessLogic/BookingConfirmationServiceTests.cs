@@ -8,9 +8,9 @@ using Xunit;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class BookingConfirmationServiceTest : IClassFixture<SharedDatabaseFixture>, IDisposable
+    public class BookingConfirmationServiceTests : IClassFixture<SharedDatabaseFixture>, IDisposable
     {
-        public BookingConfirmationServiceTest(SharedDatabaseFixture fixture) => Fixture = fixture;
+        public BookingConfirmationServiceTests(SharedDatabaseFixture fixture) => Fixture = fixture;
 
         public SharedDatabaseFixture Fixture { get; set; }
 
@@ -20,7 +20,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 int expected = 4;
-                BookingConfirmationService service = new BookingConfirmationService(context);
+                IBookingConfirmationService service = new BookingConfirmationService(context);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 1).FirstOrDefault();
 
                 List<BookingLine> marinaOwnerBookings = await service.GetBookingsByMarinaOwner(marinaOwner);
@@ -37,7 +37,7 @@ namespace WebApplication.Tests.BusinessLogic
             {
                 //await new BookingServiceTest(context).CreateBookingWithThreeSpotsInDifferentMarinas();
                 int expected = 3;
-                BookingConfirmationService service = new BookingConfirmationService(context);
+                IBookingConfirmationService service = new BookingConfirmationService(context);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 1).FirstOrDefault();
 
                 List<BookingLine> spotsToConfirm = await service.GetUnconfirmedBookingLines(marinaOwner);
@@ -53,7 +53,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 bool expected = true;
-                BookingConfirmationService service = new BookingConfirmationService(context);
+                IBookingConfirmationService service = new BookingConfirmationService(context);
                 BookingLine bookingLine = context.BookingLines.Where(bl => bl.BookingId == 1).FirstOrDefault();
 
                 bool actual = service.ConfirmSpotBooked(bookingLine.BookingLineId);

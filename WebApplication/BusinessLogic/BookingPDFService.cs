@@ -29,7 +29,7 @@ namespace WebApplication.BusinessLogic
             booking.BookingLines.ForEach(bookingLine => bookingLinesData += ($"Item #{bookingLine.BookingLineId}\n" +
                                                                                 $"Marina Owner - {bookingLine.Spot?.Marina?.MarinaOwner?.Person?.Email}\n" +
                                                                                 $"Marina - {bookingLine.Spot?.Marina?.Name}\n" +
-                                                                                $"Marina Address - {bookingLine.Spot?.Marina?.Address}\n" +
+                                                                                $"Marina Address - {bookingLine.Spot?.Marina?.Address?.City}\n" +
                                                                                 $"Spot - {bookingLine.Spot?.SpotNumber}\n" +
                                                                                 $"Start Date - {bookingLine.StartDate}\n" +
                                                                                 $"End Date - {bookingLine.EndDate}\n" +
