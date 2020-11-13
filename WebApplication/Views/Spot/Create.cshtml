@@ -44,8 +44,54 @@
             </div>
             <div class="form-group">
                 <label asp-for="MarinaId" class="control-label"></label>
-                <select asp-for="MarinaId" class ="form-control" asp-items="ViewBag.MarinaId"></select>
+                <select asp-for="MarinaId" class="form-control" asp-items="ViewBag.MarinaId"></select>
             </div>
+
+            @* Cool stuff *@
+
+            <div id="mapid" style="height: 600px"></div>
+
+            <script src="~/js/leaflet_map.js"></script>
+            <script>mymap.setView([56.2639, 9.5018], 7)</script>
+
+            @* End of cool stuff *@
+
+            <div class="form-group">
+                <label asp-for="Location.XLatitude" class="control-label"></label>
+                <input asp-for="Location.XLatitude" id="lat" class="form-control" name="XLatitude" />
+                <span asp-validation-for="Location.XLatitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.YLongitude" class="control-label"></label>
+                <input asp-for="Location.YLongitude" id="long" class="form-control" name="YLongitude" />
+                <span asp-validation-for="Location.XLatitude" class="text-danger"></span>
+            </div>
+
+            @* Some more cool stuff *@
+
+            <script>
+                var latitude = document.getElementById("lat");
+                var longitude = document.getElementById("long");
+
+                function onMapClick(e) {
+                    currentMarker
+                        .setLatLng(e.latlng)
+                        .addTo(mymap)
+                        .bindPopup("<b>Selected Location</b><br/>" + e.latlng.toString()).openPopup();
+
+                    latitude.value = e.latlng.lat;
+                    longitude.value = e.latlng.lng;
+                }
+
+                mymap.on('click', onMapClick);
+
+                HTMLInputElementObject.addEventListener('input', function (evt) {
+                    something(this.value);
+                });
+            </script>
+
+            @* End of cool stuff again *@
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

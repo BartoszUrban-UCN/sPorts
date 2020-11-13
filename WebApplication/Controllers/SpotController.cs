@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,14 @@ namespace WebApplication.Controllers
         // GET: Spot
         public async Task<IActionResult> Index()
         {
-            var sportsContext = _context.Spots.Include(s => s.Marina);
+            var sportsContext = _context.Spots
+                .Include(spot => spot.Marina);
+
+            foreach (Spot spot in sportsContext)
+            {
+                _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
+            }
+
             return View(await sportsContext.ToListAsync());
         }
 
@@ -50,6 +58,7 @@ namespace WebApplication.Controllers
         public IActionResult Create()
         {
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId");
+
             return View();
         }
 
@@ -62,11 +71,17 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (SpotLocationValid())
+                {
+                    await CreateAssignLocationToSpot(spot);
+                }
+
                 _context.Add(spot);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
+
             return View(spot);
         }
 
@@ -158,7 +173,7 @@ namespace WebApplication.Controllers
             return _context.Spots.Any(e => e.SpotId == id);
         }
 
-                [Route("spot/{id}")]
+        [Route("spot/{id}")]
         public async Task<IActionResult> Spot(int id)
         {
             ViewData["ViewName"] = "Spot";
@@ -180,6 +195,38 @@ namespace WebApplication.Controllers
                 return View("~/Views/Marina/Marina.cshtml", spot.Marina);
             }
             return View("Error");
+        }
+
+        public bool SpotLocationValid()
+        {
+            String XLatitude = Request.Form["XLatitude"];
+            String YLongitude = Request.Form["YLongitude"];
+
+            if (String.IsNullOrEmpty(XLatitude) || String.IsNullOrEmpty(YLongitude))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<IActionResult> CreateAssignLocationToSpot(Spot spot)
+        {
+            string XLatitude = Request.Form["XLatitude"];
+            string YLongitude = Request.Form["YLongitude"];
+
+            Location spotLocation = new Location
+            {
+                XLatitude = Convert.ToDouble(XLatitude),
+                YLongitude = Convert.ToDouble(YLongitude)
+            };
+
+            var locationController = new LocationController(_context);
+            IActionResult result = await locationController.Create(spotLocation);
+
+            spot.LocationId = spotLocation.LocationId;
+
+            return result;
         }
     }
 }
