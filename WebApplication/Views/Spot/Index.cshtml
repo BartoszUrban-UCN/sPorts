@@ -9,6 +9,24 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+@* Cool stuff *@
+
+<div id="mapid" style="height: 600px"></div>
+
+<script src="~/js/leaflet_map.js"></script>
+<script>mymap.setView([56.2639, 9.5018], 7)</script>
+
+@foreach (var item in Model)
+{
+    if (item.Location != null)
+    {
+        <script> L.marker([@item.Location.XLatitude, @item.Location.YLongitude]).addTo(mymap) </script>
+    }
+}
+
+@* End of cool stuff *@
+
 <table class="table">
     <thead>
         <tr>
@@ -48,43 +66,43 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SpotNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Available)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaxWidth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaxLength)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaxDepth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Marina.MarinaId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location.LocationId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location.XLatitude)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location.YLongitude)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SpotId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SpotId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SpotId">Delete</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpotNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Available)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxWidth)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxLength)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxDepth)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Marina.MarinaId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location.LocationId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location.XLatitude)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location.YLongitude)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.SpotId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.SpotId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.SpotId">Delete</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
