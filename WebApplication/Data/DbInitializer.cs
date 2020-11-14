@@ -28,6 +28,18 @@ namespace WebApplication.Data
                 context.SaveChanges();
             }
 
+            if (!context.Locations.Any())
+            {
+                var locations = new Location[]
+                {
+                    new Location { XLatitude = 57.058790791383466, YLongitude = 9.895803630352022 },
+                    new Location { XLatitude = 57.05889288811736, YLongitude = 9.895127713680269 },
+                };
+
+                context.Locations.AddRange(locations);
+                context.SaveChanges();
+            }
+
             if (!context.Persons.Any())
             {
                 var persons = new Person[]
@@ -96,8 +108,8 @@ namespace WebApplication.Data
             {
                 var spots = new Spot[]
                 {
-                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00},
-                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 40.00},
+                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00, LocationId = 1 },
+                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 40.00, LocationId = 2 },
                     new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 30.00}
                 };
 
