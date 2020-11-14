@@ -26,7 +26,7 @@ namespace WebApplication.Controllers
             return View(await sportsContext.ToListAsync());
         }
 
-        // GET: Booking/Details/5
+        [Route("{id}/details")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

@@ -7,22 +7,79 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
 {
     public class BoatOwnerController : Controller
     {
         private readonly SportsContext _context;
+        private readonly IBoatOwnerService _service;
 
-        public BoatOwnerController(SportsContext context)
+        public BoatOwnerController(SportsContext context, IBoatOwnerService service)
         {
             _context = context;
+            _service = service;
         }
 
         public async Task<IActionResult> Index()
         {
-            var boatOwners = _context.BoatOwners;
+            var boatOwners = _context.BoatOwners.Include(b => b.Person);
             return View(await boatOwners.ToListAsync());
+        }
+
+        [Route("{controller}/{id}/bookings")]
+        public async Task<IActionResult> GetBookings(int id)
+        {
+            try
+            {
+                var bookings = await _service.Bookings(id);
+                return View("~/Views/Booking/Index.cshtml", bookings);
+            }
+            catch (BusinessException)
+            {
+                return View("Error");
+            }
+        }
+
+        [Route("{controller}/{id}/ongbookings")]
+        public async Task<IActionResult> GetOngoingBookings(int id)
+        {
+            try
+            {
+                var ongoingBookings = await _service.OngoingBookings(id);
+                return View("~/Views/Booking/Index.cshtml", ongoingBookings);
+            }
+            catch (BusinessException)
+            {
+                return View("Error");
+            }
+        }
+
+        public async Task<IActionResult> GetBoats(int id)
+        {
+            var boatOwnerWithBoats = await _context.BoatOwners.Include(b => b.Boats)
+                                                        .ToListAsync();
+            var boatOwner = boatOwnerWithBoats.Find(b => b.BoatOwnerId == id);
+
+            if (boatOwner != null)
+            {
+                return View("~/Views/Boats/Index.cshtml", boatOwner.Boats);
+            }
+            return View("Error");
+        }
+
+        [Route("{controller}/{id}/details")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var boatOwner = await _service.FindBoatOwner(id);
+            if (boatOwner == null)
+            {
+                return NotFound();
+            }
+            ViewData["TotalSpent"] = _service.MoneySpent(boatOwner);
+            ViewData["TotalTime"] = _service.TotalTime(boatOwner);
+            return View(boatOwner);
         }
     }
 }

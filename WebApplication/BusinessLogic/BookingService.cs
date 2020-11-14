@@ -133,6 +133,22 @@ namespace WebApplication.BusinessLogic
 
         #endregion Store booking class & associated booking lines in db
 
+        public async void AddTimeToBookingLine(BookingLine bookingLine, int seconds)
+        {
+            if (bookingLine == null)
+            {
+                throw new BusinessException("bookingservice", "The parameter can't be null.");
+            }
+
+            if (seconds < 1)
+            {
+                throw new BusinessException("bookingservice", "The seconds provided is invalid.");
+            }
+
+            bookingLine.EndDate.AddSeconds(seconds);
+            await _context.SaveChangesAsync();
+        }
+
         #region Delete booking files by referenceNo
 
         public void DeleteBookingFiles(int bookingReferenceNo)

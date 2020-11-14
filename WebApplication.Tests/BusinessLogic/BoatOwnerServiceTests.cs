@@ -14,7 +14,7 @@ namespace WebApplication.Tests.BusinessLogic
         public SharedDatabaseFixture Fixture { get; }
 
         [Fact]
-        public void ReturnException_IfArgumentNull()
+        public void ReturnException_IfArgumentNull_ForBoat()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -24,7 +24,22 @@ namespace WebApplication.Tests.BusinessLogic
                 // Act
                 boatOwner = null;
                 // Assert
-                Assert.Throws<System.ArgumentNullException>(() => boatOwnerService.OngoingBookings(boatOwner));
+                Assert.Throws<BusinessException>(() => boatOwnerService.OngoingBookings(boatOwner));
+            }
+        }
+
+        [Fact]
+        public void ReturnException_IfArgumentNull_ForHas()
+        {
+            using (var context = Fixture.CreateContext())
+            {
+                // Arrange
+                Booking booking;
+                var boatOwnerService = new BoatOwnerService(context);
+                // Act
+                booking = null;
+                // Assert
+                Assert.Throws<BusinessException>(() => boatOwnerService.HasOngoing(booking));
             }
         }
 
@@ -168,62 +183,62 @@ namespace WebApplication.Tests.BusinessLogic
                                           item => Assert.Equal(booking3, result[3]));
             }
         }
-            [Fact]
-            public void HaveOngoing()
+        [Fact]
+        public void HaveOngoing()
 
+        {
+            using (var context = Fixture.CreateContext())
             {
-                using (var context = Fixture.CreateContext())
-                {
-                    // Arrange
-                    var boatOwnerService = new BoatOwnerService(context);
+                // Arrange
+                var boatOwnerService = new BoatOwnerService(context);
 
-                    var booking = new Booking();
+                var booking = new Booking();
 
-                    booking.BookingLines.AddRange(new List<BookingLine>
+                booking.BookingLines.AddRange(new List<BookingLine>
                 {
                     new BookingLine {Ongoing = true},
                     new BookingLine {Ongoing = false},
                     new BookingLine {Ongoing = false}
                 });
 
-                    bool result = false;
+                bool result = false;
 
-                    // Act
-                    result = boatOwnerService.HasOngoing(booking);
+                // Act
+                result = boatOwnerService.HasOngoing(booking);
 
-                    // Assert
-                    Assert.True(result);
-                }
+                // Assert
+                Assert.True(result);
             }
+        }
 
-            [Fact]
-            public void NotHaveOngoing()
+        [Fact]
+        public void NotHaveOngoing()
+        {
+            using (var context = Fixture.CreateContext())
             {
-                using (var context = Fixture.CreateContext())
-                {
-                    // Arrange
-                    var boatOwnerService = new BoatOwnerService(context);
-                    var booking = new Booking();
+                // Arrange
+                var boatOwnerService = new BoatOwnerService(context);
+                var booking = new Booking();
 
-                    booking.BookingLines.AddRange(new List<BookingLine>
+                booking.BookingLines.AddRange(new List<BookingLine>
                 {
                     new BookingLine {Ongoing = false},
                     new BookingLine {Ongoing = false},
                     new BookingLine {Ongoing = false}
                 });
 
-                    bool result = false;
+                bool result = false;
 
-                    // Act
-                    result = boatOwnerService.HasOngoing(booking);
+                // Act
+                result = boatOwnerService.HasOngoing(booking);
 
-                    // Assert
-                    Assert.False(result);
-                }
-            }
-
-            public void Dispose()
-            {
+                // Assert
+                Assert.False(result);
             }
         }
+
+        public void Dispose()
+        {
+        }
     }
+}

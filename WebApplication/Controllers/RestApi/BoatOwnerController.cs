@@ -16,10 +16,12 @@ namespace WebApplication.Controllers.RestApi
     public class BoatOwnerController : ControllerBase
     {
         private readonly SportsContext _context;
+        private readonly IBoatOwnerService _service;
 
-        public BoatOwnerController(SportsContext context)
+        public BoatOwnerController(SportsContext context, IBoatOwnerService service)
         {
             _context = context;
+            _service = service;
         }
 
         // GET: api/BoatOwner
@@ -104,40 +106,46 @@ namespace WebApplication.Controllers.RestApi
         }
 
         [HttpGet("{id}/bookings")]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetAllBookings(int id)
-        {
-            var boatWithBooking = _context.Boats.Include(b => b.Bookings);
-            var boatList = await boatWithBooking.ToListAsync();
-            var boat = boatList.Find(b => b.BoatId == id);
-
-            if (boat != null)
-            {
-                var bookings = boat.Bookings;
-                return Ok(bookings);
-            }
-
-            return NotFound(boat);
-        }
-
-        [HttpGet("{id}/ongbookings")]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetAllOngoingBookings(int id)
+        public async Task<ActionResult<IEnumerable<Booking>>> Bookings(int id)
         {
             try
             {
-                var boatOwnersWithBoatsAndBookings = _context.BoatOwners.Include(bo => bo.Boats)
-                                                            .ThenInclude(b => b.Bookings);
-                var boatOwner = await boatOwnersWithBoatsAndBookings.FirstAsync(b => b.BoatOwnerId == id);
-                var ongoingBookings = new BoatOwnerService(_context).OngoingBookings(boatOwner);
-                
-                return Ok(ongoingBookings);
+                var bookings = await _service.Bookings(id);
+                return Ok(bookings);
             }
-            catch (System.ArgumentNullException)
+            catch (BusinessException)
             {
                 return NotFound();
             }
         }
 
-        
+        [HttpGet("{id}/ongbookings")]
+        public async Task<ActionResult<IEnumerable<Booking>>> OngoingBookings(int id)
+        {
+            try
+            {
+                var ongoingBookings = await _service.OngoingBookings(id);
+                return Ok(ongoingBookings);
+            }
+            catch (BusinessException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("{id}/boats")]
+        public async Task<ActionResult<IEnumerable<Boat>>> Boats(int id)
+        {
+            var boatOwnerWithBoats = await _context.BoatOwners.Include(b => b.Boats)
+                                                        .ToListAsync();
+            var boatOwner = boatOwnerWithBoats.Find(b => b.BoatOwnerId == id);
+
+            if (boatOwner != null)
+            {
+                return Ok(boatOwner.Boats);
+            }
+            return NotFound();
+        }
 
         private bool BoatOwnerExists(int id)
         {

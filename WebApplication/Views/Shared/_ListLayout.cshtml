@@ -2,6 +2,7 @@
 
 @{
     string viewName = (string)ViewData["ViewName"];
+    string imgPath = (string)ViewData["ImgPath"];
 }
 
 @section Styles{
@@ -13,7 +14,7 @@
         @foreach(var mod in Model){
             <div class="col mb-4">
                 <div class="card white text-right h-100" style="width: 18rem;">
-                    <img class="card-img-top" src="~/img/1.webp">
+                    <img class="card-img-top" src=@imgPath>
                     <div class="card-body">
                         @{
                             await Html.RenderPartialAsync(viewName, mod);
