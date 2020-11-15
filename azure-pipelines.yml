@@ -15,6 +15,7 @@ steps:
 - task: UseDotNet@2
   displayName: 'Update .NET Core'
   inputs:
+    includePreviewVersions: true
     packageType: 'sdk'
     version: '5.0.x'
     vsVersion: '16.8.1'
