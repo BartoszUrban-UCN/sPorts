@@ -12,18 +12,24 @@ variables:
   buildConfiguration: 'Debug'
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Update .NET Core'
+  inputs:
+    packageType: 'sdk'
+    version: '5.0.x'
+    vsVersion: '16.8.1'
+    performMultiLevelLookup: true
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+
 - task: DotNetCoreCLI@2
   displayName: 'Build project'
   inputs:
+    projects: '**/*.csproj'
     command: build
     arguments: '--configuration $(buildConfiguration)'
-
-- task: NuGetCommand@2
-  displayName: 'Restore NuGet Packages'
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
     
 - task: DotNetCoreCLI@2
   displayName: 'Run tests'
