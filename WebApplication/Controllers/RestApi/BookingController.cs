@@ -14,11 +14,13 @@ namespace WebApplication.Controllers.RestApi
     {
         private readonly SportsContext _context;
         private readonly IBookingService _bookingService;
+        private readonly IBookingConfirmationService _bookingConfirmationService;
 
-        public BookingController(SportsContext context, IBookingService bookingService)
+        public BookingController(SportsContext context, IBookingService bookingService, IBookingConfirmationService bookingConfirmationService)
         {
             _context = context;
             _bookingService = bookingService;
+            _bookingConfirmationService = bookingConfirmationService;
         }
 
         [Produces("application/json")]
@@ -52,6 +54,29 @@ namespace WebApplication.Controllers.RestApi
                 return Ok(bookingLines);
             }
             return NotFound();
+        }
+
+        [Produces("application/json")]
+        [HttpGet("marinaowner")]
+        public async Task<ActionResult<IEnumerable<BookingLine>>> GetBookingsByMarinaOwner()
+        {
+            // get logged marina owner
+            int marinaOwnerId = 1;
+            var marinaOwnerBookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwnerId);
+
+            if (marinaOwnerBookingLines != null)
+            {
+                return Ok(marinaOwnerBookingLines);
+            }
+
+            return NotFound();
+        }
+
+        [HttpPut("confirmbookingline/{id}")]
+        public async Task<ActionResult<bool>> ConfirmBookingLineById(int bookingLineId)
+        {
+            var success = await _bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
+            return success;
         }
     }
 }

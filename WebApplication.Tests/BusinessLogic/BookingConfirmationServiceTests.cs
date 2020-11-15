@@ -23,7 +23,7 @@ namespace WebApplication.Tests.BusinessLogic
                 IBookingConfirmationService service = new BookingConfirmationService(context);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 1).FirstOrDefault();
 
-                List<BookingLine> marinaOwnerBookings = await service.GetBookingsByMarinaOwner(marinaOwner);
+                List<BookingLine> marinaOwnerBookings = await service.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
                 int actual = marinaOwnerBookings.Count;
 
                 Assert.Equal(expected, actual);
@@ -40,7 +40,7 @@ namespace WebApplication.Tests.BusinessLogic
                 IBookingConfirmationService service = new BookingConfirmationService(context);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 1).FirstOrDefault();
 
-                List<BookingLine> spotsToConfirm = await service.GetUnconfirmedBookingLines(marinaOwner);
+                List<BookingLine> spotsToConfirm = await service.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
                 int actual = spotsToConfirm.Count;
 
                 Assert.Equal(expected, actual);

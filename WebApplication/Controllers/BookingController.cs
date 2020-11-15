@@ -153,7 +153,8 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName("ConfirmBookingLine")]
+
+        [HttpPost, ActionName("Confirm")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmBookingLine(int bookingLineId)
         {
@@ -161,13 +162,18 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(BookingsByMarinaOwner));
         }
 
-        [Route("{controller}/marinaowner/{id}")]
-        public async Task<IActionResult> BookingsByMarinaOwner(int marinaOwnerId)
+        /// <summary>
+        /// Get Bookings of logged in Marina Owner
+        /// </summary>
+        /// <returns>View</returns>
+        // GET: Booking/marinaowner
+        [Route("{controller}/marinaowner")]
+        public async Task<IActionResult> BookingsByMarinaOwner()
         {
 
             // get logged in marina owner
             MarinaOwner marinaOwner = _context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 1).FirstOrDefault();
-            //var bookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwner);
+            //var bookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwnerId);
             var bookingLines = await _context.BookingLines.ToListAsync();
 
             bookingLines.ForEach(bl =>

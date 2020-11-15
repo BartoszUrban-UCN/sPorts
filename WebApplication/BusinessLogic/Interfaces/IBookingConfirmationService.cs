@@ -7,8 +7,8 @@ namespace WebApplication.BusinessLogic
     public interface IBookingConfirmationService
     {
         Task<bool> ConfirmSpotBooked(int bookingLineId);
-        Task<List<BookingLine>> GetBookingsByMarinaOwner(MarinaOwner marinaOwner);
-        Task<List<BookingLine>> GetUnconfirmedBookingLines(MarinaOwner marinaOwner);
+        Task<List<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId);
+        Task<List<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId);
         void SendConfirmationMail();
     }
 }

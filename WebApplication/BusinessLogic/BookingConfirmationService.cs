@@ -15,7 +15,7 @@ namespace WebApplication.BusinessLogic
         }
 
         #region Get Bookings By Marina Owner, order by time left to confirm
-        public async Task<List<BookingLine>> GetBookingsByMarinaOwner(MarinaOwner marinaOwner)
+        public async Task<List<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId)
         {
             List<BookingLine> marinaOwnerBookings = new List<BookingLine>();
             return marinaOwnerBookings;
@@ -23,7 +23,7 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region Get unconfirmed booking lines from bookings by marina owner
-        public async Task<List<BookingLine>> GetUnconfirmedBookingLines(MarinaOwner marinaOwner)
+        public async Task<List<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId)
         {
             List<BookingLine> unconfirmedBookingLines = new List<BookingLine>();
             return unconfirmedBookingLines;
