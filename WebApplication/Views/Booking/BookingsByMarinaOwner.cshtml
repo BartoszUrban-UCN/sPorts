@@ -1,0 +1,74 @@
+﻿@model IEnumerable<BookingLine>
+
+@{
+    ViewData["Title"] = "BookingsByMarinaOwner";
+}
+
+<h1>Bookings To Confirm</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Booking.BookingReferenceNo)
+            </th>
+            <th>
+                Boat Owner
+                @Html.DisplayNameFor(model => model.Booking.Boat.BoatOwner.Person.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Spot.Marina.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Spot.Marina.Address.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Spot)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Confirmed)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Booking.BookingReferenceNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Booking.Boat.BoatOwner.Person.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Spot.Marina.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Spot.Marina.Address.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Spot.SpotNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Confirmed)
+                </td>
+                <td>
+                    <a class="btn btn-outline-success" asp-action="ConfirmBookingLine" asp-route-id="@item.BookingLineId">Confirm</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

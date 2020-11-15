@@ -48,7 +48,7 @@ namespace WebApplication.Tests.BusinessLogic
         }
 
         [Fact]
-        public void ConfirmSpotBooked_ExpectedTrue_Success()
+        public async void ConfirmSpotBooked_ExpectedTrue_Success()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -56,7 +56,7 @@ namespace WebApplication.Tests.BusinessLogic
                 IBookingConfirmationService service = new BookingConfirmationService(context);
                 BookingLine bookingLine = context.BookingLines.Where(bl => bl.BookingId == 1).FirstOrDefault();
 
-                bool actual = service.ConfirmSpotBooked(bookingLine.BookingLineId);
+                bool actual = await service.ConfirmSpotBooked(bookingLine.BookingLineId);
 
                 Assert.Equal(expected, actual);
             }

@@ -31,17 +31,15 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region Confirm spot booked by boatOnwer
-        public bool ConfirmSpotBooked(int bookingLineId)
+        public async Task<bool> ConfirmSpotBooked(int bookingLineId)
         {
             return false;
         }
         #endregion
 
-        private BookingLine GetBookingLine(int bookingLineId)
-        {
-            return null;
-        }
-
+        /// <summary>
+        /// After 72 hours, email with booking info is sent to boat owner's email
+        /// </summary>
         #region After time left has been spent or all booking lines have been confirmed, send mail with booking information to boat owner
         public void SendConfirmationMail()
         {
