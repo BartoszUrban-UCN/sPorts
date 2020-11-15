@@ -12,8 +12,11 @@ variables:
   buildConfiguration: 'Debug'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'Build - $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: 'Build project'
+  inputs:
+    command: build
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: NuGetCommand@2
   displayName: 'Restore NuGet Packages'
