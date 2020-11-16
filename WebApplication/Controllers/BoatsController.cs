@@ -10,6 +10,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class BoatsController : Controller
     {
         private readonly SportsContext _context;

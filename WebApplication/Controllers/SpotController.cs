@@ -158,7 +158,6 @@ namespace WebApplication.Controllers
             return _context.Spots.Any(e => e.SpotId == id);
         }
 
-                [Route("spot/{id}")]
         public async Task<IActionResult> Spot(int id)
         {
             ViewData["ViewName"] = "Spot";

@@ -164,7 +164,6 @@ namespace WebApplication.Controllers
             return _context.Marinas.Any(e => e.MarinaId == id);
         }
 
-        [Route("{id}/spots")]
         public async Task<IActionResult> MarinaSpots(int id)
         {
             var marinaWithSpots = await _context.Marinas.Include(s => s.Spots).ToListAsync();
@@ -179,7 +178,6 @@ namespace WebApplication.Controllers
             return View("Error");
         }
 
-        [Route("marina/{id}")]
         public async Task<IActionResult> Marina(int id)
         {
             ViewData["ViewName"] = "Marina";

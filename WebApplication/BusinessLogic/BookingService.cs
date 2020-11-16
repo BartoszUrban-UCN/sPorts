@@ -133,7 +133,7 @@ namespace WebApplication.BusinessLogic
 
         #endregion Store booking class & associated booking lines in db
 
-        public async void AddTimeToBookingLine(BookingLine bookingLine, int seconds)
+        public void AddTimeToBookingLine(BookingLine bookingLine, int seconds)
         {
             if (bookingLine == null)
             {
@@ -145,8 +145,15 @@ namespace WebApplication.BusinessLogic
                 throw new BusinessException("bookingservice", "The seconds provided is invalid.");
             }
 
-            bookingLine.EndDate.AddSeconds(seconds);
-            await _context.SaveChangesAsync();
+            try
+            {
+                bookingLine.EndDate = bookingLine.EndDate.AddSeconds(seconds);
+                _context.SaveChangesAsync();
+            }
+            catch (Exception ex) when (ex is DbUpdateException || ex is DbUpdateConcurrencyException)
+            {
+                throw new BusinessException("bookingservice", "Exception when commiting to database.");
+            }
         }
 
         #region Delete booking files by referenceNo
@@ -162,11 +169,14 @@ namespace WebApplication.BusinessLogic
         public async Task<IList<BookingLine>> GetBookingLines(int bookingId)
         {
             var bookings = await _context.Bookings.Include(l => l.BookingLines).ToListAsync();
-            var booking = bookings.Find(b => b.BookingId == bookingId);
+            var booking = bookings.FirstOrDefault(b => b.BookingId == bookingId);
+
+            if (booking == null)
+            {
+                throw new BusinessException("bookingservice", "Booking was not found.");
+            }
 
             return booking?.BookingLines;
         }
-
-
     }
 }

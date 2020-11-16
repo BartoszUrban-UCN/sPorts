@@ -144,11 +144,6 @@ namespace WebApplication.BusinessLogic
                 throw new BusinessException("boatownerservice", "The parameter can't be null.");
             }
 
-            if (bookingLine.StartDate == null || bookingLine.EndDate == null)
-            {
-                throw new BusinessException("boatownerservice", "Either the startdate or the enddate is null.");
-            }
-
             return bookingLine.EndDate - bookingLine.StartDate;
         }
     }

@@ -25,7 +25,7 @@
                 @Html.DisplayNameFor(model => model.Boat)
             </th>
             <th>
-                Ongoing
+                Booking Lines
             </th>
         </tr>
     </thead>
@@ -46,8 +46,11 @@
                     @Html.DisplayFor(modelItem => item.Boat.BoatId)
                 </td>
                 <td>
+                    <a asp-route="blines" asp-route-id="@item.BookingId">Booking Lines</a>
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.BookingId">Edit</a> |
-                    <a asp-controller="Booking" asp-action="Details" asp-route-id="@item.BookingId">Details</a> |
+                    <a asp-action="Details" asp-route-id="@item.BookingId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
                 </td>
             </tr>

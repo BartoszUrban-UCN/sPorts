@@ -11,6 +11,7 @@ using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class BoatOwnerController : Controller
     {
         private readonly SportsContext _context;
@@ -28,7 +29,6 @@ namespace WebApplication.Controllers
             return View(await boatOwners.ToListAsync());
         }
 
-        [Route("{controller}/{id}/bookings")]
         public async Task<IActionResult> GetBookings(int id)
         {
             try
@@ -42,7 +42,6 @@ namespace WebApplication.Controllers
             }
         }
 
-        [Route("{controller}/{id}/ongbookings")]
         public async Task<IActionResult> GetOngoingBookings(int id)
         {
             try
@@ -60,7 +59,7 @@ namespace WebApplication.Controllers
         {
             var boatOwnerWithBoats = await _context.BoatOwners.Include(b => b.Boats)
                                                         .ToListAsync();
-            var boatOwner = boatOwnerWithBoats.Find(b => b.BoatOwnerId == id);
+            var boatOwner = boatOwnerWithBoats.FirstOrDefault(b => b.BoatOwnerId == id);
 
             if (boatOwner != null)
             {
@@ -69,17 +68,19 @@ namespace WebApplication.Controllers
             return View("Error");
         }
 
-        [Route("{controller}/{id}/details")]
         public async Task<IActionResult> Details(int id)
         {
-            var boatOwner = await _service.FindBoatOwner(id);
-            if (boatOwner == null)
+            try
             {
-                return NotFound();
+                var boatOwner = await _service.FindBoatOwner(id);
+                ViewData["TotalSpent"] = _service.MoneySpent(boatOwner);
+                ViewData["TotalTime"] = _service.TotalTime(boatOwner);
+                return View(boatOwner);
             }
-            ViewData["TotalSpent"] = _service.MoneySpent(boatOwner);
-            ViewData["TotalTime"] = _service.TotalTime(boatOwner);
-            return View(boatOwner);
+            catch(BusinessException)
+            {
+                return View("Error");
+            }
         }
     }
 }

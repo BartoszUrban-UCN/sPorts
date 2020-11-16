@@ -9,14 +9,17 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class BookingController : Controller
     {
         private readonly SportsContext _context;
         private readonly IBookingConfirmationService _bookingConfirmationService;
+        private readonly IBookingService _bookingService;
 
-        public BookingController(SportsContext context)
+        public BookingController(SportsContext context, IBookingService bookingService)
         {
             _context = context;
+            _bookingService = bookingService;
             _bookingConfirmationService = new BookingConfirmationService(_context);
         }
 
@@ -27,14 +30,9 @@ namespace WebApplication.Controllers
             return View(await sportsContext.ToListAsync());
         }
 
-        [Route("{id}/details")]
-        public async Task<IActionResult> Details(int? id)
+        // GET: Booking/Details/5
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var booking = await _context.Bookings
                 .Include(b => b.Boat)
                 .FirstOrDefaultAsync(m => m.BookingId == id);
@@ -191,6 +189,19 @@ namespace WebApplication.Controllers
             );
 
             return View(bookingLines);
+        }
+        [Route("Booking/{id}/GetBookingLines", Name="blines")] 
+        public async Task<IActionResult> GetBookingLines(int id)
+        {
+            try
+            {
+                var bookingLines = await _bookingService.GetBookingLines(id);
+                return View("~/Views/BookingLine/Index.cshtml", bookingLines);
+            }
+            catch (BusinessException)
+            {
+                return View("Error");
+            }
         }
 
         private bool BookingExists(int id)
