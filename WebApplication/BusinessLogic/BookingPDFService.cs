@@ -71,5 +71,15 @@ namespace WebApplication.BusinessLogic
             readFile.Close();
             pdf.Close();
         }
+
+        #region Delete booking files by referenceNo
+
+        public void DeleteBookingFiles(int bookingReferenceNo)
+        {
+            File.Delete($@"\{bookingReferenceNo}.pdf");
+            File.Delete($@"\{bookingReferenceNo}.txt");
+        }
+
+        #endregion Delete booking files by referenceNo
     }
 }

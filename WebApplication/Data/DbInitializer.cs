@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using WebApplication.Models;
 
 namespace WebApplication.Data
@@ -48,6 +47,7 @@ namespace WebApplication.Data
                 {
                     new MarinaOwner{PersonId=1 },
                     new MarinaOwner{PersonId=2 },
+                    new MarinaOwner{PersonId=3 },
                 };
 
                 context.MarinaOwners.AddRange(marinaOwners);
@@ -128,30 +128,30 @@ namespace WebApplication.Data
                 var bookingLines = new BookingLine[]
                 {
                     // Ongoing: True
-                    new BookingLine {Ongoing = true, BookingId = 1, SpotId= 1, DiscountedTotalPrice = 1},
-                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 1, DiscountedTotalPrice = 2},
-                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 1, DiscountedTotalPrice = 3},
+                    new BookingLine {Ongoing = true, BookingId = 1, SpotId= 1, DiscountedTotalPrice = 1, Confirmed = true},
+                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 2, DiscountedTotalPrice = 2},
+                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 3, DiscountedTotalPrice = 3},
                     // Ongoing: False
                     new BookingLine {Ongoing = false, BookingId = 2, SpotId= 1, DiscountedTotalPrice = 4},
-                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 1, DiscountedTotalPrice = 5},
-                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 1, DiscountedTotalPrice = 6},
+                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 2, DiscountedTotalPrice = 5},
+                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 3, DiscountedTotalPrice = 6},
                     // Ongoing: False
                     new BookingLine {Ongoing = false, BookingId = 3, SpotId= 1, DiscountedTotalPrice = 10},
-                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 1, DiscountedTotalPrice = 10},
-                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 1, DiscountedTotalPrice = 10},
+                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 2, DiscountedTotalPrice = 10},
+                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 3, DiscountedTotalPrice = 10},
                     
                     // Ongoing: False
                     new BookingLine {Ongoing = false, BookingId = 4, SpotId= 1, DiscountedTotalPrice = 19},
-                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 1, DiscountedTotalPrice = 11},
-                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 1, DiscountedTotalPrice = 17},
+                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 2, DiscountedTotalPrice = 11},
+                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 3, DiscountedTotalPrice = 17},
                     // Ongoing: True
                     new BookingLine {Ongoing = true, BookingId = 5, SpotId= 1, DiscountedTotalPrice = 15},
-                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 1, DiscountedTotalPrice = 16},
-                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 1, DiscountedTotalPrice = 14},
+                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 3, DiscountedTotalPrice = 16},
+                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 2, DiscountedTotalPrice = 14},
                     // Ongoing: True
                     new BookingLine {Ongoing = false, BookingId = 6, SpotId= 1, DiscountedTotalPrice = 12},
-                    new BookingLine {Ongoing = true, BookingId = 6, SpotId= 1, DiscountedTotalPrice = 13},
-                    new BookingLine {Ongoing = true, BookingId = 6, SpotId= 1, DiscountedTotalPrice = 14}
+                    new BookingLine {Ongoing = true, BookingId = 6, SpotId= 2, DiscountedTotalPrice = 13},
+                    new BookingLine {Ongoing = true, BookingId = 6, SpotId= 5, DiscountedTotalPrice = 14}
                 };
 
                 context.BookingLines.AddRange(bookingLines);

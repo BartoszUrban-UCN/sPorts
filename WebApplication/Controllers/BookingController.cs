@@ -152,7 +152,12 @@ namespace WebApplication.Controllers
         }
 
 
-        [HttpPost, ActionName("Confirm")]
+        public IActionResult Confirmation(int bookingLineId)
+        {
+            return Content("Hello World!");
+        }
+
+        [HttpPost, ActionName("Confirmation")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmBookingLine(int bookingLineId)
         {
@@ -170,23 +175,8 @@ namespace WebApplication.Controllers
         {
 
             // get logged in marina owner
-            MarinaOwner marinaOwner = _context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 1).FirstOrDefault();
-            //var bookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwnerId);
-            var bookingLines = await _context.BookingLines.ToListAsync();
-
-            bookingLines.ForEach(bl =>
-            {
-                _context.Entry(bl).Reference(bl => bl.Spot).Load();
-                _context.Entry(bl).Reference(bl => bl.Booking).Load();
-                _context.Entry(bl.Spot).Reference(s => s.Marina).Load();
-                _context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
-                _context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
-                _context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
-                _context.Entry(bl.Booking).Reference(b => b.Boat).Load();
-                _context.Entry(bl.Booking.Boat).Reference(b => b.BoatOwner).Load();
-                _context.Entry(bl.Booking.Boat.BoatOwner).Reference(bo => bo.Person).Load();
-            }
-            );
+            MarinaOwner marinaOwner = _context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 2).FirstOrDefault();
+            var bookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
 
             return View(bookingLines);
         }

@@ -11,8 +11,6 @@ namespace WebApplication.BusinessLogic
 
         Task<IList<BookingLine>> GetBookingLines(int bookingId);
 
-        void DeleteBookingFiles(int bookingReferenceNo);
-
         void AddTimeToBookingLine(BookingLine bookingLine, int seconds);
     }
 }

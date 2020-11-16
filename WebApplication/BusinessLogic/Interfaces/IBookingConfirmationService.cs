@@ -9,6 +9,6 @@ namespace WebApplication.BusinessLogic
         Task<bool> ConfirmSpotBooked(int bookingLineId);
         Task<List<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId);
         Task<List<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId);
-        void SendConfirmationMail();
+        void SendConfirmationMail(int bookingId);
     }
 }

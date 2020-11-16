@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
@@ -49,7 +48,7 @@ namespace WebApplication.BusinessLogic
                 SendEmail(bookingReference: booking.BookingReferenceNo);
 
                 // delete files create in CreateBookingPdfFile
-                DeleteBookingFiles(booking.BookingReferenceNo);
+                pdfService.DeleteBookingFiles(booking.BookingReferenceNo);
             }
 
             return rowsAffected > 0;
@@ -155,16 +154,6 @@ namespace WebApplication.BusinessLogic
                 throw new BusinessException("bookingservice", "Exception when commiting to database.");
             }
         }
-
-        #region Delete booking files by referenceNo
-
-        public void DeleteBookingFiles(int bookingReferenceNo)
-        {
-            File.Delete($@"\{bookingReferenceNo}.pdf");
-            File.Delete($@"\{bookingReferenceNo}.txt");
-        }
-
-        #endregion Delete booking files by referenceNo
 
         public async Task<IList<BookingLine>> GetBookingLines(int bookingId)
         {
