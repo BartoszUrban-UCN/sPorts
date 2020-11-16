@@ -48,6 +48,65 @@
                 <select asp-for="MarinaId" class="form-control" asp-items="ViewBag.MarinaId"></select>
                 <span asp-validation-for="MarinaId" class="text-danger"></span>
             </div>
+
+            @* Initialize Leaflet Map and set the view with Denmark's coordinates *@
+
+            <div id="mapid" style="height: 600px"></div>
+
+            <script src="~/js/leaflet_map.js"></script>
+            <script>mymap.setView([56.2639, 9.5018], 7)</script>
+
+            @* End of initialization *@
+
+            <div class="form-group">
+                <label asp-for="LocationId" class="control-label"></label>
+                <input asp-for="LocationId" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.XLatitude" class="control-label"></label>
+                <input asp-for="Location.XLatitude" id="lat" class="form-control" name="XLatitude" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.YLongitude" class="control-label"></label>
+                <input asp-for="Location.YLongitude" id="long" class="form-control" name="YLongitude" readonly />
+            </div>
+
+            @* JavaScript to be able to click on map, select a Location and read the coordinates *@
+
+            <script>
+                var currentMarker = L.marker([@Model.Location.XLatitude, @Model.Location.YLongitude]).addTo(mymap);
+
+                var latitude = document.getElementById("lat");
+                var longitude = document.getElementById("long");
+
+                function onMapClick(e) {
+                    currentMarker
+                        .setLatLng(e.latlng)
+                        .addTo(mymap)
+                        .bindPopup(`<b>Selected Location</b><br/> ${e.latlng.toString()} <br/><b>Double Click on marker to remove it</b>`).openPopup();
+
+                    latitude.value = e.latlng.lat;
+                    longitude.value = e.latlng.lng;
+                }
+
+                function removeMarker(e) {
+                    currentMarker.removeFrom(mymap);
+
+                    latitude.value = null;
+                    longitude.value = null;
+                }
+
+                mymap.on('click', onMapClick);
+                currentMarker.on('dblclick', removeMarker);
+
+                            // HTMLInputElementObject.addEventListener('input', function (evt) {
+                            //     something(this.value);
+                            // });
+
+            </script>
+
+            @* End of JavaScript *@
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

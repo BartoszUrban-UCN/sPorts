@@ -46,6 +46,9 @@ namespace WebApplication.Controllers
             var spot = await _context.Spots
                 .Include(s => s.Marina)
                 .FirstOrDefaultAsync(m => m.SpotId == id);
+
+            _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
+
             if (spot == null)
             {
                 return NotFound();
@@ -94,10 +97,14 @@ namespace WebApplication.Controllers
             }
 
             var spot = await _context.Spots.FindAsync(id);
+
             if (spot == null)
             {
                 return NotFound();
             }
+
+            _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
+
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
@@ -107,7 +114,7 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SpotId,SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId")] Spot spot)
+        public async Task<IActionResult> Edit(int id, [Bind("SpotId,SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId,LocationId")] Spot spot)
         {
             if (id != spot.SpotId)
             {
@@ -118,6 +125,11 @@ namespace WebApplication.Controllers
             {
                 try
                 {
+                    if (SpotLocationValid())
+                    {
+                        await UpdateSpotLocation(spot);
+                    }
+
                     _context.Update(spot);
                     await _context.SaveChangesAsync();
                 }
@@ -225,6 +237,22 @@ namespace WebApplication.Controllers
             IActionResult result = await locationController.Create(spotLocation);
 
             spot.LocationId = spotLocation.LocationId;
+
+            return result;
+        }
+
+        public async Task<IActionResult> UpdateSpotLocation(Spot spot)
+        {
+            string XLatitude = Request.Form["XLatitude"];
+            string YLongitude = Request.Form["YLongitude"];
+
+            Location spotLocation = _context.Locations.Find(spot.LocationId);
+
+            spotLocation.XLatitude = Convert.ToDouble(XLatitude);
+            spotLocation.YLongitude = Convert.ToDouble(YLongitude);
+
+            var locationController = new LocationController(_context);
+            IActionResult result = await locationController.Edit(spotLocation.LocationId, spotLocation);
 
             return result;
         }
