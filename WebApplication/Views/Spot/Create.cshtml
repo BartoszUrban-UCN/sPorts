@@ -58,17 +58,17 @@
 
             <div class="form-group">
                 <label asp-for="Location.XLatitude" class="control-label"></label>
-                <input id="lat" class="form-control" name="XLatitude" />
+                <input id="lat" class="form-control" name="XLatitude" readonly/>
             </div>
             <div class="form-group">
                 <label asp-for="Location.YLongitude" class="control-label"></label>
-                <input id="long" class="form-control" name="YLongitude" />
+                <input id="long" class="form-control" name="YLongitude" readonly/>
             </div>
 
             @* JavaScript to be able to click on map, select a Location and read the coordinates *@
 
             <script>
-                var currentMarker = new L.marker();
+                var currentMarker = L.marker();
 
                 var latitude = document.getElementById("lat");
                 var longitude = document.getElementById("long");
