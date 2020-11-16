@@ -8,7 +8,24 @@
 
 <div>
     <h4>Spot</h4>
+
     <hr />
+
+    @* Display map on spot location if it has a location set *@
+
+    @if (Model.LocationId != null)
+    {
+        <div id="mapid" style="height: 400px; width: 300px"></div>
+        <br />
+        <script src="~/js/leaflet_map.js"></script>
+        <script>
+            mymap.setView([@Model.Location.XLatitude, @Model.Location.YLongitude], 16);
+            L.marker([@Model.Location.XLatitude, @Model.Location.YLongitude]).addTo(mymap);
+        </script>
+    }
+
+    @* End of displaying map *@
+
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.SpotNumber)
