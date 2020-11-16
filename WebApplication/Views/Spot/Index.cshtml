@@ -10,10 +10,9 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-@* Cool stuff *@
+@* Initialize map showing available and unavailable spots *@
 
-<div id="mapid" style="height: 600px"></div>
-
+<div id="mapid" style="height: 600px; width: 700px"></div>
 <script src="~/js/leaflet_map.js"></script>
 <script>mymap.setView([56.2639, 9.5018], 7)</script>
 
@@ -21,11 +20,18 @@
 {
     if (item.Location != null)
     {
-        <script> L.marker([@item.Location.XLatitude, @item.Location.YLongitude]).addTo(mymap) </script>
+        if (item.Available)
+        {
+            <script> L.marker([@item.Location.XLatitude, @item.Location.YLongitude]).addTo(mymap) </script>
+        }
+        else
+        {
+            <script> L.marker([@item.Location.XLatitude, @item.Location.YLongitude], { icon: unavailableMarkerIcon }).addTo(mymap) </script>
+        }
     }
 }
 
-@* End of cool stuff *@
+@* End of initialization *@
 
 <table class="table">
     <thead>
