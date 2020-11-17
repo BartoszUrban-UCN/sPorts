@@ -16,12 +16,12 @@ namespace WebApplication.Controllers.RestApi
     public class BoatOwnerController : ControllerBase
     {
         private readonly SportsContext _context;
-        private readonly IBoatOwnerService _service;
+        private readonly IBoatOwnerService _boatOwnerService;
 
-        public BoatOwnerController(SportsContext context, IBoatOwnerService service)
+        public BoatOwnerController(SportsContext context, IBoatOwnerService boatOwnerService)
         {
             _context = context;
-            _service = service;
+            _boatOwnerService = boatOwnerService;
         }
 
         // GET: api/BoatOwner
@@ -110,7 +110,7 @@ namespace WebApplication.Controllers.RestApi
         {
             try
             {
-                var bookings = await _service.Bookings(id);
+                var bookings = await _boatOwnerService.Bookings(id);
                 return Ok(bookings);
             }
             catch (BusinessException)
@@ -124,7 +124,7 @@ namespace WebApplication.Controllers.RestApi
         {
             try
             {
-                var ongoingBookings = await _service.OngoingBookings(id);
+                var ongoingBookings = await _boatOwnerService.OngoingBookings(id);
                 return Ok(ongoingBookings);
             }
             catch (BusinessException)

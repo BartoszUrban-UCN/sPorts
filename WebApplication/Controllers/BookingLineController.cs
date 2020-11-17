@@ -15,12 +15,11 @@ namespace WebApplication.Controllers
     public class BookingLineController : Controller
     {
         private readonly SportsContext _context;
-        private readonly IBookingService _bookingService;
-
-        public BookingLineController(SportsContext context, IBookingService bookingService)
+        private readonly IBookingLineService _bookingLineService;
+        public BookingLineController(SportsContext context, IBookingLineService bookingLineService)
         {
             _context = context;
-            _bookingService = bookingService;
+            _bookingLineService = bookingLineService;
         }
         public async Task<IActionResult> Details(int id)
         {
@@ -35,28 +34,28 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
+        [Route("bookingline/{id}/addtime", Name="addtime")]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> Details(int id, int amount = 10)
+        public async Task<IActionResult> AddTime(int id, [Bind("amount")]int amount)
         {
-            var bookingLine = await _context.BookingLines
-                .FirstOrDefaultAsync(b => b.BookingLineId == id);
+            var success = await _bookingLineService.AddTime(id, amount);
 
-            if (bookingLine == null)
+            if (success)
             {
-                return NotFound();
+                return Content("Added");
             }
+            return Content("Not Added");
+        }
 
-            try
+        [Route("bookingline/{id}/cancel", Name="cancelbline")]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            var success = await _bookingLineService.CancelBookingLine(id);
+            if (success)
             {
-                _bookingService.AddTimeToBookingLine(bookingLine, amount);
-
-                return View(bookingLine);
-
+                return Content("Canceled!");
             }
-            catch (BusinessException)
-            {
-                return Content("Something bad happened.🤠");
-            }
+            return Content("Not Canceled!");
         }
     }
 }

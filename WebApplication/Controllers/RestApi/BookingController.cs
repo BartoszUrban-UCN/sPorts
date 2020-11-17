@@ -34,7 +34,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet("{id}")]
         public async Task<ActionResult<Booking>> GetBooking(int id)
         {
-            var booking = await _context.Bookings.FindAsync(id);
+            var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.BookingId == id);
 
             if (booking != null)
             {
@@ -70,6 +70,13 @@ namespace WebApplication.Controllers.RestApi
             }
 
             return NotFound();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<bool>> Cancel(int id)
+        {
+            var success = await _bookingService.CancelBooking(id);
+            return Ok(success);
         }
 
         [HttpPut("{id}/bookinglineconfirmation")]

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
+using System;
 
 namespace WebApplication.Controllers
 {
@@ -13,14 +14,14 @@ namespace WebApplication.Controllers
     public class BookingController : Controller
     {
         private readonly SportsContext _context;
-        private readonly IBookingConfirmationService _bookingConfirmationService;
         private readonly IBookingService _bookingService;
+        private readonly IBookingConfirmationService _bookingConfirmationService;
 
-        public BookingController(SportsContext context, IBookingService bookingService)
+        public BookingController(SportsContext context, IBookingService bookingService, IBookingConfirmationService bookingConfirmationService)
         {
             _context = context;
             _bookingService = bookingService;
-            _bookingConfirmationService = new BookingConfirmationService(_context);
+            _bookingConfirmationService = bookingConfirmationService;
         }
 
         // GET: Booking
@@ -40,7 +41,6 @@ namespace WebApplication.Controllers
             {
                 return NotFound();
             }
-
             return View(booking);
         }
 
@@ -173,7 +173,8 @@ namespace WebApplication.Controllers
 
             return View(bookingLines);
         }
-        [Route("Booking/{id}/BookingLines", Name = "blines")]
+
+        [Route("Booking/{id}/GetBookingLines", Name = "blines")]
         public async Task<IActionResult> GetBookingLines(int id)
         {
             try
@@ -185,6 +186,17 @@ namespace WebApplication.Controllers
             {
                 return View("Error");
             }
+        }
+
+        [Route("Booking/{id}/Cancel", Name = "cancel")]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            var success = await _bookingService.CancelBooking(id);
+            if (success)
+            {
+                return Content("Canceled!");
+            }
+            return Content("Not Canceled!");
         }
 
         private bool BookingExists(int id)

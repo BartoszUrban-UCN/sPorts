@@ -15,12 +15,11 @@ namespace WebApplication.Controllers
     public class BoatOwnerController : Controller
     {
         private readonly SportsContext _context;
-        private readonly IBoatOwnerService _service;
-
+        private readonly IBoatOwnerService _boatOwnerService;
         public BoatOwnerController(SportsContext context, IBoatOwnerService service)
         {
             _context = context;
-            _service = service;
+            _boatOwnerService = service;
         }
 
         public async Task<IActionResult> Index()
@@ -33,7 +32,7 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var bookings = await _service.Bookings(id);
+                var bookings = await _boatOwnerService.Bookings(id);
                 return View("~/Views/Booking/Index.cshtml", bookings);
             }
             catch (BusinessException)
@@ -46,7 +45,7 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var ongoingBookings = await _service.OngoingBookings(id);
+                var ongoingBookings = await _boatOwnerService.OngoingBookings(id);
                 return View("~/Views/Booking/Index.cshtml", ongoingBookings);
             }
             catch (BusinessException)
@@ -72,9 +71,9 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var boatOwner = await _service.FindBoatOwner(id);
-                ViewData["TotalSpent"] = _service.MoneySpent(boatOwner);
-                ViewData["TotalTime"] = _service.TotalTime(boatOwner);
+                var boatOwner = await _boatOwnerService.FindBoatOwner(id);
+                ViewData["TotalSpent"] = _boatOwnerService.MoneySpent(boatOwner);
+                ViewData["TotalTime"] = _boatOwnerService.TotalTime(boatOwner);
                 return View(boatOwner);
             }
             catch(BusinessException)

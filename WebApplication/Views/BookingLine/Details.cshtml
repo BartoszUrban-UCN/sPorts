@@ -49,7 +49,11 @@
     </dl>
 </div>
 <div>
-    <form method="POST">
+    <form asp-action="AddTime">
+         <div class="form-group">
+             <label class="control-label">Amount</label>
+             <input name="amount" class="form-control"/>
+         </div>
         <button type="submit" class="btn btn-primary">Add Time</button>
     </form>
     <a asp-action="Index">Back to List</a>

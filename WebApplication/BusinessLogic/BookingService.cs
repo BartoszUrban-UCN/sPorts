@@ -140,40 +140,55 @@ namespace WebApplication.BusinessLogic
 
         #endregion Store booking class & associated booking lines in db
 
-        public void AddTimeToBookingLine(BookingLine bookingLine, int seconds)
+        #region Delete booking files by referenceNo
+
+        public void DeleteBookingFiles(int bookingReferenceNo)
         {
-            if (bookingLine == null)
-            {
-                throw new BusinessException("bookingservice", "The parameter can't be null.");
-            }
-
-            if (seconds < 1)
-            {
-                throw new BusinessException("bookingservice", "The seconds provided is invalid.");
-            }
-
-            try
-            {
-                bookingLine.EndDate = bookingLine.EndDate.AddSeconds(seconds);
-                _context.SaveChangesAsync();
-            }
-            catch (Exception ex) when (ex is DbUpdateException || ex is DbUpdateConcurrencyException)
-            {
-                throw new BusinessException("bookingservice", "Exception when commiting to database.");
-            }
+            File.Delete($@"\{bookingReferenceNo}.pdf");
+            File.Delete($@"\{bookingReferenceNo}.txt");
         }
 
-        public async Task<IList<BookingLine>> GetBookingLines(int bookingId)
+        #endregion Delete booking files by referenceNo
+
+        public async Task<Booking> FindBooking(int id)
         {
-            var bookings = await _context.Bookings.Include(l => l.BookingLines).ToListAsync();
-            var booking = bookings.FirstOrDefault(b => b.BookingId == bookingId);
+            var booking = await _context.Bookings
+                                        .Include(b => b.BookingLines)
+                                        .FirstOrDefaultAsync(b => b.BookingId == id);
 
             if (booking == null)
             {
                 throw new BusinessException("bookingservice", "Booking was not found.");
             }
+            return booking;
+        }
 
-            return booking?.BookingLines;
+        public async Task<IEnumerable<BookingLine>> GetBookingLines(int id)
+        {
+            var booking = await FindBooking(id);
+            return booking.BookingLines;
+        }
+
+        public async Task<bool> CancelBooking(int id)
+        {
+            var success = false;
+            try
+            {
+                var booking = await FindBooking(id);
+
+                foreach (var bookingLine in booking.BookingLines)
+                {
+                    bookingLine.Ongoing = false;
+                }
+
+                var result = _context.SaveChanges();
+                success = result > 0;
+            }
+            catch (Exception ex) when (ex is DbUpdateException
+                                    || ex is DbUpdateConcurrencyException
+                                    || ex is BusinessException)
+            { }
+            return success;
         }
     }
 }
