@@ -23,7 +23,25 @@ namespace WebApplication.Controllers
         // GET: Marina
         public async Task<IActionResult> Index()
         {
-            var sportsContext = _context.Marinas.Include(m => m.Address).Include(m => m.MarinaOwner);
+            // TODO: Including all the spots might be a bit heavyweight on the system, but let's see if the delay is acceptable P.S. Need it for marina location generation
+            var sportsContext = _context.Marinas
+                .Include(m => m.Address)
+                .Include(m => m.MarinaOwner)
+                .Include(m => m.Location)
+                .Include(m => m.Spots)
+                    .ThenInclude(s => s.Location);
+
+            foreach (Marina marina in sportsContext.ToList())
+            {
+                if (marina.Location == null)
+                {
+                    if (MarinaHasSpotsLocations(marina))
+                    {
+                        await CalculateMarinaLocation(marina);
+                    }
+                }
+            }
+
             return View(await sportsContext.ToListAsync());
         }
 
@@ -39,6 +57,7 @@ namespace WebApplication.Controllers
                 .Include(m => m.Address)
                 .Include(m => m.MarinaOwner)
                 .FirstOrDefaultAsync(m => m.MarinaId == id);
+
             if (marina == null)
             {
                 return NotFound();
@@ -193,6 +212,69 @@ namespace WebApplication.Controllers
                 return View("_ListLayout", marinaList);
             }
             return View("Error");
+        }
+
+        public async Task<IActionResult> CreateAssignLocationToMarina(Marina marina)
+        {
+            string XLatitude = Request.Form["XLatitude"];
+            string YLongitude = Request.Form["YLongitude"];
+
+            Location spotLocation = new Location
+            {
+                XLatitude = Convert.ToDouble(XLatitude),
+                YLongitude = Convert.ToDouble(YLongitude)
+            };
+
+            var locationController = new LocationController(_context);
+            IActionResult result = await locationController.Create(spotLocation);
+
+            marina.LocationId = spotLocation.LocationId;
+
+            return result;
+        }
+
+        public bool MarinaHasSpotsLocations(Marina marina)
+        {
+            foreach (Spot spot in marina.Spots)
+            {
+                if (spot.LocationId != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public async Task<IActionResult> CalculateMarinaLocation(Marina marina)
+        {
+            double latitudeSum = 0;
+            double longitudeSum = 0;
+            double locationsTotal = 0;
+
+            foreach (Spot spot in marina.Spots)
+            {
+                if (spot.LocationId != null)
+                {
+                    locationsTotal += 1;
+                    latitudeSum += spot.Location.XLatitude;
+                    longitudeSum += spot.Location.YLongitude;
+                }
+            }
+
+            Location marinaLocation = new Location
+            {
+                XLatitude = latitudeSum / locationsTotal,
+                YLongitude = longitudeSum / locationsTotal,
+            };
+
+            var locationController = new LocationController(_context);
+            IActionResult result = await locationController.Create(marinaLocation);
+
+            marina.LocationId = marinaLocation.LocationId;
+            marina.Location = marinaLocation;
+
+            return result;
         }
     }
 }

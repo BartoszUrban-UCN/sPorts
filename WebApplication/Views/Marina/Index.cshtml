@@ -9,6 +9,15 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+@* Initialize map showing available and unavailable spots *@
+
+<div id="mapid" style="height: 600px; width: 700px"></div>
+<script src="~/js/leaflet_map.js"></script>
+<script>mymap.setView([56.2639, 9.5018], 7)</script>
+
+@* End of initialization *@
+
 <table class="table">
     <thead>
         <tr>
@@ -27,33 +36,76 @@
             <th>
                 @Html.DisplayNameFor(model => model.Address)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location.XLatitude)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location.YLongitude)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Facilities)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MarinaOwner.MarinaOwnerId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address.AddressId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MarinaId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MarinaId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MarinaId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Facilities)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MarinaOwner.MarinaOwnerId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address.AddressId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location.LocationId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location.XLatitude)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location.YLongitude)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.MarinaId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.MarinaId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.MarinaId">Delete</a>
+
+                    @if (item.Location != null)
+                    {
+                        <script>
+                            L.circle([@item.Location.XLatitude, @item.Location.YLongitude], {
+                                color: 'pink',
+                                fillColor: '#f03',
+                                fillOpacity: 0.5,
+                                radius: 10000
+                            }).addTo(mymap);
+                        </script>
+                    }
+
+                    @*@{
+                        foreach (Spot spot in item.Spots)
+                        {
+                            Console.WriteLine("Spot: " + spot.SpotId);
+
+                            if (spot.Location != null)
+                            {
+                                Console.WriteLine("Location: " + spot.Location.LocationId);
+                            }
+                        }
+                    }*@
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
