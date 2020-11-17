@@ -111,12 +111,12 @@ namespace WebApplication.Data
             {
                 var bookings = new Booking[]
                 {
-                    new Booking {BookingReferenceNo = 1, BoatId = 1, TotalPrice = 2},
-                    new Booking {BookingReferenceNo = 2, BoatId = 1, TotalPrice = 10},
-                    new Booking {BookingReferenceNo = 3, BoatId = 1, TotalPrice = 100},
-                    new Booking {BookingReferenceNo = 4, BoatId = 2, TotalPrice = 83},
-                    new Booking {BookingReferenceNo = 5, BoatId = 2, TotalPrice = 97},
-                    new Booking {BookingReferenceNo = 6, BoatId = 2, TotalPrice = 23}
+                    new Booking {BookingReferenceNo = 1, BoatId = 1, TotalPrice = 2, PaymentStatus = "not paid"},
+                    new Booking {BookingReferenceNo = 2, BoatId = 1, TotalPrice = 10, PaymentStatus = "not paid"},
+                    new Booking {BookingReferenceNo = 3, BoatId = 1, TotalPrice = 100, PaymentStatus = "not paid"},
+                    new Booking {BookingReferenceNo = 4, BoatId = 2, TotalPrice = 83, PaymentStatus = "not paid"},
+                    new Booking {BookingReferenceNo = 5, BoatId = 2, TotalPrice = 97, PaymentStatus = "not paid"},
+                    new Booking {BookingReferenceNo = 6, BoatId = 2, TotalPrice = 23, PaymentStatus = "not paid"}
                 };
 
                 context.Bookings.AddRange(bookings);

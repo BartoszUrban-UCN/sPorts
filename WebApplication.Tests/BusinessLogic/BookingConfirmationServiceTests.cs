@@ -15,7 +15,7 @@ namespace WebApplication.Tests.BusinessLogic
         public SharedDatabaseFixture Fixture { get; set; }
 
         [Fact]
-        public async void GetBookingsByMarinOwner_Expected18_Pass()
+        public async void GetBookingsByMarinOwner_Expected0_Pass()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -24,14 +24,14 @@ namespace WebApplication.Tests.BusinessLogic
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 3).FirstOrDefault();
 
                 List<BookingLine> marinaOwnerBookings = await service.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
-                int actual = marinaOwnerBookings.Count;
+                int actual = marinaOwnerBookings == null ? 0 : marinaOwnerBookings.Count;
 
                 Assert.Equal(expected, actual);
             }
         }
 
         [Fact]
-        public async void GetUnconfirmedBookingLines_Expected3_Pass()
+        public async void GetUnconfirmedBookingLines_Expected0_Pass()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -41,7 +41,7 @@ namespace WebApplication.Tests.BusinessLogic
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 3).FirstOrDefault();
 
                 List<BookingLine> spotsToConfirm = await service.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
-                int actual = spotsToConfirm.Count;
+                int actual = spotsToConfirm == null ? 0 : spotsToConfirm.Count;
 
                 Assert.Equal(expected, actual);
             }

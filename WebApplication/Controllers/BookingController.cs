@@ -151,18 +151,11 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-        public IActionResult Confirmation(int bookingLineId)
-        {
-            return Content("Hello World!");
-        }
-
-        [HttpPost, ActionName("Confirmation")]
-        [ValidateAntiForgeryToken]
+        [HttpPut]
         public async Task<IActionResult> ConfirmBookingLine(int bookingLineId)
         {
             var success = await _bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
-            return RedirectToAction(nameof(BookingsByMarinaOwner));
+            return Content(success.ToString());
         }
 
         /// <summary>
@@ -170,7 +163,7 @@ namespace WebApplication.Controllers
         /// </summary>
         /// <returns>View</returns>
         // GET: Booking/marinaowner
-        [Route("{controller}/marinaowner")]
+        [Route("{controller}/MarinaOwner")]
         public async Task<IActionResult> BookingsByMarinaOwner()
         {
 
@@ -180,7 +173,7 @@ namespace WebApplication.Controllers
 
             return View(bookingLines);
         }
-        [Route("Booking/{id}/GetBookingLines", Name="blines")] 
+        [Route("Booking/{id}/BookingLines", Name = "blines")]
         public async Task<IActionResult> GetBookingLines(int id)
         {
             try

@@ -110,21 +110,29 @@ namespace WebApplication.BusinessLogic
 
             using (SportsContext context = _context)
             {
-                context.Bookings.Add(booking);
-                booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
-
-                rowsAffected = await context.SaveChangesAsync();
-
-                context.Entry(booking.Boat).Reference(b => b.BoatOwner).Load();
-                context.Entry(booking.Boat.BoatOwner).Reference(b => b.Person).Load();
-                booking.BookingLines.ForEach(bl =>
+                try
                 {
-                    context.Entry(bl.Spot).Reference(s => s.Marina).Load();
-                    context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
-                    context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
-                    context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
+                    context.Bookings.Add(booking);
+                    booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
+
+                    rowsAffected = await context.SaveChangesAsync();
+
+                    context.Entry(booking.Boat).Reference(b => b.BoatOwner).Load();
+                    context.Entry(booking.Boat.BoatOwner).Reference(b => b.Person).Load();
+                    booking.BookingLines.ForEach(bl =>
+                    {
+                        context.Entry(bl.Spot).Reference(s => s.Marina).Load();
+                        context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
+                        context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
+                        context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
+                    }
+                    );
                 }
-                );
+                catch (Exception)
+                {
+
+                    throw;
+                }
             }
 
             return rowsAffected;

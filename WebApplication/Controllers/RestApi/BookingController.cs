@@ -73,9 +73,9 @@ namespace WebApplication.Controllers.RestApi
         }
 
         [HttpPut("{id}/bookinglineconfirmation")]
-        public async Task<ActionResult<bool>> ConfirmBookingLineById(int bookingLineId)
+        public async Task<ActionResult<bool>> ConfirmBookingLineById(int id)
         {
-            var success = await _bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
+            var success = await _bookingConfirmationService.ConfirmSpotBooked(id);
             return success;
         }
     }

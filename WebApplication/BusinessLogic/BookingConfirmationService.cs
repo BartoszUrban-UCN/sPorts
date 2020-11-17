@@ -51,7 +51,8 @@ namespace WebApplication.BusinessLogic
         {
             using (SportsContext context = _context)
             {
-                BookingLine bookingLine = _context.BookingLines.Find(bookingLineId);
+                BookingLine bookingLine = new BookingLine();
+                bookingLine = _context.BookingLines.Find(bookingLineId);
                 bookingLine.Confirmed = true;
                 var success = await _context.SaveChangesAsync() > 0;
                 SendConfirmationMail(bookingLine.BookingId);
@@ -61,7 +62,7 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         /// <summary>
-        /// After 72 hours, email with booking info is sent to boat owner's email
+        /// Email with booking info is sent to boat owner's email if something has changed in the booking
         /// </summary>
         #region After time left has been spent or all booking lines have been confirmed, send mail with booking information to boat owner
         public void SendConfirmationMail(int bookingId)
@@ -83,7 +84,8 @@ namespace WebApplication.BusinessLogic
 
             IPDFService<Booking> service = new BookingPDFService();
             service.CreatePDFFile(booking);
-            SendEmail(booking.BookingReferenceNo);
+            SendEmail(bookingReference: booking.BookingReferenceNo);
+            service.DeleteBookingFiles(booking.BookingReferenceNo);
         }
         #endregion
     }

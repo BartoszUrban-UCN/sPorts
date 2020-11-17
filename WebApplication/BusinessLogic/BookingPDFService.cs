@@ -24,7 +24,8 @@ namespace WebApplication.BusinessLogic
                                     $"Boat Owner - {booking.Boat?.BoatOwner?.Person?.Email}\n" +
                                     $"Boat - {booking.Boat?.Name}\n" +
                                     $"Payment Status - {booking.PaymentStatus}\n" +
-                                    $"Total Price: {booking.TotalPrice}\n";
+                                    $"Total Price: {booking.TotalPrice}\n" +
+                                    "--------------------------------------------------------\n";
             string bookingLinesData = "";
             booking.BookingLines.ForEach(bookingLine => bookingLinesData += ($"Item #{bookingLine.BookingLineId}\n" +
                                                                                 $"Marina Owner - {bookingLine.Spot?.Marina?.MarinaOwner?.Person?.Email}\n" +
@@ -45,30 +46,30 @@ namespace WebApplication.BusinessLogic
                 file.WriteLine(bookingLinesData);
             }
 
-            StreamReader readFile = new StreamReader($@"\{booking.BookingReferenceNo}.txt");
-
-            graph.DrawString($"Booking - {booking.BookingReferenceNo}", fontTitle, XBrushes.Black, new XRect(0, 20, page.Width.Point, page.Height.Point), XStringFormats.TopCenter);
-
-            int yPoint = 50;
-            string line = null;
-
-            while (true)
+            using (StreamReader readFile = new StreamReader($@"\{booking.BookingReferenceNo}.txt"))
             {
-                line = readFile.ReadLine();
-                if (line == null)
+                graph.DrawString($"Booking - {booking.BookingReferenceNo}", fontTitle, XBrushes.Black, new XRect(0, 20, page.Width.Point, page.Height.Point), XStringFormats.TopCenter);
+
+                int yPoint = 50;
+                string line = null;
+
+                while (true)
                 {
-                    break;
-                }
-                else
-                {
-                    graph.DrawString(line, font, XBrushes.Black, new XRect(20, yPoint, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
-                    yPoint += 20;
+                    line = readFile.ReadLine();
+                    if (line == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        graph.DrawString(line, font, XBrushes.Black, new XRect(20, yPoint, page.Width.Point, page.Height.Point), XStringFormats.TopLeft);
+                        yPoint += 20;
+                    }
                 }
             }
 
             string pdfFileName = booking.BookingReferenceNo.ToString();
             pdf.Save($@"\{pdfFileName}.pdf");
-            readFile.Close();
             pdf.Close();
         }
 
@@ -76,8 +77,14 @@ namespace WebApplication.BusinessLogic
 
         public void DeleteBookingFiles(int bookingReferenceNo)
         {
-            File.Delete($@"\{bookingReferenceNo}.pdf");
-            File.Delete($@"\{bookingReferenceNo}.txt");
+            var pathPdf = $@"\{bookingReferenceNo}.pdf";
+            var pathTxt = $@"\{bookingReferenceNo}.txt";
+
+            if (File.Exists(pathPdf))
+                File.Delete($@"\{bookingReferenceNo}.pdf");
+
+            if (File.Exists(pathTxt))
+                File.Delete($@"\{bookingReferenceNo}.txt");
         }
 
         #endregion Delete booking files by referenceNo

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
 
@@ -27,12 +28,14 @@ namespace WebApplication.BusinessLogic
                 mail.Subject = $"Booking - {bookingReference}";
                 mail.Body = "Document with information about your booking.";
 
-                if (bookingReference > 0)
+                var pathPdf = $@"\{bookingReference}.pdf";
+                var pathTxt = $@"\{bookingReference}.txt";
+                if (bookingReference > 0 && File.Exists(pathTxt) && File.Exists(pathPdf))
                 {
                     Attachment attachment;
-                    attachment = new Attachment($@"\{bookingReference}.pdf");
+                    attachment = new Attachment(pathTxt);
                     mail.Attachments.Add(attachment);
-                    attachment = new Attachment($@"\{bookingReference}.txt");
+                    attachment = new Attachment(pathPdf);
                     mail.Attachments.Add(attachment);
                 }
 
