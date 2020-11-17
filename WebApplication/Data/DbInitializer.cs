@@ -20,8 +20,10 @@ namespace WebApplication.Data
             {
                 var addresses = new Address[]
                 {
-                    new Address{Street="Amazing Drive"},
-                    new Address{Street="Not so Amazing Drive"},
+                    new Address{ City="Aalborg", Street="Amazing Drive", Country="Denmark", PostalCode="9000", State="Denmark" },
+                    new Address{ City="Aarhus", Street="Not so Amazing Drive", Country="Denmark", PostalCode="9000", State="Denmark" },
+                    new Address{ City="Copenhagen", Street="Not so Amazing Drive", Country="Denmark", PostalCode="9000", State="Denmark" },
+                    new Address{ City="Esbjerg", Street="Not so Amazing Drive", Country="Denmark", PostalCode="9000", State="Denmark" },
                 };
 
                 context.Addresses.AddRange(addresses);
@@ -58,8 +60,8 @@ namespace WebApplication.Data
             {
                 var marinaOwners = new MarinaOwner[]
                 {
-                    new MarinaOwner{PersonId=1 },
-                    new MarinaOwner{PersonId=2 },
+                    new MarinaOwner{ PersonId=1 },
+                    new MarinaOwner{ PersonId=2 },
                 };
 
                 context.MarinaOwners.AddRange(marinaOwners);
@@ -70,10 +72,10 @@ namespace WebApplication.Data
             {
                 var marinas = new Marina[]
                 {
-                    new Marina{Name="Hello", MarinaOwnerId=1 },
-                    new Marina{Name="Rocky Bay", MarinaOwnerId=1 },
-                    new Marina{Name="HELLO", MarinaOwnerId=2 },
-                    new Marina{Name="ROCKY BAY", MarinaOwnerId=2 }
+                    new Marina{ Name="Aalborg Marina", MarinaOwnerId=1, Description="Coolest marina", Facilities="none", AddressId=1 },
+                    new Marina{ Name="Aarhus Marina", MarinaOwnerId=1, Description="Some marina", Facilities="none", AddressId=2 },
+                    new Marina{ Name="Copenhagen Marina", MarinaOwnerId=2, Description="Some marina", Facilities="none", AddressId=3 },
+                    new Marina{ Name="Esbjerg Marina", MarinaOwnerId=2, Description="Some marina", Facilities="none", AddressId=4 },
                 };
 
                 context.Marinas.AddRange(marinas);
@@ -108,9 +110,9 @@ namespace WebApplication.Data
             {
                 var spots = new Spot[]
                 {
-                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00, LocationId = 1 },
-                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 40.00, LocationId = 2 },
-                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 30.00}
+                    new Spot{ SpotNumber = 1, MarinaId = 4, Available = true, Price = 50.00, LocationId = 1 },
+                    new Spot{ SpotNumber = 2, MarinaId = 4, Available = true, Price = 40.00, LocationId = 2 },
+                    new Spot{ SpotNumber = 3, MarinaId = 4, Available = true, Price = 30.00}
                 };
 
                 context.Spots.AddRange(spots);
