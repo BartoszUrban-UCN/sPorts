@@ -27,6 +27,7 @@ namespace WebApplication.Controllers
             var sportsContext = _context.Spots
                 .Include(spot => spot.Marina);
 
+            // TODO: The loading of the Locations could be replaced by a ViewBag, just like Marina uses (see line 87 for example)
             foreach (Spot spot in sportsContext)
             {
                 _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
@@ -47,6 +48,8 @@ namespace WebApplication.Controllers
                 .Include(s => s.Marina)
                 .FirstOrDefaultAsync(m => m.SpotId == id);
 
+            // Location related to the spot is loaded
+            // TODO: Could have probably been done by using ThenInclude directly in the spot
             _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
 
             if (spot == null)
@@ -74,8 +77,10 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (SpotLocationValid())
+                // If user has chosen a location for the spot by using the Leaflet map
+                if (SpotLocationIsSelected())
                 {
+                    // Create related data (Location) for the Spot and assign the newly created Location to the Spot
                     await CreateAssignLocationToSpot(spot);
                 }
 
@@ -104,7 +109,6 @@ namespace WebApplication.Controllers
             }
 
             _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
-
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
@@ -125,9 +129,29 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    if (SpotLocationValid())
+                    // If user has chosen a location for the spot by using the Leaflet map
+                    if (SpotLocationIsSelected())
                     {
-                        await UpdateSpotLocation(spot);
+                        // Either update the location linked to the spot with the new data
+                        if (spot.LocationId != null)
+                        {
+                            await UpdateSpotLocation(spot);
+                        }
+                        // Or create related data (Location) for the Spot and assign the newly created Location to the Spot
+                        else
+                        {
+                            await CreateAssignLocationToSpot(spot);
+                        }
+                    }
+                    // But if the spot does not have a location now
+                    else
+                    {
+                        // And if the spot has had a location assigned to it before but now the user removed it
+                        if (spot.LocationId != null)
+                        {
+                            // Delete the spot's location
+                            await DeleteSpotLocation(spot);
+                        }
                     }
 
                     _context.Update(spot);
@@ -146,6 +170,7 @@ namespace WebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
@@ -161,6 +186,7 @@ namespace WebApplication.Controllers
             var spot = await _context.Spots
                 .Include(s => s.Marina)
                 .FirstOrDefaultAsync(m => m.SpotId == id);
+
             if (spot == null)
             {
                 return NotFound();
@@ -175,8 +201,13 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var spot = await _context.Spots.FindAsync(id);
+
+            // TODO: This deletion type could be replaced by a delete on cascade (Spot -> Location)
+            await DeleteSpotLocation(spot);
+
             _context.Spots.Remove(spot);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -209,7 +240,7 @@ namespace WebApplication.Controllers
             return View("Error");
         }
 
-        public bool SpotLocationValid()
+        public bool SpotLocationIsSelected()
         {
             String XLatitude = Request.Form["XLatitude"];
             String YLongitude = Request.Form["YLongitude"];
@@ -253,6 +284,18 @@ namespace WebApplication.Controllers
 
             var locationController = new LocationController(_context);
             IActionResult result = await locationController.Edit(spotLocation.LocationId, spotLocation);
+
+            return result;
+        }
+
+        public async Task<IActionResult> DeleteSpotLocation(Spot spot)
+        {
+            Location spotLocation = _context.Locations.Find(spot.LocationId);
+
+            var locationController = new LocationController(_context);
+            IActionResult result = await locationController.Delete(spot.LocationId);
+
+            spot.LocationId = null;
 
             return result;
         }
