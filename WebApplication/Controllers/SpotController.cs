@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -15,25 +15,20 @@ namespace WebApplication.Controllers
     public class SpotController : Controller
     {
         private readonly SportsContext _context;
+        private readonly ISpotService _spotService;
+        private readonly ILocationService _locationService;
 
-        public SpotController(SportsContext context)
+        public SpotController(SportsContext context, ISpotService spotService, ILocationService locationService)
         {
             _context = context;
+            _spotService = spotService;
+            _locationService = locationService;
         }
 
         // GET: Spot
         public async Task<IActionResult> Index()
         {
-            var sportsContext = _context.Spots
-                .Include(spot => spot.Marina);
-
-            // TODO: The loading of the Locations could be replaced by a ViewBag, just like Marina uses (see line 87 for example)
-            foreach (Spot spot in sportsContext)
-            {
-                _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
-            }
-
-            return View(await sportsContext.ToListAsync());
+            return View(await _spotService.GetAll());
         }
 
         // GET: Spot/Details/5
@@ -44,13 +39,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var spot = await _context.Spots
-                .Include(s => s.Marina)
-                .FirstOrDefaultAsync(m => m.SpotId == id);
-
-            // Location related to the spot is loaded
-            // TODO: Could have probably been done by using ThenInclude directly in the spot
-            _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
+            var spot = await _spotService.GetSingle(id);
 
             if (spot == null)
             {
@@ -69,7 +58,7 @@ namespace WebApplication.Controllers
         }
 
         // POST: Spot/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -77,19 +66,27 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                // If user has chosen a location for the spot by using the Leaflet map
-                if (SpotLocationIsSelected())
+                try
                 {
-                    // Create related data (Location) for the Spot and assign the newly created Location to the Spot
-                    await CreateAssignLocationToSpot(spot);
+                    // If user has chosen a location for the spot by using the Leaflet map
+                    if (SpotLocationIsSelected())
+                    {
+                        // Create related data (Location) for the Spot and assign the newly created Location to the Spot
+                        var location = GetLocationData();
+                        await _spotService.CreateWithLocation(spot, location);
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    await _spotService.Create(spot);
+                    return RedirectToAction(nameof(Index));
                 }
-
-                _context.Add(spot);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                catch (BusinessException exception)
+                {
+                    ModelState.TryAddModelError(exception.Key, exception.Message);
+                }
             }
-            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
 
+            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 
@@ -114,7 +111,7 @@ namespace WebApplication.Controllers
         }
 
         // POST: Spot/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -140,7 +137,7 @@ namespace WebApplication.Controllers
                         // Or create related data (Location) for the Spot and assign the newly created Location to the Spot
                         else
                         {
-                            await CreateAssignLocationToSpot(spot);
+                            //await CreateAssignLocationToSpot(spot);
                         }
                     }
                     // But if the spot does not have a location now
@@ -253,7 +250,7 @@ namespace WebApplication.Controllers
             return true;
         }
 
-        public async Task<IActionResult> CreateAssignLocationToSpot(Spot spot)
+        private Location GetLocationData()
         {
             string XLatitude = Request.Form["XLatitude"];
             string YLongitude = Request.Form["YLongitude"];
@@ -264,12 +261,7 @@ namespace WebApplication.Controllers
                 YLongitude = Convert.ToDouble(YLongitude)
             };
 
-            var locationController = new LocationController(_context);
-            IActionResult result = await locationController.Create(spotLocation);
-
-            spot.LocationId = spotLocation.LocationId;
-
-            return result;
+            return spotLocation;
         }
 
         public async Task<IActionResult> UpdateSpotLocation(Spot spot)
