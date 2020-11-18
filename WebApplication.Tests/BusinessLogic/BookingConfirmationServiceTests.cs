@@ -10,39 +10,49 @@ namespace WebApplication.Tests.BusinessLogic
 {
     public class BookingConfirmationServiceTests : IClassFixture<SharedDatabaseFixture>, IDisposable
     {
-        public BookingConfirmationServiceTests(SharedDatabaseFixture fixture) => Fixture = fixture;
+        public BookingConfirmationServiceTests(SharedDatabaseFixture fixture)
+        {
+            Fixture = fixture;
+            GenerateBookingData.Fixture = Fixture;
+        }
 
-        public SharedDatabaseFixture Fixture { get; set; }
+        public SharedDatabaseFixture Fixture { get; }
 
         [Fact]
-        public async void GetBookingsByMarinOwner_Expected0_Pass()
+        public async void GetBookingsByMarinOwner_Expected2_Pass()
         {
             using (var context = Fixture.CreateContext())
             {
-                int expected = 0;
+                int expected = 2;
                 IBookingConfirmationService service = new BookingConfirmationService(context);
-                MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 3).FirstOrDefault();
+                Marina marina = context.Marinas.Find(1);
+                MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
+                bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
 
                 List<BookingLine> marinaOwnerBookings = await service.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
                 int actual = marinaOwnerBookings == null ? 0 : marinaOwnerBookings.Count;
 
+                Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
         }
 
         [Fact]
-        public async void GetUnconfirmedBookingLines_Expected0_Pass()
+        public async void GetUnconfirmedBookingLines_Expected2_Pass()
         {
             using (var context = Fixture.CreateContext())
             {
-                //await new BookingServiceTest(context).CreateBookingWithThreeSpotsInDifferentMarinas();
-                int expected = 0;
+
+                int expected = 2;
                 IBookingConfirmationService service = new BookingConfirmationService(context);
-                MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 3).FirstOrDefault();
+                Marina marina = context.Marinas.Find(1);
+                MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
+                bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
 
                 List<BookingLine> spotsToConfirm = await service.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
                 int actual = spotsToConfirm == null ? 0 : spotsToConfirm.Count;
 
+                Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
         }
@@ -64,7 +74,7 @@ namespace WebApplication.Tests.BusinessLogic
 
         public void Dispose()
         {
-            // delete created bookings
+            GenerateBookingData.DeleteBooking();
         }
     }
 }

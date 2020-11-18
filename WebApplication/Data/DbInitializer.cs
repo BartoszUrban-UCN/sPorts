@@ -76,9 +76,9 @@ namespace WebApplication.Data
                 var marinas = new Marina[]
                 {
                     new Marina{ Name="Aalborg Marina", MarinaOwnerId=1, Description="Coolest marina", Facilities="none", AddressId=1 },
-                    new Marina{ Name="Aarhus Marina", MarinaOwnerId=1, Description="Some marina", Facilities="none", AddressId=2 },
-                    new Marina{ Name="Copenhagen Marina", MarinaOwnerId=2, Description="Some marina", Facilities="none", AddressId=3 },
-                    new Marina{ Name="Esbjerg Marina", MarinaOwnerId=2, Description="Some marina", Facilities="none", AddressId=4 },
+                    new Marina{ Name="Aarhus Marina", MarinaOwnerId=2, Description="Some marina", Facilities="none", AddressId=2 },
+                    new Marina{ Name="Copenhagen Marina", MarinaOwnerId=3, Description="Some marina", Facilities="none", AddressId=3 },
+                    new Marina{ Name="Esbjerg Marina", MarinaOwnerId=1, Description="Some marina", Facilities="none", AddressId=4 },
                 };
 
                 context.Marinas.AddRange(marinas);
