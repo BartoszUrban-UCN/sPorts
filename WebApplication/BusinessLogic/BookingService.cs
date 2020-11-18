@@ -9,7 +9,7 @@ using static WebApplication.BusinessLogic.EmailService;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingService : IBookingService
+    public class BookingService : IBookingService, ICRUD<Booking>
     {
         private readonly SportsContext _context;
 
@@ -24,7 +24,7 @@ namespace WebApplication.BusinessLogic
             // get booking lines from the booking
             List<BookingLine> bookingLines = booking.BookingLines;
 
-            if (bookingLines.Count > 0)
+            if (bookingLines?.Count > 0)
             {
                 // calculate total price
                 double totalPrice = 0;
@@ -162,6 +162,36 @@ namespace WebApplication.BusinessLogic
                                     || ex is BusinessException)
             { }
             return success;
+        }
+
+        public Task<int> Create(Booking objectToCreate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Booking> GetSingle(int? id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Booking>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Booking> Update(Booking objectToUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Delete(int? id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> Exists(int? id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

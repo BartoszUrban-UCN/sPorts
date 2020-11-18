@@ -26,7 +26,9 @@ namespace WebApplication.Tests.Utils
             using (var context = Fixture.CreateContext())
             {
                 IBookingService bookingService = new BookingService(context);
-                return await bookingService.CreateBooking(null, null, null);
+                Booking booking = new Booking();
+                booking.BookingLines = new List<BookingLine>();
+                return await bookingService.CreateBooking(booking);
             }
         }
 
@@ -42,8 +44,10 @@ namespace WebApplication.Tests.Utils
                 Dictionary<DateTime[], Spot> marinaSpotStayDates = new Dictionary<DateTime[], Spot>() {
                     { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot }
                 };
+                Booking booking = new Booking { Boat = boat };
+                booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.CreateBooking(boatOwner, boat, marinaSpotStayDates);
+                return await bookingService.CreateBooking(booking);
             }
         }
 
@@ -61,8 +65,10 @@ namespace WebApplication.Tests.Utils
                     { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot1 },
                     { new DateTime[2] { DateTime.Now.AddDays(1), DateTime.Now.AddDays(2) }, spot2 }
                 };
+                Booking booking = new Booking { Boat = boat };
+                booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.CreateBooking(boatOwner, boat, marinaSpotStayDates);
+                return await bookingService.CreateBooking(booking);
             }
         }
 
@@ -83,8 +89,10 @@ namespace WebApplication.Tests.Utils
                     { new DateTime[2] { DateTime.Now.AddDays(1), DateTime.Now.AddDays(2) }, spot2 },
                     { new DateTime[2] { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) }, spot3 }
                 };
+                Booking booking = new Booking { Boat = boat };
+                booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.CreateBooking(boatOwner, boat, marinaSpotStayDates);
+                return await bookingService.CreateBooking(booking);
             }
         }
 

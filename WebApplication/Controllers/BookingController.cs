@@ -63,8 +63,6 @@ namespace WebApplication.Controllers
             {
                 booking.BookingLines = _bookingService.CreateBookingLines(marinaSpotStayDates);
                 await _bookingService.CreateBooking(booking);
-                _context.Add(booking);
-                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["BoatId"] = new SelectList(_context.Boats, "BoatId", "BoatId", booking.BoatId);
