@@ -246,24 +246,18 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> CalculateMarinaLocation(Marina marina)
         {
-            double latitudeSum = 0;
-            double longitudeSum = 0;
-            double locationsTotal = 0;
+            IList<Point> locations = new List<Point>();
 
-            foreach (Spot spot in marina.Spots)
-            {
-                if (spot.LocationId != null)
-                {
-                    locationsTotal += 1;
-                    latitudeSum += spot.Location.XLatitude;
-                    longitudeSum += spot.Location.YLongitude;
-                }
-            }
+            marina.Spots
+                .FindAll(spot => spot.LocationId != null)
+                .ForEach(spot => locations.Add(new Point(spot.Location.XLatitude, spot.Location.YLongitude)));
+
+            Circle circle = SmallestEnclosingCircle.MakeCircle(locations);
 
             Location marinaLocation = new Location
             {
-                XLatitude = latitudeSum / locationsTotal,
-                YLongitude = longitudeSum / locationsTotal,
+                XLatitude = circle.c.x,
+                YLongitude = circle.c.y
             };
 
             var locationController = new LocationController(_context);
