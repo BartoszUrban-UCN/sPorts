@@ -18,14 +18,16 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> Create(Spot spot)
         {
-            _context.Add(spot);
+            _context.Spots.Add(spot);
             await _context.SaveChangesAsync();
             return spot.SpotId;
         }
 
-        public Task Delete(int? idOfTheObjectToDelete)
+        public async Task Delete(int? spotId)
         {
-            throw new System.NotImplementedException();
+            var location = await _context.Spots.FindAsync(spotId);
+            _context.Spots.Remove(location);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Spot>> GetAll()
@@ -42,7 +44,7 @@ namespace WebApplication.BusinessLogic
             var spot = _context.Spots
                 .Include(s => s.Marina)
                 .Include(s => s.Location)
-                .FirstOrDefaultAsync(m => m.SpotId == id);
+                .FirstOrDefaultAsync(s => s.SpotId == id);
 
             return await spot;
         }

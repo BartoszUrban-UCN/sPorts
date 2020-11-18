@@ -17,7 +17,7 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> Create(Location location)
         {
-            _context.Add(location);
+            _context.Locations.Add(location);
             await _context.SaveChangesAsync();
             return location.LocationId;
         }
