@@ -47,14 +47,16 @@ namespace WebApplication.BusinessLogic
             return await spot;
         }
 
-        public Task<Spot> Update(Spot objectToUpdate)
+        public async Task<Spot> Update(Spot spot)
         {
-            throw new System.NotImplementedException();
+            _context.Update(spot);
+            await _context.SaveChangesAsync();
+            return spot;
         }
 
         public Task<bool> Exists(int? id)
         {
-            throw new System.NotImplementedException();
+            return _context.Spots.AnyAsync(l => l.SpotId == id);
         }
 
         public async Task<int> CreateWithLocation(Spot spot, Location location)
