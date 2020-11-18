@@ -14,15 +14,11 @@ namespace WebApplication.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class SpotController : Controller
     {
-        private readonly SportsContext _context;
         private readonly ISpotService _spotService;
-        private readonly ILocationService _locationService;
 
-        public SpotController(SportsContext context, ISpotService spotService, ILocationService locationService)
+        public SpotController(SportsContext context, ISpotService spotService)
         {
-            _context = context;
             _spotService = spotService;
-            _locationService = locationService;
         }
 
         // GET: Spot
@@ -50,10 +46,9 @@ namespace WebApplication.Controllers
         }
 
         // GET: Spot/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId");
-
+            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId");
             return View();
         }
 
@@ -86,7 +81,7 @@ namespace WebApplication.Controllers
                 }
             }
 
-            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
+            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 
@@ -98,15 +93,14 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var spot = await _context.Spots.FindAsync(id);
+            var spot = await _spotService.GetSingle(id);
 
             if (spot == null)
             {
                 return NotFound();
             }
 
-            _context.Locations.Where(location => location.LocationId == spot.LocationId).Load();
-            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
+            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 
@@ -130,15 +124,9 @@ namespace WebApplication.Controllers
                     if (SpotLocationIsSelected())
                     {
                         // Either update the location linked to the spot with the new data
-                        if (spot.LocationId != null)
-                        {
-                            await UpdateSpotLocation(spot);
-                        }
                         // Or create related data (Location) for the Spot and assign the newly created Location to the Spot
-                        else
-                        {
-                            //await CreateAssignLocationToSpot(spot);
-                        }
+                        var location = GetLocationData();
+                        await _spotService.UpdateSpotLocation(spot, location);
                     }
                     // But if the spot does not have a location now
                     else
@@ -147,16 +135,15 @@ namespace WebApplication.Controllers
                         if (spot.LocationId != null)
                         {
                             // Delete the spot's location
-                            await DeleteSpotLocation(spot);
+                            await _spotService.DeleteSpotLocation(spot);
                         }
                     }
 
-                    _context.Update(spot);
-                    await _context.SaveChangesAsync();
+                    await _spotService.Update(spot);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SpotExists(spot.SpotId))
+                    if (!await SpotExists(spot.SpotId))
                     {
                         return NotFound();
                     }
@@ -168,7 +155,7 @@ namespace WebApplication.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["MarinaId"] = new SelectList(_context.Marinas, "MarinaId", "MarinaId", spot.MarinaId);
+            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 
@@ -180,9 +167,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var spot = await _context.Spots
-                .Include(s => s.Marina)
-                .FirstOrDefaultAsync(m => m.SpotId == id);
+            var spot = await _spotService.GetSingle(id);
 
             if (spot == null)
             {
@@ -197,20 +182,15 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var spot = await _context.Spots.FindAsync(id);
-
             // TODO: This deletion type could be replaced by a delete on cascade (Spot -> Location)
-            await DeleteSpotLocation(spot);
-
-            _context.Spots.Remove(spot);
-            await _context.SaveChangesAsync();
+            await _spotService.Delete(id);
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool SpotExists(int id)
+        private async Task<bool> SpotExists(int id)
         {
-            return _context.Spots.Any(e => e.SpotId == id);
+            return await _spotService.Exists(id);
         }
 
         [Route("spot/{id}")]
@@ -218,7 +198,8 @@ namespace WebApplication.Controllers
         {
             ViewData["ViewName"] = "Spot";
 
-            var spot = _context.Spots.FindAsync(id);
+            var spot = _spotService.GetSingle(id);
+
             var spotList = new List<Spot>();
             spotList.Add(await spot);
 
@@ -227,8 +208,8 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> Marina(int id)
         {
-            var spotsWithMarina = await _context.Spots.Include(s => s.Marina).ToListAsync();
-            var spot = spotsWithMarina.Find(spot => spot.SpotId == id);
+            var spotsWithMarina = await _spotService.GetAll();
+            var spot = spotsWithMarina.ToList().Find(spot => spot.SpotId == id);
 
             if (spot != null)
             {
@@ -262,34 +243,6 @@ namespace WebApplication.Controllers
             };
 
             return spotLocation;
-        }
-
-        public async Task<IActionResult> UpdateSpotLocation(Spot spot)
-        {
-            string XLatitude = Request.Form["XLatitude"];
-            string YLongitude = Request.Form["YLongitude"];
-
-            Location spotLocation = _context.Locations.Find(spot.LocationId);
-
-            spotLocation.XLatitude = Convert.ToDouble(XLatitude);
-            spotLocation.YLongitude = Convert.ToDouble(YLongitude);
-
-            var locationController = new LocationController(_context);
-            IActionResult result = await locationController.Edit(spotLocation.LocationId, spotLocation);
-
-            return result;
-        }
-
-        public async Task<IActionResult> DeleteSpotLocation(Spot spot)
-        {
-            Location spotLocation = _context.Locations.Find(spot.LocationId);
-
-            var locationController = new LocationController(_context);
-            IActionResult result = await locationController.Delete(spot.LocationId);
-
-            spot.LocationId = null;
-
-            return result;
         }
     }
 }

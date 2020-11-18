@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Data;
+using WebApplication.BusinessLogic;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
     public class LocationController : Controller
     {
-        private readonly SportsContext _context;
+        private readonly ILocationService _service;
 
-        public LocationController(SportsContext context)
+        public LocationController(ILocationService service)
         {
-            _context = context;
+            _service = service;
         }
 
         // GET: Location
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Locations.ToListAsync());
+            return View(await _service.GetAll());
         }
 
         // GET: Location/Details/5
@@ -33,8 +28,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var location = await _context.Locations
-                .FirstOrDefaultAsync(m => m.LocationId == id);
+            var location = await _service.GetSingle(id);
             if (location == null)
             {
                 return NotFound();
@@ -50,7 +44,7 @@ namespace WebApplication.Controllers
         }
 
         // POST: Location/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -58,9 +52,15 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(location);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _service.Create(location);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (BusinessException exception)
+                {
+                    ModelState.TryAddModelError(exception.Key, exception.Message);
+                }
             }
             return View(location);
         }
@@ -73,7 +73,8 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var location = await _context.Locations.FindAsync(id);
+            var location = await _service.GetSingle(id);
+
             if (location == null)
             {
                 return NotFound();
@@ -82,7 +83,7 @@ namespace WebApplication.Controllers
         }
 
         // POST: Location/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -97,18 +98,17 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    _context.Update(location);
-                    await _context.SaveChangesAsync();
+                    await _service.Update(location);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (BusinessException ex)
                 {
-                    if (!LocationExists(location.LocationId))
+                    if (!await LocationExists(location.LocationId))
                     {
                         return NotFound();
                     }
                     else
                     {
-                        throw;
+                        ModelState.TryAddModelError(ex.Key, ex.Message);
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -124,8 +124,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var location = await _context.Locations
-                .FirstOrDefaultAsync(m => m.LocationId == id);
+            var location = await _service.GetSingle(id);
             if (location == null)
             {
                 return NotFound();
@@ -139,15 +138,13 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var location = await _context.Locations.FindAsync(id);
-            _context.Locations.Remove(location);
-            await _context.SaveChangesAsync();
+            await _service.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LocationExists(int id)
+        private async Task<bool> LocationExists(int id)
         {
-            return _context.Locations.Any(e => e.LocationId == id);
+            return await _service.Exists(id);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace WebApplication.BusinessLogic
         public async Task<Location> GetSingle(int? id)
         {
             return await _context.Locations
-                .FirstOrDefaultAsync(m => m.LocationId == id);
+                .FindAsync(id);
         }
 
         public async Task<Location> Update(Location location)

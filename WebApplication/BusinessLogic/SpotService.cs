@@ -23,20 +23,7 @@ namespace WebApplication.BusinessLogic
             return spot.SpotId;
         }
 
-        public async Task<int> CreateWithLocation(Spot spot, Location location)
-        {
-            var locationId = _locationService.Create(location);
-            spot.LocationId = await locationId;
-
-            return await Create(spot);
-        }
-
         public Task Delete(int? idOfTheObjectToDelete)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task DeleteSpotLocation(Spot spot)
         {
             throw new System.NotImplementedException();
         }
@@ -65,14 +52,38 @@ namespace WebApplication.BusinessLogic
             throw new System.NotImplementedException();
         }
 
-        public Task<Spot> UpdateSpotLocation(Spot spot)
+        public Task<bool> Exists(int? id)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> Exists(int? id)
+        public async Task<int> CreateWithLocation(Spot spot, Location location)
         {
-            throw new System.NotImplementedException();
+            var locationId = _locationService.Create(location);
+            spot.LocationId = await locationId;
+
+            return await Create(spot);
+        }
+
+        public async Task<Spot> UpdateSpotLocation(Spot spot, Location location)
+        {
+            if (spot.LocationId == null)
+            {
+                spot.LocationId = await _locationService.Create(location);
+            }
+            else
+            {
+                _context.Update(location);
+            }
+
+            //await _context.SaveChangesAsync();
+
+            return spot;
+        }
+
+        public async Task DeleteSpotLocation(Spot spot)
+        {
+            await _locationService.Delete(spot.LocationId);
         }
     }
 }
