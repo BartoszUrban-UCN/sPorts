@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
@@ -55,12 +57,11 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookingId,BookingReferenceNo,TotalPrice,PaymentStatus,BoatId")] Booking booking)
+        public async Task<IActionResult> Create([Bind("BookingId,BookingReferenceNo,TotalPrice,PaymentStatus,BoatId")] Booking booking, Dictionary<DateTime[], Spot> marinaSpotStayDates)
         {
-            //Dictionary<DateTime[], Spot> marinaSpotStayDates
             if (ModelState.IsValid)
             {
-                //await _bookingService.CreateBookingLines();
+                booking.BookingLines = _bookingService.CreateBookingLines(marinaSpotStayDates);
                 await _bookingService.CreateBooking(booking);
                 _context.Add(booking);
                 await _context.SaveChangesAsync();
