@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
 {
@@ -14,35 +15,31 @@ namespace WebApplication.Controllers
     public class MarinaController : Controller
     {
         private readonly SportsContext _context;
+        private readonly IMarinaService _marinaService;
 
-        public MarinaController(SportsContext context)
+        public MarinaController(SportsContext context, IMarinaService marinaService)
         {
             _context = context;
+            _marinaService = marinaService;
         }
 
         // GET: Marina
         public async Task<IActionResult> Index()
         {
-            // TODO: Including all the spots might be a bit heavyweight on the system, but let's see if the delay is acceptable P.S. Need it for marina location generation
-            var sportsContext = _context.Marinas
-                .Include(m => m.Address)
-                .Include(m => m.MarinaOwner)
-                .Include(m => m.Location)
-                .Include(m => m.Spots)
-                    .ThenInclude(s => s.Location);
+            
 
-            foreach (Marina marina in sportsContext.ToList())
-            {
-                if (marina.Location == null)
-                {
-                    if (MarinaHasSpotsLocations(marina))
-                    {
-                        await CalculateMarinaLocation(marina);
-                    }
-                }
-            }
+            //foreach (Marina marina in sportsContext.ToList())
+            //{
+            //    if (marina.Location == null)
+            //    {
+            //        if (MarinaHasSpotsLocations(marina))
+            //        {
+            //            CalculateMarinaLocation(marina);
+            //        }
+            //    }
+            //}
 
-            return View(await sportsContext.ToListAsync());
+            return View(await _marinaService.GetAll());
         }
 
         // GET: Marina/Details/5
@@ -240,29 +237,6 @@ namespace WebApplication.Controllers
             }
 
             return false;
-        }
-
-        public async Task CalculateMarinaLocation(Marina marina)
-        {
-            IList<Point> locations = new List<Point>();
-
-            marina.Spots
-                .FindAll(spot => spot.LocationId != null)
-                .ForEach(spot => locations.Add(new Point(spot.Location.XLatitude, spot.Location.YLongitude)));
-
-            Circle circle = SmallestEnclosingCircle.MakeCircle(locations);
-
-            Location marinaLocation = new Location
-            {
-                XLatitude = circle.c.x,
-                YLongitude = circle.c.y
-            };
-
-            //var locationController = new LocationController(_context);
-            //IActionResult result = await locationController.Create(marinaLocation);
-
-            marina.LocationId = marinaLocation.LocationId;
-            marina.Location = marinaLocation;
         }
     }
 }

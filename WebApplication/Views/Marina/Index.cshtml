@@ -51,6 +51,16 @@
     <tbody>
         @foreach (var item in Model)
         {
+            Circle marinaCircleDisplay;
+            marinaCircleDisplay.c.x = 0;
+            marinaCircleDisplay.c.y = 0;
+            marinaCircleDisplay.r = 0;
+
+            if (item.LocationId == null && item.Spots.Count > 0)
+            {
+                marinaCircleDisplay = WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(item);
+            }
+
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
@@ -68,7 +78,7 @@
                     @Html.DisplayFor(modelItem => item.Address.AddressId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Location.LocationId)
+                    @Html.DisplayFor(modelItem => item.LocationId)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Location.XLatitude)
@@ -83,27 +93,29 @@
 
                     @if (item.Location != null)
                     {
-                        <script>
-                            L.circle([@item.Location.XLatitude, @item.Location.YLongitude], {
-                                color: 'pink',
-                                fillColor: '#f03',
-                                fillOpacity: 0.5,
-                                radius: 10000
-                            }).addTo(mymap);
-                        </script>
-                    }
-
-                    @*@{
-                        foreach (Spot spot in item.Spots)
+                        if (item.LocationId != null)
                         {
-                            Console.WriteLine("Spot: " + spot.SpotId);
-
-                            if (spot.Location != null)
-                            {
-                                Console.WriteLine("Location: " + spot.Location.LocationId);
-                            }
+                            <script>
+                                L.circle([@item.Location.XLatitude, @item.Location.YLongitude], {
+                                    color: 'pink',
+                                    fillColor: '#f03',
+                                    fillOpacity: 0.5,
+                                    radius: 10000
+                                }).addTo(mymap);
+                            </script>
                         }
-                    }*@
+                        else
+                        {
+                            <script>
+                                L.circle([@marinaCircleDisplay.c.x, @marinaCircleDisplay.c.y], {
+                                    color: 'pink',
+                                    fillColor: '#f03',
+                                    fillOpacity: 0.5,
+                                    radius: @(marinaCircleDisplay.r * 80000)
+                                }).addTo(mymap);
+                            </script>
+                        }
+                    }
                 </td>
             </tr>
         }
