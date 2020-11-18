@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.Tests.Utils;
 using Xunit;
@@ -43,6 +42,7 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid@email.com", Password = "123456" };
 
                     // Act Assert
+                    Assert.True(await service.CreatePerson(person));
                     await Assert.ThrowsAsync<BusinessException>(() => service.CreatePerson(person));
                 }
             }
