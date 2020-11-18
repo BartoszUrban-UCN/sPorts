@@ -59,6 +59,11 @@
             if (item.LocationId == null && item.Spots.Count > 0)
             {
                 marinaCircleDisplay = WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(item);
+
+                if (marinaCircleDisplay.r * 80000 < 10000)
+                {
+                    marinaCircleDisplay.r = 10000;
+                }
             }
 
             <tr>
@@ -101,18 +106,27 @@
                                     fillColor: '#f03',
                                     fillOpacity: 0.5,
                                     radius: 10000
-                                }).addTo(mymap);
+                                }).bindTooltip("text").openTooltip().addTo(mymap);
                             </script>
                         }
                         else
                         {
                             <script>
+
+                                var marinaPopup = '\
+                                    <div class="text-center" style="width: 100px">\
+                                        <p style="font-weight: bold">@item.Name</p>\
+                                        <a href="Marina/Details/@item.MarinaId" class="btn btn-primary text-white">Details</a>\
+                                    </div>\
+                                ';
+
                                 L.circle([@marinaCircleDisplay.c.x, @marinaCircleDisplay.c.y], {
                                     color: 'pink',
                                     fillColor: '#f03',
                                     fillOpacity: 0.5,
-                                    radius: @(marinaCircleDisplay.r * 80000)
-                                }).addTo(mymap);
+                                    radius: @marinaCircleDisplay.r
+                                }).bindPopup(marinaPopup).openTooltip().addTo(mymap);
+
                             </script>
                         }
                     }
