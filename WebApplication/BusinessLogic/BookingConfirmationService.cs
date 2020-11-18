@@ -39,6 +39,11 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region Get unconfirmed booking lines from bookings by marina owner
+        /// <summary>
+        /// Gets unconfirmed booking lines by marina owner
+        /// </summary>
+        /// <param name="marinaOwnerId"></param>
+        /// <returns>List of BookingLines</returns>
         public async Task<List<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId)
         {
             List<BookingLine> unconfirmedBookingLines = await GetBookingLinesByMarinaOwner(marinaOwnerId);
@@ -47,6 +52,11 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region Confirm spot booked by boatOnwer
+        /// <summary>
+        /// Marina Owner confirms spot booked by a boat owner
+        /// </summary>
+        /// <param name="bookingLineId"></param>
+        /// <returns>bool whether it has been successfully confirmed or not</returns>
         public async Task<bool> ConfirmSpotBooked(int bookingLineId)
         {
             using (SportsContext context = _context)
@@ -62,7 +72,7 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         /// <summary>
-        /// Email with booking info is sent to boat owner's email if something has changed in the booking
+        /// Email with booking info is sent to boat owner's email if something has changed in the booking e.g. spot has been confirmed.
         /// </summary>
         #region After time left has been spent or all booking lines have been confirmed, send mail with booking information to boat owner
         public void SendConfirmationMail(int bookingId)

@@ -74,7 +74,10 @@ namespace WebApplication.BusinessLogic
         }
 
         #region Delete booking files by referenceNo
-
+        /// <summary>
+        /// Deletes files from your device that were created in order to sent mail
+        /// </summary>
+        /// <param name="bookingReferenceNo"></param>
         public void DeleteBookingFiles(int bookingReferenceNo)
         {
             var pathPdf = $@"\{bookingReferenceNo}.pdf";

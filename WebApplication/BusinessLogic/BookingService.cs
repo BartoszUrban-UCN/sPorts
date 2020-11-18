@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
@@ -19,11 +18,11 @@ namespace WebApplication.BusinessLogic
             _context = context;
         }
 
-        public async Task<bool> CreateBooking(BoatOwner boatOwner, Boat boat, Dictionary<DateTime[], Spot> marinaSpotStayDates)
+        public async Task<bool> CreateBooking(Booking booking)
         {
             int rowsAffected = 0;
-            // create booking lines based on the information from the form
-            List<BookingLine> bookingLines = CreateBookingLines(marinaSpotStayDates);
+            // get booking lines from the booking
+            List<BookingLine> bookingLines = booking.BookingLines;
 
             if (bookingLines.Count > 0)
             {
@@ -34,9 +33,11 @@ namespace WebApplication.BusinessLogic
                     totalPrice += bookingLine.DiscountedTotalPrice;
                 }
 
-                // associate booking lines & totalPrice with newly created booking class
-                Booking booking = new Booking();
-                InitBooking(ref booking, bookingLines, totalPrice, boat);
+                // init booking
+                booking.BookingReferenceNo = new Random().Next(1, 1000);
+                booking.PaymentStatus = "Not Paid";
+                booking.CreationDate = DateTime.Now;
+                booking.TotalPrice = totalPrice;
 
                 // store booking class & booking lines in the db
                 rowsAffected = await StoreBookingInDb(booking);
@@ -57,7 +58,7 @@ namespace WebApplication.BusinessLogic
 
         #region Create booking lines based on data from the form
 
-        private List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates)
+        public List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates)
         {
             List<BookingLine> bookingLines = new List<BookingLine>();
 
@@ -83,25 +84,6 @@ namespace WebApplication.BusinessLogic
         }
 
         #endregion Create booking lines based on data from the form
-
-        #region Create booking class with booking lines & totalPrice
-
-        private Booking InitBooking(ref Booking booking, List<BookingLine> bookingLines, double totalPrice, Boat boat)
-        {
-            booking = new Booking
-            {
-                BookingLines = bookingLines,
-                BookingReferenceNo = new Random().Next(1, 1000),
-                Boat = boat,
-                TotalPrice = totalPrice,
-                PaymentStatus = "Not Paid",
-                CreationDate = DateTime.Now,
-            };
-
-            return booking;
-        }
-
-        #endregion Create booking class with booking lines & totalPrice
 
         #region Store booking class & associated booking lines in db
 
@@ -140,16 +122,6 @@ namespace WebApplication.BusinessLogic
         }
 
         #endregion Store booking class & associated booking lines in db
-
-        #region Delete booking files by referenceNo
-
-        public void DeleteBookingFiles(int bookingReferenceNo)
-        {
-            File.Delete($@"\{bookingReferenceNo}.pdf");
-            File.Delete($@"\{bookingReferenceNo}.txt");
-        }
-
-        #endregion Delete booking files by referenceNo
 
         public async Task<Booking> FindBooking(int id)
         {

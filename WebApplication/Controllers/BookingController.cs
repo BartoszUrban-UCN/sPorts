@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
-using System;
 
 namespace WebApplication.Controllers
 {
@@ -58,8 +57,11 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BookingId,BookingReferenceNo,TotalPrice,PaymentStatus,BoatId")] Booking booking)
         {
+            //Dictionary<DateTime[], Spot> marinaSpotStayDates
             if (ModelState.IsValid)
             {
+                //await _bookingService.CreateBookingLines();
+                await _bookingService.CreateBooking(booking);
                 _context.Add(booking);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
