@@ -57,7 +57,7 @@ namespace WebApplication.Tests.BusinessLogic
 
         public void Dispose()
         {
-            GenerateBookingData.DeleteBooking();
+            //GenerateBookingData.DeleteBookings();
         }
     }
 }

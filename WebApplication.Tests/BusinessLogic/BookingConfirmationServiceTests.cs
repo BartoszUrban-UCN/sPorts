@@ -23,14 +23,14 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-                int expected = 2;
+                bool expected = true;
                 IBookingConfirmationService service = new BookingConfirmationService(context);
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
 
                 List<BookingLine> marinaOwnerBookings = await service.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
-                int actual = marinaOwnerBookings == null ? 0 : marinaOwnerBookings.Count;
+                bool actual = marinaOwnerBookings == null ? false : marinaOwnerBookings.Count > 0 ? true : false;
 
                 Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
@@ -38,19 +38,18 @@ namespace WebApplication.Tests.BusinessLogic
         }
 
         [Fact]
-        public async void GetUnconfirmedBookingLines_Expected2_Pass()
+        public async void GetUnconfirmedBookingLines_Pass()
         {
             using (var context = Fixture.CreateContext())
             {
-
-                int expected = 2;
+                bool expected = true;
                 IBookingConfirmationService service = new BookingConfirmationService(context);
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
 
                 List<BookingLine> spotsToConfirm = await service.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
-                int actual = spotsToConfirm == null ? 0 : spotsToConfirm.Count;
+                bool actual = spotsToConfirm == null ? false : spotsToConfirm.Count > 0 ? true : false;
 
                 Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
@@ -62,19 +61,21 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
+                bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot();
                 bool expected = true;
                 IBookingConfirmationService service = new BookingConfirmationService(context);
-                BookingLine bookingLine = context.BookingLines.Find(1);
+                List<BookingLine> unconfirmedBookingLines = await service.GetUnconfirmedBookingLines(1);
 
-                bool actual = await service.ConfirmSpotBooked(bookingLine.BookingLineId);
+                bool actual = await service.ConfirmSpotBooked(unconfirmedBookingLines.First().BookingLineId);
 
+                Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
         }
 
         public void Dispose()
         {
-            GenerateBookingData.DeleteBooking();
+            //GenerateBookingData.DeleteBookings();
         }
     }
 }

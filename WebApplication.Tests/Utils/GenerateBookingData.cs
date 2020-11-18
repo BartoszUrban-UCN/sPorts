@@ -32,7 +32,6 @@ namespace WebApplication.Tests.Utils
 
         public static async Task<bool> CreateBookingWithOneSpot()
         {
-            DeleteBooking();
             using (var context = Fixture.CreateContext())
             {
                 IBookingService bookingService = new BookingService(context);
@@ -50,7 +49,6 @@ namespace WebApplication.Tests.Utils
 
         public async static Task<bool> CreateBookingWithTwoSpotsInSameMarina()
         {
-            DeleteBooking();
             using (var context = Fixture.CreateContext())
             {
                 IBookingService bookingService = new BookingService(context);
@@ -70,7 +68,6 @@ namespace WebApplication.Tests.Utils
 
         public async static Task<bool> CreateBookingWithThreeSpotsInDifferentMarinas()
         {
-            DeleteBooking();
             using (var context = Fixture.CreateContext())
             {
                 IBookingService bookingService = new BookingService(context);
@@ -91,7 +88,7 @@ namespace WebApplication.Tests.Utils
             }
         }
 
-        public static void DeleteBooking()
+        public async static void DeleteBookings()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -99,7 +96,7 @@ namespace WebApplication.Tests.Utils
                 if (bookings.Count > 0)
                 {
                     bookings.ForEach(b => context.Bookings.Remove(b));
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
             }
         }
