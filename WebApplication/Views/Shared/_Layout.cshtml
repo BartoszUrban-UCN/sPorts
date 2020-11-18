@@ -7,6 +7,8 @@
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-superhero.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.min.css" />
+    <script src="~/lib/leaflet/leaflet.min.js"></script>
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -25,6 +27,12 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Spot" asp-action="Index">Spots</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Marina" asp-action="Index">Marinas</a>
                         </li>
                     </ul>
                 </div>

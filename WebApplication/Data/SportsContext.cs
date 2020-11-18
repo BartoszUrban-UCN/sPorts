@@ -19,6 +19,7 @@ namespace WebApplication.Data
         public DbSet<Person> Persons { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Spot> Spots { get; set; }
+        public DbSet<Location> Locations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,7 @@ namespace WebApplication.Data
             modelBuilder.Entity<Spot>().ToTable("Spot");
             modelBuilder.Entity<Booking>().ToTable("Booking");
             modelBuilder.Entity<BookingLine>().ToTable("BookingLine");
+            modelBuilder.Entity<Location>().ToTable("Location");
         }
     }
 }

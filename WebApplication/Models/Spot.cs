@@ -28,8 +28,10 @@ namespace WebApplication.Models
         [Required]
         public double Price { get; set; }
 
-        public int? MarinaId { get; set; }
+        public int? LocationId { get; set; }
+        public Location Location { get; set; }
 
+        public int? MarinaId { get; set; }
         public Marina Marina { get; set; }
 
         public List<BookingLine> BookingLines { get; set; } = new List<BookingLine>();

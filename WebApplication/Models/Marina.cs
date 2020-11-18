@@ -19,6 +19,9 @@ namespace WebApplication.Models
         public int? AddressId { get; set; }
         public Address Address { get; set; }
 
+        public int? LocationId { get; set; }
+        public Location Location { get; set; }
+
         public List<Review> Reviews { get; set; } = new List<Review>();
 
         public List<Spot> Spots { get; set; } = new List<Spot>();
