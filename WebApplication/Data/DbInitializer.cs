@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using WebApplication.Models;
 
 namespace WebApplication.Data
@@ -19,8 +20,8 @@ namespace WebApplication.Data
             {
                 var addresses = new Address[]
                 {
-                    new Address{Street="Amazing Drive"},
-                    new Address{Street="Not so Amazing Drive"},
+                    new Address{Street="Amazing Drive", City="Aalborg", Country="DK", State="DK"},
+                    new Address{Street="Not so Amazing Drive", City="Copenhagen", Country="DK", State="DK"},
                 };
 
                 context.Addresses.AddRange(addresses);
@@ -31,10 +32,10 @@ namespace WebApplication.Data
             {
                 var persons = new Person[]
                 {
-                    new Person{FirstName="Bartosz", LastName="Urban", Email="valid@email.com", Password="123456", AddressId=1},
-                    new Person{FirstName="Dragos", LastName="Ionescu", Email="valid2@email.com", Password="123456", AddressId=1},
-                    new Person{FirstName="Peter", LastName="Boelt", Email="valid3@email.com", Password="123456", AddressId=2},
-                    new Person{FirstName="Zach", LastName="Horatau", Email="valid4@email.com", Password="123456", AddressId=2}
+                    new Person{FirstName="Bartosz", LastName="Urban", Email="bartosz@email.com", Password="123456", AddressId=1},
+                    new Person{FirstName="Dragos", LastName="Ionescu", Email="dragos@email.com", Password="123456", AddressId=1},
+                    new Person{FirstName="Peter", LastName="Boelt", Email="peter@email.com", Password="123456", AddressId=2},
+                    new Person{FirstName="Zach", LastName="Horatau", Email="zaharia@email.com", Password="123456", AddressId=2}
                 };
 
                 context.Persons.AddRange(persons);
@@ -58,10 +59,10 @@ namespace WebApplication.Data
             {
                 var marinas = new Marina[]
                 {
-                    new Marina{Name="Hello", MarinaOwnerId=1 },
+                    new Marina{Name="Hello", MarinaOwnerId=1},
                     new Marina{Name="Rocky Bay", MarinaOwnerId=1 },
-                    new Marina{Name="HELLO", MarinaOwnerId=2 },
-                    new Marina{Name="ROCKY BAY", MarinaOwnerId=2 }
+                    new Marina{Name="World", MarinaOwnerId=2 },
+                    new Marina{Name="Sunny Bay", MarinaOwnerId=2 }
                 };
 
                 context.Marinas.AddRange(marinas);
@@ -84,8 +85,8 @@ namespace WebApplication.Data
             {
                 var boats = new Boat[]
                 {
-                    new Boat{Name="Titanic", BoatOwnerId=1},
-                    new Boat{Name="Mama Destroyer", BoatOwnerId=2},
+                    new Boat{Name="Titanic", BoatOwnerId=1, Depth=2, Length=5, Width=3},
+                    new Boat{Name="Mama Destroyer", BoatOwnerId=2, Depth=5, Length=20, Width=9},
                 };
 
                 context.Boats.AddRange(boats);
@@ -96,11 +97,11 @@ namespace WebApplication.Data
             {
                 var spots = new Spot[]
                 {
-                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00},
-                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 50.00},
-                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 50.00},
-                    new Spot{ SpotNumber = 4, MarinaId = 2, Available = true, Price = 50.00},
-                    new Spot{ SpotNumber = 5, MarinaId = 3, Available = true, Price = 50.00},
+                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=50},
+                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=50},
+                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=50},
+                    new Spot{ SpotNumber = 4, MarinaId = 2, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=50},
+                    new Spot{ SpotNumber = 5, MarinaId = 3, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=50},
                 };
 
                 context.Spots.AddRange(spots);
@@ -111,12 +112,12 @@ namespace WebApplication.Data
             {
                 var bookings = new Booking[]
                 {
-                    new Booking {BookingReferenceNo = 1, BoatId = 1, TotalPrice = 2, PaymentStatus = "not paid"},
-                    new Booking {BookingReferenceNo = 2, BoatId = 1, TotalPrice = 10, PaymentStatus = "not paid"},
-                    new Booking {BookingReferenceNo = 3, BoatId = 1, TotalPrice = 100, PaymentStatus = "not paid"},
-                    new Booking {BookingReferenceNo = 4, BoatId = 2, TotalPrice = 83, PaymentStatus = "not paid"},
-                    new Booking {BookingReferenceNo = 5, BoatId = 2, TotalPrice = 97, PaymentStatus = "not paid"},
-                    new Booking {BookingReferenceNo = 6, BoatId = 2, TotalPrice = 23, PaymentStatus = "not paid"}
+                    new Booking {BookingReferenceNo = 1, BoatId = 1, TotalPrice = 2, PaymentStatus = "not paid", CreationDate=DateTime.Now},
+                    new Booking {BookingReferenceNo = 2, BoatId = 1, TotalPrice = 10, PaymentStatus = "not paid", CreationDate=DateTime.Now},
+                    new Booking {BookingReferenceNo = 3, BoatId = 1, TotalPrice = 100, PaymentStatus = "not paid", CreationDate=DateTime.Now},
+                    new Booking {BookingReferenceNo = 4, BoatId = 2, TotalPrice = 83, PaymentStatus = "not paid", CreationDate=DateTime.Now},
+                    new Booking {BookingReferenceNo = 5, BoatId = 2, TotalPrice = 97, PaymentStatus = "not paid", CreationDate=DateTime.Now},
+                    new Booking {BookingReferenceNo = 6, BoatId = 2, TotalPrice = 23, PaymentStatus = "not paid", CreationDate=DateTime.Now}
                 };
 
                 context.Bookings.AddRange(bookings);
