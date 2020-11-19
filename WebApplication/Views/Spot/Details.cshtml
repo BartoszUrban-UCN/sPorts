@@ -19,8 +19,8 @@
         <br />
         <script src="~/js/leaflet_map.js"></script>
         <script>
-            mymap.setView([@Model.Location.XLatitude, @Model.Location.YLongitude], 16);
-            L.marker([@Model.Location.XLatitude, @Model.Location.YLongitude]).addTo(mymap);
+            mymap.setView([@Model.Location.Latitude, @Model.Location.Longitude], 16);
+            L.marker([@Model.Location.Latitude, @Model.Location.Longitude]).addTo(mymap);
         </script>
     }
 

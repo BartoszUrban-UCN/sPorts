@@ -36,8 +36,8 @@ namespace WebApplication.Data
             {
                 var locations = new Location[]
                 {
-                    new Location { XLatitude = 57.058790791383466, YLongitude = 9.895803630352022 },
-                    new Location { XLatitude = 57.05889288811736, YLongitude = 9.895127713680269 },
+                    new Location { Latitude = 57.058790791383466, Longitude = 9.895803630352022 },
+                    new Location { Latitude = 57.05889288811736, Longitude = 9.895127713680269 },
                 };
 
                 context.Locations.AddRange(locations);

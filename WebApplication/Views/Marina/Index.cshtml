@@ -40,10 +40,10 @@
                 @Html.DisplayNameFor(model => model.Location)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Location.XLatitude)
+                @Html.DisplayNameFor(model => model.Location.Latitude)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Location.YLongitude)
+                @Html.DisplayNameFor(model => model.Location.Longitude)
             </th>
             <th></th>
         </tr>
@@ -86,10 +86,10 @@
                     @Html.DisplayFor(modelItem => item.LocationId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Location.XLatitude)
+                    @Html.DisplayFor(modelItem => item.Location.Latitude)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Location.YLongitude)
+                    @Html.DisplayFor(modelItem => item.Location.Longitude)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.MarinaId">Edit</a> |
@@ -101,7 +101,7 @@
                         if (item.LocationId != null)
                         {
                             <script>
-                                L.circle([@item.Location.XLatitude, @item.Location.YLongitude], {
+                                L.circle([@item.Location.Latitude, @item.Location.Longitude], {
                                     color: 'pink',
                                     fillColor: '#f03',
                                     fillOpacity: 0.5,

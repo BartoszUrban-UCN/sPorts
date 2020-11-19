@@ -3,7 +3,8 @@
     public class Location
     {
         public int LocationId { get; set; }
-        public double XLatitude { get; set; }
-        public double YLongitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double Radius { get; set; }
     }
 }

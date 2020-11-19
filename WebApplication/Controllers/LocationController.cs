@@ -48,7 +48,7 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LocationId,XLatitude,YLongitude")] Location location)
+        public async Task<IActionResult> Create([Bind("LocationId,Latitude,Longitude")] Location location)
         {
             if (ModelState.IsValid)
             {
@@ -87,7 +87,7 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("LocationId,XLatitude,YLongitude")] Location location)
+        public async Task<IActionResult> Edit(int id, [Bind("LocationId,Latitude,Longitude")] Location location)
         {
             if (id != location.LocationId)
             {

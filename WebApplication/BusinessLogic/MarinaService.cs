@@ -95,14 +95,14 @@ namespace WebApplication.BusinessLogic
 
             marina.Spots
                 .FindAll(spot => spot.LocationId != null)
-                .ForEach(spot => locations.Add(new Point(spot.Location.XLatitude, spot.Location.YLongitude)));
+                .ForEach(spot => locations.Add(new Point(spot.Location.Latitude, spot.Location.Longitude)));
 
             Circle circle = SmallestEnclosingCircle.MakeCircle(locations);
 
             Location marinaLocation = new Location
             {
-                XLatitude = circle.c.x,
-                YLongitude = circle.c.y
+                Latitude = circle.c.x,
+                Longitude = circle.c.y
             };
 
             marina.Location = marinaLocation;

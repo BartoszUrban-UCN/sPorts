@@ -22,11 +22,11 @@
     {
         if (item.Available)
         {
-            <script> L.marker([@item.Location.XLatitude, @item.Location.YLongitude]).addTo(mymap) </script>
+            <script> L.marker([@item.Location.Latitude, @item.Location.Longitude]).addTo(mymap) </script>
         }
         else
         {
-            <script> L.marker([@item.Location.XLatitude, @item.Location.YLongitude], { icon: unavailableMarkerIcon }).addTo(mymap) </script>
+            <script> L.marker([@item.Location.Latitude, @item.Location.Longitude], { icon: unavailableMarkerIcon }).addTo(mymap) </script>
         }
     }
 }
@@ -98,10 +98,10 @@
                     @Html.DisplayFor(modelItem => item.Location.LocationId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Location.XLatitude)
+                    @Html.DisplayFor(modelItem => item.Location.Latitude)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Location.YLongitude)
+                    @Html.DisplayFor(modelItem => item.Location.Longitude)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.SpotId">Edit</a> |

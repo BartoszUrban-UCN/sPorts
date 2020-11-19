@@ -218,10 +218,10 @@ namespace WebApplication.Controllers
 
         public bool SpotLocationIsSelected()
         {
-            String XLatitude = Request.Form["XLatitude"];
-            String YLongitude = Request.Form["YLongitude"];
+            String Latitude = Request.Form["Latitude"];
+            String Longitude = Request.Form["Longitude"];
 
-            if (String.IsNullOrEmpty(XLatitude) || String.IsNullOrEmpty(YLongitude))
+            if (String.IsNullOrEmpty(Latitude) || String.IsNullOrEmpty(Longitude))
             {
                 return false;
             }
@@ -231,13 +231,13 @@ namespace WebApplication.Controllers
 
         private Location GetLocationData()
         {
-            string XLatitude = Request.Form["XLatitude"];
-            string YLongitude = Request.Form["YLongitude"];
+            string Latitude = Request.Form["Latitude"];
+            string Longitude = Request.Form["Longitude"];
 
             Location spotLocation = new Location
             {
-                XLatitude = Convert.ToDouble(XLatitude),
-                YLongitude = Convert.ToDouble(YLongitude)
+                Latitude = Convert.ToDouble(Latitude),
+                Longitude = Convert.ToDouble(Longitude)
             };
 
             return spotLocation;
