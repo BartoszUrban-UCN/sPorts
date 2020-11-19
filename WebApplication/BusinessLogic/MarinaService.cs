@@ -105,11 +105,10 @@ namespace WebApplication.BusinessLogic
                 .ForEach(spot => locations.Add(new Point(spot.Location.Latitude, spot.Location.Longitude)));
 
             Circle circle = SmallestEnclosingCircle.MakeCircle(locations);
-            circle.r *= 8000;
 
-            if (circle.r < 10000)
+            if (circle.r * 8000 < 10000)
             {
-                circle.r = 10000;
+                circle.r = 10;
             }
 
             Location marinaLocation = new Location

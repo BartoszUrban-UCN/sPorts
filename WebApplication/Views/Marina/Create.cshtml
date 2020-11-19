@@ -65,8 +65,8 @@
                     <div class="text-center" style="width: 200px">\
                         <b>Selected Location</b>\
                         <div style="display: flex; align-items: baseline; justify-content: space-evenly;">\
-                            <label class="control-label" style="padding-right: 10px;">Radius</label>\
-                            <input id="popup-location-radius" class="form-control form-control-sm popup-input" type="number" style="margin: 10px 0px 10px 0px" placeholder="Radius" min="7000"/>\
+                            <label class="control-label" style="padding-right: 10px;">Size</label>\
+                            <input id="popup-location-radius" class="form-control form-control-sm popup-input" type="number" style="margin: 10px 0px 10px 0px" placeholder="Radius" min="7"/>\
                         </div>\
                         <button type="button" class="btn btn-primary btn-sm" onclick=removeCircleMarker()>Remove</button>\
                     </div>\
@@ -99,7 +99,7 @@
                     popupRadius.addEventListener('change', updateLocationRadius);
                     popupRadius.addEventListener('input', updateLocationRadius);
 
-                    popupRadius.value = 10000;
+                    popupRadius.value = 10;
 
                     updateLocationRadius();
                 }
@@ -114,7 +114,7 @@
 
                 function updateLocationRadius(e) {
                     currentCircleMarker
-                        .setRadius(popupRadius.value);
+                        .setRadius(popupRadius.value * 1000);
                     radius.value = popupRadius.value;
                 }
 

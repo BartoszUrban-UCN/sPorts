@@ -45,6 +45,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Location.Longitude)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location.Radius)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -86,6 +89,9 @@
                     @Html.DisplayFor(modelItem => item.Location.Longitude)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Location.Radius)
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.MarinaId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.MarinaId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.MarinaId">Delete</a>
@@ -104,7 +110,7 @@
                                 color: 'pink',
                                 fillColor: '#f03',
                                 fillOpacity: 0.5,
-                                radius: @item.Location.Radius,
+                                radius: @(item.Location.Radius * 1000),
                             }).bindPopup(marinaPopup).openTooltip().addTo(mymap);
                         </script>
                     }
