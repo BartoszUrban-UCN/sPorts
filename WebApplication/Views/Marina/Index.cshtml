@@ -51,19 +51,13 @@
     <tbody>
         @foreach (var item in Model)
         {
-            Circle marinaCircleDisplay;
-            marinaCircleDisplay.c.x = 0;
-            marinaCircleDisplay.c.y = 0;
-            marinaCircleDisplay.r = 0;
-
+            // If a Marina does not have a custom location, but it was populated with spots before,
+            // it means that a preview location can be deducted based on its spots' locations
+            // (Take note that a marina ONLY loaded spots that have a location)
+            // (Check MarinaService GetAll method)
             if (item.LocationId == null && item.Spots.Count > 0)
             {
-                marinaCircleDisplay = WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(item);
-
-                if (marinaCircleDisplay.r * 80000 < 10000)
-                {
-                    marinaCircleDisplay.r = 10000;
-                }
+                WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(item);
             }
 
             <tr>
@@ -98,37 +92,21 @@
 
                     @if (item.Location != null)
                     {
-                        if (item.LocationId != null)
-                        {
-                            <script>
-                                L.circle([@item.Location.Latitude, @item.Location.Longitude], {
-                                    color: 'pink',
-                                    fillColor: '#f03',
-                                    fillOpacity: 0.5,
-                                    radius: 10000
-                                }).bindTooltip("text").openTooltip().addTo(mymap);
-                            </script>
-                        }
-                        else
-                        {
-                            <script>
+                        <script>
+                            var marinaPopup = '\
+                                <div class="text-center" style="width: 100px">\
+                                    <p style="font-weight: bold">@item.Name</p>\
+                                    <a href="Marina/Details/@item.MarinaId" class="btn btn-primary text-white">Details</a>\
+                                </div>\
+                            ';
 
-                                var marinaPopup = '\
-                                    <div class="text-center" style="width: 100px">\
-                                        <p style="font-weight: bold">@item.Name</p>\
-                                        <a href="Marina/Details/@item.MarinaId" class="btn btn-primary text-white">Details</a>\
-                                    </div>\
-                                ';
-
-                                L.circle([@marinaCircleDisplay.c.x, @marinaCircleDisplay.c.y], {
-                                    color: 'pink',
-                                    fillColor: '#f03',
-                                    fillOpacity: 0.5,
-                                    radius: @marinaCircleDisplay.r
-                                }).bindPopup(marinaPopup).openTooltip().addTo(mymap);
-
-                            </script>
-                        }
+                            L.circle([@item.Location.Latitude, @item.Location.Longitude], {
+                                color: 'pink',
+                                fillColor: '#f03',
+                                fillOpacity: 0.5,
+                                radius: @item.Location.Radius,
+                            }).bindPopup(marinaPopup).openTooltip().addTo(mymap);
+                        </script>
                     }
                 </td>
             </tr>

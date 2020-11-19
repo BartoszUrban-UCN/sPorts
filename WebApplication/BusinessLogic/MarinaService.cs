@@ -88,26 +88,39 @@ namespace WebApplication.BusinessLogic
             throw new System.NotImplementedException();
         }
 
-        //
-        public static Circle CalculateMarinaLocation(Marina marina)
+        /// <summary>
+        /// Calculate a marina's location based on the locations that its spots have, if it has any.
+        /// </summary>
+        /// <remarks>
+        /// Uses a mathematical algorithm in order to determine the smallest enclosing circle of a number of points.
+        /// </remarks>
+        /// <param name="marina"></param>
+        public static void CalculateMarinaLocation(Marina marina)
         {
             IList<Point> locations = new List<Point>();
-
+            
+            // Verify for spots with locations once again
+            // (When the method gets called it is made sure that the spots inside have a valid location, but let's verify again)
             marina.Spots
                 .FindAll(spot => spot.LocationId != null)
                 .ForEach(spot => locations.Add(new Point(spot.Location.Latitude, spot.Location.Longitude)));
 
             Circle circle = SmallestEnclosingCircle.MakeCircle(locations);
+            circle.r *= 8000;
+
+            if (circle.r < 10000)
+            {
+                circle.r = 10000;
+            }
 
             Location marinaLocation = new Location
             {
                 Latitude = circle.c.x,
-                Longitude = circle.c.y
+                Longitude = circle.c.y,
+                Radius = circle.r,
             };
 
             marina.Location = marinaLocation;
-
-            return circle;
         }
     }
 }
