@@ -18,7 +18,7 @@ namespace WebApplication.Tests.BusinessLogic
         [Fact]
         public async void CreateBooking_NoParameters_Pass()
         {
-            Assert.ThrowsAnyAsync<Exception>(() => (GenerateBookingData.CreateBookingNoParameters()));
+            await Assert.ThrowsAnyAsync<Exception>(() => (GenerateBookingData.CreateBookingNoParameters()));
         }
 
         [Fact]

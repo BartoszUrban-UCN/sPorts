@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using WebApplication.BusinessLogic;
 using WebApplication.Models;
 using WebApplication.Tests.Utils;
-using WebApplication.BusinessLogic;
 using Xunit;
 
 namespace WebApplication.Tests.BusinessLogic
