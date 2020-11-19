@@ -80,10 +80,19 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(marina);
-                await _context.SaveChangesAsync();
+                if (MarinaLocationIsSelected())
+                {
+                    var marinaLocation = GetLocationFormData();
+                    await _marinaService.CreateWithLocation(marina, marinaLocation);
+                }
+                else
+                {
+                    await _marinaService.Create(marina);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "AddressId", marina.AddressId);
             ViewData["MarinaOwnerId"] = new SelectList(_context.MarinaOwners, "MarinaOwnerId", "MarinaOwnerId", marina.MarinaOwnerId);
             return View(marina);
@@ -237,6 +246,36 @@ namespace WebApplication.Controllers
             }
 
             return false;
+        }
+
+        public bool MarinaLocationIsSelected()
+        {
+            string Latitude = Request.Form["Latitude"];
+            string Longitude = Request.Form["Longitude"];
+            string Radius = Request.Form["Radius"];
+
+            if (String.IsNullOrEmpty(Latitude) || String.IsNullOrEmpty(Longitude) || String.IsNullOrEmpty(Radius))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private Location GetLocationFormData()
+        {
+            string Latitude = Request.Form["Latitude"];
+            string Longitude = Request.Form["Longitude"];
+            string Radius = Request.Form["Radius"];
+
+            Location spotLocation = new Location
+            {
+                Latitude = Convert.ToDouble(Latitude),
+                Longitude = Convert.ToDouble(Longitude),
+                Radius = Convert.ToDouble(Radius),
+            };
+
+            return spotLocation;
         }
     }
 }

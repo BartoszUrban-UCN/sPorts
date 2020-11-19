@@ -67,8 +67,7 @@ namespace WebApplication.BusinessLogic
                 .Include(marina => marina.MarinaOwner)
                 .Include(marina => marina.Location)
                 .Include(marina => marina.Spots.Where(spot => spot.LocationId != null))
-                    .ThenInclude(spot => spot.Location)
-                .Where(marina => marina.LocationId == null);
+                    .ThenInclude(spot => spot.Location);
 
             return await sportsContext.ToListAsync();
         }

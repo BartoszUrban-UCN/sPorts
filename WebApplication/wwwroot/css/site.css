@@ -77,3 +77,8 @@ body {
 .navbar-light {
     background-color: #ececec;
 }
+
+/* Leaflet circle grows smoothly */
+g path.leaflet-interactive {
+    transition: d 1s;
+}
