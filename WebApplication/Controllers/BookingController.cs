@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
@@ -14,13 +11,11 @@ namespace WebApplication.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BookingController : Controller
     {
-        private readonly SportsContext _context;
         private readonly IBookingService _bookingService;
         private readonly IBookingConfirmationService _bookingConfirmationService;
 
-        public BookingController(SportsContext context, IBookingService bookingService, IBookingConfirmationService bookingConfirmationService)
+        public BookingController(IBookingService bookingService, IBookingConfirmationService bookingConfirmationService)
         {
-            _context = context;
             _bookingService = bookingService;
             _bookingConfirmationService = bookingConfirmationService;
         }
@@ -28,16 +23,14 @@ namespace WebApplication.Controllers
         // GET: Booking
         public async Task<IActionResult> Index()
         {
-            var sportsContext = _context.Bookings.Include(b => b.Boat);
-            return View(await sportsContext.ToListAsync());
+            var bookings = await _bookingService.GetAll();
+            return View(bookings);
         }
 
         // GET: Booking/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var booking = await _context.Bookings
-                .Include(b => b.Boat)
-                .FirstOrDefaultAsync(m => m.BookingId == id);
+            var booking = await _bookingService.GetSingle(id);
             if (booking == null)
             {
                 return NotFound();
@@ -48,7 +41,8 @@ namespace WebApplication.Controllers
         // GET: Booking/Create
         public IActionResult Create()
         {
-            ViewData["BoatId"] = new SelectList(_context.Boats, "BoatId", "BoatId");
+            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId");
             return View();
         }
 
@@ -62,10 +56,12 @@ namespace WebApplication.Controllers
             if (ModelState.IsValid)
             {
                 booking.BookingLines = _bookingService.CreateBookingLines(marinaSpotStayDates);
-                await _bookingService.CreateBooking(booking);
+                await _bookingService.Create(booking);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BoatId"] = new SelectList(_context.Boats, "BoatId", "BoatId", booking.BoatId);
+
+            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId", booking.BoatId);
             return View(booking);
         }
 
@@ -77,12 +73,14 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var booking = await _context.Bookings.FindAsync(id);
+            var booking = await _bookingService.GetSingle(id);
             if (booking == null)
             {
                 return NotFound();
             }
-            ViewData["BoatId"] = new SelectList(_context.Boats, "BoatId", "BoatId", booking.BoatId);
+
+            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId", booking.BoatId);;
             return View(booking);
         }
 
@@ -102,12 +100,11 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    _context.Update(booking);
-                    await _context.SaveChangesAsync();
+                    await _bookingService.Update(booking);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BookingExists(booking.BookingId))
+                    if (!await _bookingService.Exists(booking.BookingId))
                     {
                         return NotFound();
                     }
@@ -118,7 +115,8 @@ namespace WebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BoatId"] = new SelectList(_context.Boats, "BoatId", "BoatId", booking.BoatId);
+            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId", booking.BoatId);
             return View(booking);
         }
 
@@ -130,9 +128,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var booking = await _context.Bookings
-                .Include(b => b.Boat)
-                .FirstOrDefaultAsync(m => m.BookingId == id);
+            var booking = await _bookingService.GetSingle(id);
             if (booking == null)
             {
                 return NotFound();
@@ -146,17 +142,8 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var booking = await _context.Bookings.FindAsync(id);
-            _context.Bookings.Remove(booking);
-            await _context.SaveChangesAsync();
+            await _bookingService.Delete(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> ConfirmBookingLine(int bookingLineId)
-        {
-            var success = await _bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
-            return Content(success.ToString());
         }
 
         /// <summary>
@@ -169,10 +156,11 @@ namespace WebApplication.Controllers
         {
 
             // get logged in marina owner
-            MarinaOwner marinaOwner = _context.MarinaOwners.Where(mo => mo.MarinaOwnerId == 2).FirstOrDefault();
-            var bookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
+            // var marinaOwner = await _marinaOwnerService.GetSingle(int loggedMarinaOwnerId);
+            // var bookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
 
-            return View(bookingLines);
+            //return View(bookingLines);
+            return View();
         }
 
         [Route("Booking/{id}/GetBookingLines", Name = "blines")]
@@ -180,8 +168,9 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var bookingLines = await _bookingService.GetBookingLines(id);
-                return View("~/Views/BookingLine/Index.cshtml", bookingLines);
+                //var bookingLines = await _bookingService.GetBookingLines(id);
+                //return View("~/Views/BookingLine/Index.cshtml", bookingLines);
+                return View();
             }
             catch (BusinessException)
             {
@@ -192,17 +181,12 @@ namespace WebApplication.Controllers
         [Route("Booking/{id}/Cancel", Name = "cancel")]
         public async Task<IActionResult> Cancel(int id)
         {
-            var success = await _bookingService.CancelBooking(id);
-            if (success)
-            {
-                return Content("Canceled!");
-            }
+            //var success = await _bookingService.CancelBooking(id);
+            //if (success)
+            //{
+            //    return Content("Canceled!");
+            //}
             return Content("Not Canceled!");
-        }
-
-        private bool BookingExists(int id)
-        {
-            return _context.Bookings.Any(e => e.BookingId == id);
         }
     }
 }

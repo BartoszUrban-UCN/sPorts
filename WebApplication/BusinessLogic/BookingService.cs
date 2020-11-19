@@ -9,7 +9,7 @@ using static WebApplication.BusinessLogic.EmailService;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingService : IBookingService, ICRUD<Booking>
+    public class BookingService : IBookingService
     {
         private readonly SportsContext _context;
 
@@ -18,20 +18,16 @@ namespace WebApplication.BusinessLogic
             _context = context;
         }
 
-        public async Task<bool> CreateBooking(Booking booking)
+        private async Task<int> CreateBooking(Booking booking)
         {
             int rowsAffected = 0;
             // get booking lines from the booking
-            List<BookingLine> bookingLines = booking.BookingLines;
+            List<BookingLine> bookingLines = booking?.BookingLines;
 
             if (bookingLines?.Count > 0)
             {
                 // calculate total price
-                double totalPrice = 0;
-                foreach (var bookingLine in bookingLines)
-                {
-                    totalPrice += bookingLine.DiscountedTotalPrice;
-                }
+                double totalPrice = BookingCalculatePrice(bookingLines);
 
                 // init booking
                 booking.BookingReferenceNo = new Random().Next(1, 1000);
@@ -53,11 +49,22 @@ namespace WebApplication.BusinessLogic
                 pdfService.DeleteBookingFiles(booking.BookingReferenceNo);
             }
 
-            return rowsAffected > 0;
+            return rowsAffected > 0 ? booking.BookingId : throw new BusinessException("Booking", "Failed to create booking.");
+        }
+
+        public double BookingCalculatePrice(List<BookingLine> bookingLines)
+        {
+            double totalPrice = 0;
+            foreach (var bookingLine in bookingLines)
+            {
+                totalPrice += bookingLine.DiscountedTotalPrice;
+            }
+
+            return totalPrice;
         }
 
         #region Create booking lines based on data from the form
-
+        // take List<BookingLine> as parameter
         public List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates)
         {
             List<BookingLine> bookingLines = new List<BookingLine>();
@@ -69,10 +76,10 @@ namespace WebApplication.BusinessLogic
                     Spot = marinaSpotStayDates[date],
                     StartDate = date[0],
                     EndDate = date[1],
-                    Confirmed = false,
-                    Ongoing = false
                 };
 
+                bookingLine.Confirmed = false;
+                bookingLine.Ongoing = false;
                 bookingLine.OriginalTotalPrice = bookingLine.Spot.Price;
                 bookingLine.AppliedDiscounts = 0;
                 bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
@@ -99,22 +106,13 @@ namespace WebApplication.BusinessLogic
                     booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
 
                     rowsAffected = await context.SaveChangesAsync();
+                    ExplicitLoad(booking);
 
-                    context.Entry(booking.Boat).Reference(b => b.BoatOwner).Load();
-                    context.Entry(booking.Boat.BoatOwner).Reference(b => b.Person).Load();
-                    booking.BookingLines.ForEach(bl =>
-                    {
-                        context.Entry(bl.Spot).Reference(s => s.Marina).Load();
-                        context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
-                        context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
-                        context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
-                    }
-                    );
                 }
                 catch (Exception)
                 {
 
-                    throw;
+                    throw new BusinessException("Booking", "Something went wrong when creating your booking. Please try again. If problem persists please contact our techincal service."); ;
                 }
             }
 
@@ -123,75 +121,120 @@ namespace WebApplication.BusinessLogic
 
         #endregion Store booking class & associated booking lines in db
 
-        public async Task<Booking> FindBooking(int id)
-        {
-            var booking = await _context.Bookings
-                                        .Include(b => b.BookingLines)
-                                        .FirstOrDefaultAsync(b => b.BookingId == id);
+        //public async Task<Booking> FindBooking(int id)
+        //{
+        //    var booking = await _context.Bookings
+        //                                .Include(b => b.BookingLines)
+        //                                .FirstOrDefaultAsync(b => b.BookingId == id);
 
-            if (booking == null)
+        //    if (booking == null)
+        //    {
+        //        throw new BusinessException("bookingservice", "Booking was not found.");
+        //    }
+        //    return booking;
+        //}
+
+        //public async Task<IEnumerable<BookingLine>> GetBookingLines(int id)
+        //{
+        //    var booking = await FindBooking(id);
+        //    return booking.BookingLines;
+        //}
+
+        //public async Task<bool> CancelBooking(int id)
+        //{
+        //    var success = false;
+        //    try
+        //    {
+        //        var booking = await FindBooking(id);
+
+        //        foreach (var bookingLine in booking.BookingLines)
+        //        {
+        //            bookingLine.Ongoing = false;
+        //        }
+
+        //        var result = _context.SaveChanges();
+        //        success = result > 0;
+        //    }
+        //    catch (Exception ex) when (ex is DbUpdateException
+        //                            || ex is DbUpdateConcurrencyException
+        //                            || ex is BusinessException)
+        //    { }
+        //    return success;
+        //}
+
+        public Booking ExplicitLoad(Booking booking)
+        {
+            _context.Entry(booking).Reference(b => b.Boat).Load();
+            _context.Entry(booking.Boat).Reference(b => b.BoatOwner).Load();
+            _context.Entry(booking.Boat.BoatOwner).Reference(b => b.Person).Load();
+            _context.Entry(booking).Collection(b => b.BookingLines).Load();
+            booking.BookingLines.ForEach(bl =>
             {
-                throw new BusinessException("bookingservice", "Booking was not found.");
+                _context.Entry(bl).Reference(bl => bl.Spot).Load();
+                _context.Entry(bl.Spot).Reference(s => s.Location).Load();
+                _context.Entry(bl.Spot).Reference(s => s.Marina).Load();
+                _context.Entry(bl.Spot.Marina).Reference(m => m.Location).Load();
+                _context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
+                _context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
+                _context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
             }
+            );
+
             return booking;
         }
 
-        public async Task<IEnumerable<BookingLine>> GetBookingLines(int id)
+        public async Task<int> Create(Booking objectToCreate)
         {
-            var booking = await FindBooking(id);
-            return booking.BookingLines;
+            return await CreateBooking(objectToCreate);
         }
 
-        public async Task<bool> CancelBooking(int id)
+        public async Task<Booking> GetSingle(int? id)
         {
-            var success = false;
+            var booking = await _context.Bookings.FindAsync(id);
+            ExplicitLoad(booking);
+            return booking;
+        }
+
+        public async Task<IEnumerable<Booking>> GetAll()
+        {
+            var bookings = await _context.Bookings.ToListAsync();
+            bookings.ForEach(b => ExplicitLoad(b));
+            return bookings;
+        }
+
+        public async Task<Booking> Update(Booking objectToUpdate)
+        {
             try
             {
-                var booking = await FindBooking(id);
-
-                foreach (var bookingLine in booking.BookingLines)
-                {
-                    bookingLine.Ongoing = false;
-                }
-
-                var result = _context.SaveChanges();
-                success = result > 0;
+                _context.Bookings.Update(objectToUpdate);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex) when (ex is DbUpdateException
-                                    || ex is DbUpdateConcurrencyException
-                                    || ex is BusinessException)
-            { }
-            return success;
+            catch (Exception)
+            {
+
+                throw new BusinessException("Booking", "Something went wrong when updating your booking. Please try again. If problem persists please contact our techincal service.");
+            }
+            return objectToUpdate;
         }
 
-        public Task<int> Create(Booking objectToCreate)
+        public async Task Delete(int? id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var booking = await _context.Bookings.FindAsync(id);
+                _context.Bookings.Remove(booking);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw new BusinessException("Booking", "Something went wrong when deleting your booking. Please try again. If problem persists please contact our techincal service.");
+            }
         }
 
-        public Task<Booking> GetSingle(int? id)
+        public async Task<bool> Exists(int? id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Booking>> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Booking> Update(Booking objectToUpdate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Delete(int? id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Exists(int? id)
-        {
-            throw new NotImplementedException();
+            return await _context.Bookings.AnyAsync(b => b.BookingId == id);
         }
     }
 }

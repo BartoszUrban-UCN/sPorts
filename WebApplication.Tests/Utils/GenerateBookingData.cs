@@ -28,7 +28,7 @@ namespace WebApplication.Tests.Utils
                 IBookingService bookingService = new BookingService(context);
                 Booking booking = new Booking();
                 booking.BookingLines = new List<BookingLine>();
-                return await bookingService.CreateBooking(booking);
+                return await bookingService.Create(booking) > 0;
             }
         }
 
@@ -47,7 +47,7 @@ namespace WebApplication.Tests.Utils
                 Booking booking = new Booking { Boat = boat };
                 booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.CreateBooking(booking);
+                return await bookingService.Create(booking) > 0;
             }
         }
 
@@ -68,7 +68,7 @@ namespace WebApplication.Tests.Utils
                 Booking booking = new Booking { Boat = boat };
                 booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.CreateBooking(booking);
+                return await bookingService.Create(booking) > 0;
             }
         }
 
@@ -92,7 +92,7 @@ namespace WebApplication.Tests.Utils
                 Booking booking = new Booking { Boat = boat };
                 booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.CreateBooking(booking);
+                return await bookingService.Create(booking) > 0;
             }
         }
 

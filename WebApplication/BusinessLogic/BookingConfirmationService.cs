@@ -22,12 +22,14 @@ namespace WebApplication.BusinessLogic
             List<BookingLine> marinaOwnerBookings = new List<BookingLine>(await _context.BookingLines.ToListAsync());
             marinaOwnerBookings.ForEach(bl =>
             {
+                // booking lines explicit loading, move to bookinglines service??
                 _context.Entry(bl).Reference(bl => bl.Spot).Load();
-                _context.Entry(bl).Reference(bl => bl.Booking).Load();
+                _context.Entry(bl.Spot).Reference(s => s.Location).Load();
                 _context.Entry(bl.Spot).Reference(s => s.Marina).Load();
                 _context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
                 _context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
                 _context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
+                _context.Entry(bl).Reference(bl => bl.Booking).Load();
                 _context.Entry(bl.Booking).Reference(b => b.Boat).Load();
                 _context.Entry(bl.Booking.Boat).Reference(b => b.BoatOwner).Load();
                 _context.Entry(bl.Booking.Boat.BoatOwner).Reference(bo => bo.Person).Load();
@@ -78,19 +80,8 @@ namespace WebApplication.BusinessLogic
         public void SendConfirmationMail(int bookingId)
         {
             Booking booking = _context.Bookings.Find(bookingId);
-            _context.Entry(booking).Reference(b => b.Boat).Load();
-            _context.Entry(booking.Boat).Reference(b => b.BoatOwner).Load();
-            _context.Entry(booking.Boat.BoatOwner).Reference(b => b.Person).Load();
-            _context.Entry(booking).Collection(b => b.BookingLines).Load();
-            booking.BookingLines.ForEach(bl =>
-            {
-                _context.Entry(bl).Reference(bl => bl.Spot).Load();
-                _context.Entry(bl.Spot).Reference(s => s.Marina).Load();
-                _context.Entry(bl.Spot.Marina).Reference(m => m.Address).Load();
-                _context.Entry(bl.Spot.Marina).Reference(m => m.MarinaOwner).Load();
-                _context.Entry(bl.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
-            }
-            );
+            IBookingService bookingService = new BookingService(_context);
+            bookingService.ExplicitLoad(booking);
 
             IPDFService<Booking> service = new BookingPDFService();
             service.CreatePDFFile(booking);

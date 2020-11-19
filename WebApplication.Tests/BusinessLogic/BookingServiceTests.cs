@@ -18,11 +18,7 @@ namespace WebApplication.Tests.BusinessLogic
         [Fact]
         public async void CreateBooking_NoParameters_Pass()
         {
-            bool expected = false;
-
-            bool actual = await GenerateBookingData.CreateBookingNoParameters();
-
-            Assert.Equal(expected, actual);
+            Assert.ThrowsAnyAsync<Exception>(() => (GenerateBookingData.CreateBookingNoParameters()));
         }
 
         [Fact]
