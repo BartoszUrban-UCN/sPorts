@@ -11,12 +11,10 @@ namespace WebApplication.Controllers.RestApi
     public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;
-        private readonly IBookingConfirmationService _bookingConfirmationService;
 
-        public BookingController(IBookingService bookingService, IBookingConfirmationService bookingConfirmationService)
+        public BookingController(IBookingService bookingService)
         {
             _bookingService = bookingService;
-            _bookingConfirmationService = bookingConfirmationService;
         }
 
         /// <summary>
@@ -58,12 +56,12 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet("{id}/lines")]
         public async Task<ActionResult<IEnumerable<Booking>>> GetBookingLines(int id)
         {
-            //var bookingLines = await _bookingService.GetBookingLines(id);
+            var booking = await _bookingService.GetSingle(id);
 
-            //if (bookingLines != null)
-            //{
-            //    return Ok(bookingLines);
-            //}
+            if (booking != null)
+            {
+                return Ok(booking.BookingLines);
+            }
             return NotFound();
         }
 
@@ -77,10 +75,10 @@ namespace WebApplication.Controllers.RestApi
         {
             // get logged marina owner
             // var marinaOwner = await _marinaOwnerService.GetSingle(int loggedMarinaOwnerId);
-            // var bookingLines = await _bookingConfirmationService.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
+            // var bookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
 
             int marinaOwnerId = 1;
-            var marinaOwnerBookingLines = await _bookingConfirmationService.GetBookingLinesByMarinaOwner(marinaOwnerId);
+            var marinaOwnerBookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwnerId);
 
             if (marinaOwnerBookingLines != null)
             {
@@ -98,7 +96,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpPut]
         public async Task<ActionResult<bool>> Cancel(int id)
         {
-            //var success = await _bookingService.CancelBooking(id);
+            var success = await _bookingService.CancelBooking(id);
             return Ok();
         }
 
@@ -110,7 +108,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpPut("{id}/bookinglineconfirmation")]
         public async Task<ActionResult<bool>> ConfirmBookingLineById(int id)
         {
-            var success = await _bookingConfirmationService.ConfirmSpotBooked(id);
+            var success = await _bookingService.ConfirmSpotBooked(id);
             return success;
         }
     }

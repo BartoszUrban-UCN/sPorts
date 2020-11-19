@@ -12,12 +12,10 @@ namespace WebApplication.Controllers
     public class BookingController : Controller
     {
         private readonly IBookingService _bookingService;
-        private readonly IBookingConfirmationService _bookingConfirmationService;
 
-        public BookingController(IBookingService bookingService, IBookingConfirmationService bookingConfirmationService)
+        public BookingController(IBookingService bookingService)
         {
             _bookingService = bookingService;
-            _bookingConfirmationService = bookingConfirmationService;
         }
 
         // GET: Booking
@@ -41,7 +39,7 @@ namespace WebApplication.Controllers
         // GET: Booking/Create
         public IActionResult Create()
         {
-            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //var boats = await _bookingService.GetBoatsByBoatOwner(int boatOwnerId);
             //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId");
             return View();
         }
@@ -60,7 +58,7 @@ namespace WebApplication.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //var boats = await _bookingService.GetBoatsByBoatOwner(int boatOwnerId);
             //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId", booking.BoatId);
             return View(booking);
         }
@@ -79,7 +77,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //var boats = await _bookingService.GetBoatsByBoatOwner(int boatOwnerId);
             //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId", booking.BoatId);;
             return View(booking);
         }
@@ -115,7 +113,7 @@ namespace WebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //var boats = await _boatService.GetBoatsByBoatOwner(int boatOwnerId);
+            //var boats = await _bookingService.GetBoatsByBoatOwner(int boatOwnerId);
             //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId", booking.BoatId);
             return View(booking);
         }
@@ -156,8 +154,8 @@ namespace WebApplication.Controllers
         {
 
             // get logged in marina owner
-            // var marinaOwner = await _marinaOwnerService.GetSingle(int loggedMarinaOwnerId);
-            // var bookingLines = await _bookingConfirmationService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
+            // var marinaOwner = await _bookingService.GetSingle(int loggedMarinaOwnerId);
+            // var bookingLines = await _bookingService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
 
             //return View(bookingLines);
             return View();
@@ -168,9 +166,9 @@ namespace WebApplication.Controllers
         {
             try
             {
-                //var bookingLines = await _bookingService.GetBookingLines(id);
-                //return View("~/Views/BookingLine/Index.cshtml", bookingLines);
-                return View();
+                var booking = await _bookingService.GetSingle(id);
+
+                return View("~/Views/BookingLine/Index.cshtml", booking?.BookingLines);
             }
             catch (BusinessException)
             {
@@ -181,11 +179,11 @@ namespace WebApplication.Controllers
         [Route("Booking/{id}/Cancel", Name = "cancel")]
         public async Task<IActionResult> Cancel(int id)
         {
-            //var success = await _bookingService.CancelBooking(id);
-            //if (success)
-            //{
-            //    return Content("Canceled!");
-            //}
+            var success = await _bookingService.CancelBooking(id);
+            if (success)
+            {
+                return Content("Canceled!");
+            }
             return Content("Not Canceled!");
         }
     }

@@ -121,47 +121,6 @@ namespace WebApplication.BusinessLogic
 
         #endregion Store booking class & associated booking lines in db
 
-        //public async Task<Booking> FindBooking(int id)
-        //{
-        //    var booking = await _context.Bookings
-        //                                .Include(b => b.BookingLines)
-        //                                .FirstOrDefaultAsync(b => b.BookingId == id);
-
-        //    if (booking == null)
-        //    {
-        //        throw new BusinessException("bookingservice", "Booking was not found.");
-        //    }
-        //    return booking;
-        //}
-
-        //public async Task<IEnumerable<BookingLine>> GetBookingLines(int id)
-        //{
-        //    var booking = await FindBooking(id);
-        //    return booking.BookingLines;
-        //}
-
-        //public async Task<bool> CancelBooking(int id)
-        //{
-        //    var success = false;
-        //    try
-        //    {
-        //        var booking = await FindBooking(id);
-
-        //        foreach (var bookingLine in booking.BookingLines)
-        //        {
-        //            bookingLine.Ongoing = false;
-        //        }
-
-        //        var result = _context.SaveChanges();
-        //        success = result > 0;
-        //    }
-        //    catch (Exception ex) when (ex is DbUpdateException
-        //                            || ex is DbUpdateConcurrencyException
-        //                            || ex is BusinessException)
-        //    { }
-        //    return success;
-        //}
-
         public Booking ExplicitLoad(Booking booking)
         {
             _context.Entry(booking).Reference(b => b.Boat).Load();
@@ -236,5 +195,88 @@ namespace WebApplication.BusinessLogic
         {
             return await _context.Bookings.AnyAsync(b => b.BookingId == id);
         }
+
+        public async Task<BookingLine> GetBookingLine(int id)
+        {
+            IBookingLineService bookingLineService = new BookingLineService(_context);
+            var bookingLine = await bookingLineService.FindBookingLine(id);
+            return bookingLine;
+        }
+
+        public async Task<bool> CancelBooking(int id)
+        {
+            var success = false;
+            try
+            {
+                var booking = await GetSingle(id);
+
+                foreach (var bookingLine in booking.BookingLines)
+                {
+                    bookingLine.Ongoing = false;
+                    _context.BookingLines.Update(bookingLine);
+                }
+
+                var result = await _context.SaveChangesAsync();
+                success = result > 0;
+            }
+            catch (Exception ex) when (ex is DbUpdateException
+                                    || ex is DbUpdateConcurrencyException
+                                    || ex is BusinessException)
+            {
+                throw new BusinessException("Booking cancellation", "Failed to cancel your booking.");
+            }
+            return success;
+        }
+
+        #region IBookingConfirmationService
+        public async Task<bool> ConfirmSpotBooked(int bookingLineId)
+        {
+            IBookingConfirmationService bookingConfirmationService = new BookingConfirmationService(_context);
+            return await bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
+        }
+
+        /// <summary>
+        /// Gets unconfirmed booking lines by marina owner
+        /// </summary>
+        /// <param name="marinaOwnerId"></param>
+        /// <returns>List of BookingLines</returns>
+        public async Task<List<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId)
+        {
+            List<BookingLine> unconfirmedBookingLines = new List<BookingLine>(await GetBookingLinesByMarinaOwner(marinaOwnerId));
+            return unconfirmedBookingLines.FindAll(bl => !bl.Confirmed);
+        }
+
+        public void SendConfirmationMail(int bookingId)
+        {
+            IBookingConfirmationService bookingConfirmationService = new BookingConfirmationService(_context);
+            bookingConfirmationService.SendConfirmationMail(bookingId);
+        }
+        #endregion
+
+        #region IBookingLineService
+        public async Task<List<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId)
+        {
+            IBookingLineService bookingLineService = new BookingLineService(_context);
+            return await bookingLineService.GetBookingLinesByMarinaOwner(marinaOwnerId);
+        }
+
+        public async Task<BookingLine> FindBookingLine(int id)
+        {
+            IBookingLineService bookingLineService = new BookingLineService(_context);
+            return await bookingLineService.FindBookingLine(id);
+        }
+
+        public async Task<bool> CancelBookingLine(int id)
+        {
+            IBookingLineService bookingLineService = new BookingLineService(_context);
+            return await bookingLineService.CancelBookingLine(id);
+        }
+
+        public async Task<bool> AddTime(int id, int amount)
+        {
+            IBookingLineService bookingLineService = new BookingLineService(_context);
+            return await bookingLineService.AddTime(id, amount);
+        }
+        #endregion 
     }
 }

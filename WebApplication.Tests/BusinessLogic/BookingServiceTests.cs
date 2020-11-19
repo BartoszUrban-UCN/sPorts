@@ -5,7 +5,7 @@ using Assert = Xunit.Assert;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class BookingServiceTests : IClassFixture<SharedDatabaseFixture>, IDisposable
+    public class BookingServiceTests : IClassFixture<SharedDatabaseFixture>
     {
         public BookingServiceTests(SharedDatabaseFixture fixture)
         {
@@ -48,11 +48,6 @@ namespace WebApplication.Tests.BusinessLogic
             bool actual = await GenerateBookingData.CreateBookingWithThreeSpotsInDifferentMarinas();
 
             Assert.Equal(expected, actual);
-        }
-
-        public void Dispose()
-        {
-            //GenerateBookingData.DeleteBookings();
         }
     }
 }

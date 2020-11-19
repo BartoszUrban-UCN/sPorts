@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Data;
-using WebApplication.Models;
+using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
+using WebApplication.Data;
 
 namespace WebApplication.Controllers
 {
@@ -23,8 +17,7 @@ namespace WebApplication.Controllers
         }
         public async Task<IActionResult> Details(int id)
         {
-            var bookingLine = await _context.BookingLines
-                .FirstOrDefaultAsync(b => b.BookingLineId == id);
+            var bookingLine = await _bookingLineService.FindBookingLine(id);
             if (bookingLine == null)
             {
                 return NotFound();
@@ -34,9 +27,9 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("bookingline/{id}/addtime", Name="addtime")]
+        [Route("bookingline/{id}/addtime", Name = "addtime")]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> AddTime(int id, [Bind("amount")]int amount)
+        public async Task<IActionResult> AddTime(int id, [Bind("amount")] int amount)
         {
             var success = await _bookingLineService.AddTime(id, amount);
 
@@ -47,7 +40,7 @@ namespace WebApplication.Controllers
             return Content("Not Added");
         }
 
-        [Route("bookingline/{id}/cancel", Name="cancelbline")]
+        [Route("bookingline/{id}/cancel", Name = "cancelbline")]
         public async Task<IActionResult> Cancel(int id)
         {
             var success = await _bookingLineService.CancelBookingLine(id);

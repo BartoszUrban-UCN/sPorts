@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
@@ -8,7 +7,7 @@ using Xunit;
 
 namespace WebApplication.Tests.BusinessLogic
 {
-    public class BookingConfirmationServiceTests : IClassFixture<SharedDatabaseFixture>, IDisposable
+    public class BookingConfirmationServiceTests : IClassFixture<SharedDatabaseFixture>
     {
         public BookingConfirmationServiceTests(SharedDatabaseFixture fixture)
         {
@@ -24,7 +23,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 bool expected = true;
-                IBookingConfirmationService service = new BookingConfirmationService(context);
+                IBookingService service = new BookingService(context);
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
@@ -43,7 +42,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 bool expected = true;
-                IBookingConfirmationService service = new BookingConfirmationService(context);
+                IBookingService service = new BookingService(context);
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
@@ -63,7 +62,7 @@ namespace WebApplication.Tests.BusinessLogic
             {
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot();
                 bool expected = true;
-                IBookingConfirmationService service = new BookingConfirmationService(context);
+                IBookingService service = new BookingService(context);
                 List<BookingLine> unconfirmedBookingLines = await service.GetUnconfirmedBookingLines(1);
 
                 bool actual = await service.ConfirmSpotBooked(unconfirmedBookingLines.First().BookingLineId);
@@ -71,11 +70,6 @@ namespace WebApplication.Tests.BusinessLogic
                 Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
-        }
-
-        public void Dispose()
-        {
-            //GenerateBookingData.DeleteBookings();
         }
     }
 }
