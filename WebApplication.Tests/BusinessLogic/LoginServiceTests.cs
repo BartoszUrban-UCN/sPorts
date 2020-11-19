@@ -14,7 +14,7 @@ namespace WebApplication.Tests.BusinessLogic
         public SharedDatabaseFixture Fixture { get; }
 
         [Fact]
-        public async void CreatePersonRequiredMissing()
+        public async void CreateRequiredMissing()
         {
             using (var transaction = Fixture.Connection.BeginTransaction())
             {
@@ -25,13 +25,13 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz" };
 
                     // Act Assert
-                    await Assert.ThrowsAnyAsync<Exception>(() => service.CreatePerson(person));
+                    await Assert.ThrowsAnyAsync<Exception>(() => service.Create(person));
                 }
             }
         }
 
         [Fact]
-        public async void CreatePersonEmailExists()
+        public async void CreateEmailExists()
         {
             using (var transaction = Fixture.Connection.BeginTransaction())
             {
@@ -42,14 +42,14 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid@email.com", Password = "123456" };
 
                     // Act Assert
-                    Assert.True(await service.CreatePerson(person));
-                    await Assert.ThrowsAsync<BusinessException>(() => service.CreatePerson(person));
+                    Assert.NotEqual(0, await service.Create(person));
+                    await Assert.ThrowsAsync<BusinessException>(() => service.Create(person));
                 }
             }
         }
 
         [Fact]
-        public async void CreatePersonSuccess()
+        public async void CreateSuccess()
         {
             using (var transaction = Fixture.Connection.BeginTransaction())
             {
@@ -60,10 +60,10 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid100@email.com", Password = "123456" };
 
                     // Act
-                    var success = await service.CreatePerson(person);
+                    var id = await service.Create(person);
 
                     // Assert
-                    Assert.True(success);
+                    Assert.NotEqual(0, id);
                     Assert.True(context.Persons.AsQueryable().FirstOrDefault(p => p.Email.Equals(person.Email)) != null);
                 }
             }
@@ -81,13 +81,13 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid100@email.com", Password = "123456" };
 
                     // Act
-                    await service.CreatePerson(person);
+                    await service.Create(person);
                     person = context.Persons.AsQueryable().First(p => p.Email.Equals("valid100@email.com"));
 
-                    var success = await service.MakePersonBoatOwner(person);
+                    var boatOwner = await service.MakePersonBoatOwner(person);
 
                     // Assert
-                    Assert.True(success);
+                    Assert.NotNull(boatOwner);
                     Assert.True(context.BoatOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
 
                     await Assert.ThrowsAsync<BusinessException>(() => service.MakePersonBoatOwner(person));
@@ -107,13 +107,13 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid100@email.com", Password = "123456" };
 
                     // Act
-                    await service.CreatePerson(person);
+                    await service.Create(person);
                     person = context.Persons.AsQueryable().First(p => p.Email.Equals("valid100@email.com"));
 
-                    var success = await service.MakePersonMarinaOwner(person);
+                    var marinaOwner = await service.MakePersonMarinaOwner(person);
 
                     // Assert
-                    Assert.True(success);
+                    Assert.NotNull(marinaOwner);
                     Assert.True(context.MarinaOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
 
                     await Assert.ThrowsAsync<BusinessException>(() => service.MakePersonMarinaOwner(person));

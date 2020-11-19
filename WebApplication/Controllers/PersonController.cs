@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
@@ -67,7 +64,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    await _loginService.CreatePerson(person);
+                    await _loginService.Create(person);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (BusinessException exception)

@@ -12,7 +12,6 @@ namespace WebApplication.Tests.BusinessLogic
             GenerateBookingData.Fixture = fixture;
         }
 
-
         //[Theory]
         //[ClassData(typeof(GenerateBookingData))]
         [Fact]

@@ -3,12 +3,10 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public interface ILoginService
+    public interface ILoginService : ICRUD<Person>
     {
-        Task<bool> CreatePerson(Person person);
+        Task<BoatOwner> MakePersonBoatOwner(Person person);
 
-        Task<bool> MakePersonBoatOwner(Person person);
-
-        Task<bool> MakePersonMarinaOwner(Person person);
+        Task<MarinaOwner> MakePersonMarinaOwner(Person person);
     }
 }
