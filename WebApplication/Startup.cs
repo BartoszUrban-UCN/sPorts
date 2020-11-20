@@ -28,7 +28,7 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var supportedCultures = new string[] { "en-GB", "en-US", "da-DK" };
+            var supportedCultures = new string[] { "en-US" };
             app.UseRequestLocalization(options =>
                         options
                         .AddSupportedCultures(supportedCultures)
