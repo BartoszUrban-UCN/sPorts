@@ -67,10 +67,12 @@ namespace WebApplication.Controllers
                         // Create related data (Location) for the Spot and assign the newly created Location to the Spot
                         var location = GetLocationData();
                         await _spotService.CreateWithLocation(spot, location);
-                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        await _spotService.Create(spot);
                     }
 
-                    await _spotService.Create(spot);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (BusinessException exception)
