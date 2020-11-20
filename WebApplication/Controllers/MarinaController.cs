@@ -26,7 +26,7 @@ namespace WebApplication.Controllers
         // GET: Marina
         public async Task<IActionResult> Index()
         {
-            
+
 
             //foreach (Marina marina in sportsContext.ToList())
             //{
@@ -38,7 +38,7 @@ namespace WebApplication.Controllers
             //        }
             //    }
             //}
-
+         
             return View(await _marinaService.GetAll());
         }
 
@@ -51,6 +51,7 @@ namespace WebApplication.Controllers
             }
 
             var marina = await _context.Marinas
+                .Include(m => m.Spots)
                 .Include(m => m.Address)
                 .Include(m => m.MarinaOwner)
                 .FirstOrDefaultAsync(m => m.MarinaId == id);
@@ -106,7 +107,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var marina = await _context.Marinas.FindAsync(id);
+            var marina = await _context.Marinas.Include(m => m.Spots).FirstOrDefaultAsync(m => m.MarinaId == id);
             if (marina == null)
             {
                 return NotFound();
