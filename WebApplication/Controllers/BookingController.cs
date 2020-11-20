@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
@@ -12,13 +11,15 @@ namespace WebApplication.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BookingController : Controller
     {
-        private readonly SportsContext _context;
         private readonly IBookingService _bookingService;
+        private readonly IBookingFormService _bookingFormService;
+        private readonly IMarinaService _marinaService;
 
-        public BookingController(SportsContext context, IBookingService bookingService)
+        public BookingController(IBookingService bookingService, IBookingFormService bookingFormService, IMarinaService marinaService)
         {
-            _context = context;
             _bookingService = bookingService;
+            _bookingFormService = bookingFormService;
+            _marinaService = marinaService;
         }
 
         // GET: Booking
@@ -48,7 +49,7 @@ namespace WebApplication.Controllers
         }
 
         // POST: Booking/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -86,7 +87,7 @@ namespace WebApplication.Controllers
         }
 
         // POST: Booking/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -155,7 +156,6 @@ namespace WebApplication.Controllers
         [Route("{controller}/MarinaOwner")]
         public async Task<IActionResult> BookingsByMarinaOwner()
         {
-
             // get logged in marina owner
             // var marinaOwner = await _bookingService.GetSingle(int loggedMarinaOwnerId);
             // var bookingLines = await _bookingService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
@@ -194,14 +194,11 @@ namespace WebApplication.Controllers
         // GET: Booking/CreateBookingMapMingle
         public async Task<IActionResult> CreateBookingMapMingle()
         {
-            BookingFormService bookingFormService = new BookingFormService(_context);
-            MarinaService marinaService = new MarinaService(_context, new LocationService(_context));
-
             DateTime startDate = DateTime.Now;
             DateTime endDate = DateTime.MaxValue;
 
-            ViewData["AvailableMarinas"] = bookingFormService.GetAllAvailableSpotsCount(new List<int>() { 1, 2, 3, 4 }, 1, startDate, endDate);
-            ViewData["Marinas"] = await marinaService.GetAll();
+            ViewData["AvailableMarinas"] = _bookingFormService.GetAllAvailableSpotsCount(new List<int>() { 1, 2, 3, 4 }, 1, startDate, endDate);
+            ViewData["Marinas"] = await _marinaService.GetAll();
             return View();
         }
     }

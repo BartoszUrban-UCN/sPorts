@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
@@ -13,10 +12,12 @@ namespace WebApplication.Controllers
     public class SpotController : Controller
     {
         private readonly ISpotService _spotService;
+        private readonly IMarinaService _marinaService;
 
-        public SpotController(SportsContext context, ISpotService spotService)
+        public SpotController(ISpotService spotService, IMarinaService marinaService)
         {
             _spotService = spotService;
+            _marinaService = marinaService;
         }
 
         // GET: Spot
@@ -46,7 +47,7 @@ namespace WebApplication.Controllers
         // GET: Spot/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId");
+            ViewData["MarinaId"] = new SelectList(await _marinaService.GetAll(), "MarinaId", "MarinaId");
             return View();
         }
 
@@ -81,7 +82,7 @@ namespace WebApplication.Controllers
                 }
             }
 
-            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
+            ViewData["MarinaId"] = new SelectList(await _marinaService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 
@@ -100,7 +101,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
+            ViewData["MarinaId"] = new SelectList(await _marinaService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 
@@ -155,7 +156,7 @@ namespace WebApplication.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["MarinaId"] = new SelectList(await _spotService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
+            ViewData["MarinaId"] = new SelectList(await _marinaService.GetAll(), "MarinaId", "MarinaId", spot.MarinaId);
             return View(spot);
         }
 

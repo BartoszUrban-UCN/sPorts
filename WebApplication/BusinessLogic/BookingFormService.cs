@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WebApplication.Data;
 using WebApplication.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication.BusinessLogic
 {
@@ -54,21 +54,22 @@ namespace WebApplication.BusinessLogic
                     {
                         // Only go through Booking Lines that end later than "Now" - does not go
                         // through past bookings
-                        if (spot.BookingLines != null && spot.BookingLines.Any())
+
+                        var booked = false;
+                        foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
                         {
-                            foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
+                            if (DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
                             {
-                                if (!DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
-                                {
-                                    // Basically returns all spots that
-                                    // 1. Fit the boat
-                                    // 2. Have NO date intersects with any existing bookings with no
-                                    // optimizations in mind whatsoever 🙂
-                                    availableSpots.Add(spot);
-                                }
+                                // Basically returns all spots that
+                                // 1. Fit the boat
+                                // 2. Have NO date intersects with any existing bookings with no
+                                // optimizations in mind whatsoever 🙂
+                                booked = true;
+                                break;
                             }
                         }
-                        else
+
+                        if (!booked)
                         {
                             availableSpots.Add(spot);
                         }
