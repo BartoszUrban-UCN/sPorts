@@ -114,14 +114,14 @@ namespace WebApplication.Data
             {
                 var spots = new Spot[]
                 {
-                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=30},
-                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=30},
-                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=30},
-                    new Spot{ SpotNumber = 4, MarinaId = 2, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=30, LocationId = 3},
-                    new Spot{ SpotNumber = 5, MarinaId = 3, Available = true, Price = 50.00, MaxDepth=10, MaxWidth=10, MaxLength=30},
-                    new Spot{ SpotNumber = 1, MarinaId = 4, Available = true, Price = 50.00, LocationId = 1 },
-                    new Spot{ SpotNumber = 2, MarinaId = 4, Available = true, Price = 40.00, LocationId = 2 },
-                    new Spot{ SpotNumber = 3, MarinaId = 4, Available = true, Price = 30.00}
+                    new Spot{ SpotNumber = 1, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=30, MaxWidth=10, MaxLength=30},
+                    new Spot{ SpotNumber = 2, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=30, MaxWidth=30, MaxLength=30},
+                    new Spot{ SpotNumber = 3, MarinaId = 1, Available = true, Price = 50.00, MaxDepth=30, MaxWidth=30, MaxLength=30},
+                    new Spot{ SpotNumber = 4, MarinaId = 2, Available = true, Price = 50.00, MaxDepth=30, MaxWidth=30, MaxLength=30, LocationId = 3},
+                    new Spot{ SpotNumber = 5, MarinaId = 3, Available = true, Price = 50.00, MaxDepth=30, MaxWidth=30, MaxLength=30},
+                    new Spot{ SpotNumber = 1, MarinaId = 4, Available = true, Price = 50.00, MaxDepth=30, MaxWidth=30, MaxLength=30, LocationId = 1 },
+                    new Spot{ SpotNumber = 2, MarinaId = 4, Available = true, Price = 40.00, MaxDepth=30, MaxWidth=30, MaxLength=30, LocationId = 2 },
+                    new Spot{ SpotNumber = 3, MarinaId = 4, Available = true, Price = 30.00, MaxDepth=30, MaxWidth=30, MaxLength=30}
                 };
 
                 context.Spots.AddRange(spots);

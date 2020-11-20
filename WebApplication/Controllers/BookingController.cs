@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
+using WebApplication.Data;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
@@ -11,10 +12,12 @@ namespace WebApplication.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BookingController : Controller
     {
+        private readonly SportsContext _context;
         private readonly IBookingService _bookingService;
 
-        public BookingController(IBookingService bookingService)
+        public BookingController(SportsContext context, IBookingService bookingService)
         {
+            _context = context;
             _bookingService = bookingService;
         }
 
@@ -185,6 +188,21 @@ namespace WebApplication.Controllers
                 return Content("Canceled!");
             }
             return Content("Not Canceled!");
+        }
+
+        // Random method
+        // GET: Booking/CreateBookingMapMingle
+        public async Task<IActionResult> CreateBookingMapMingle()
+        {
+            BookingFormService bookingFormService = new BookingFormService(_context);
+            MarinaService marinaService = new MarinaService(_context, new LocationService(_context));
+
+            DateTime startDate = DateTime.Now;
+            DateTime endDate = DateTime.MaxValue;
+
+            ViewData["AvailableMarinas"] = bookingFormService.GetAllAvailableSpotsCount(new List<int>() { 1, 2, 3, 4 }, 1, startDate, endDate);
+            ViewData["Marinas"] = await marinaService.GetAll();
+            return View();
         }
     }
 }

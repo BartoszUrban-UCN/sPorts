@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WebApplication.Data;
 using WebApplication.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication.BusinessLogic
 {
@@ -25,7 +26,7 @@ namespace WebApplication.BusinessLogic
 
                 if (availableSpotsInMarina.Any())
                 {
-                    availableSpotsPerMarinaId.Add(marinaId, availableSpotsInMarina.Count());
+                    availableSpotsPerMarinaId.Add(marinaId, availableSpotsInMarina.Count);
                 }
             }
 
@@ -36,7 +37,11 @@ namespace WebApplication.BusinessLogic
         {
             IList<Spot> availableSpots = new List<Spot>();
 
-            var marina = _context.Marinas.Find(marinaId);
+            var marina = _context.Marinas
+                .Include(marina => marina.Location)
+                .Include(marina => marina.Spots.Where(spot => spot.LocationId != null))
+                .FirstOrDefault(marina => marina.MarinaId == marinaId);
+
             var boat = _context.Boats.Find(boatId);
 
             // Dates are valid if endDate is later, or on the same day, as startDate and if they are
@@ -49,16 +54,23 @@ namespace WebApplication.BusinessLogic
                     {
                         // Only go through Booking Lines that end later than "Now" - does not go
                         // through past bookings
-                        foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
+                        if (spot.BookingLines != null && spot.BookingLines.Any())
                         {
-                            if (!DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
+                            foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
                             {
-                                // Basically returns all spots that
-                                // 1. Fit the boat
-                                // 2. Have NO date intersects with any existing bookings with no
-                                // optimizations in mind whatsoever 🙂
-                                availableSpots.Add(spot);
+                                if (!DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
+                                {
+                                    // Basically returns all spots that
+                                    // 1. Fit the boat
+                                    // 2. Have NO date intersects with any existing bookings with no
+                                    // optimizations in mind whatsoever 🙂
+                                    availableSpots.Add(spot);
+                                }
                             }
+                        }
+                        else
+                        {
+                            availableSpots.Add(spot);
                         }
                     }
                 }
