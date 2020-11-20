@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Data;
 
@@ -26,6 +28,18 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var supportedCultures = new string[] { "en-GB", "en-US", "da-DK" };
+            app.UseRequestLocalization(options =>
+                        options
+                        .AddSupportedCultures(supportedCultures)
+                        .AddSupportedUICultures(supportedCultures)
+                        .SetDefaultCulture("en-US")
+                        .RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
+                        {
+                            return Task.FromResult(new ProviderCultureResult("en-US"));
+                        }))
+                );
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
