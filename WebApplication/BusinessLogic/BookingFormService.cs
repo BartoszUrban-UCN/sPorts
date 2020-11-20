@@ -23,7 +23,7 @@ namespace WebApplication.BusinessLogic
             {
                 var availableSpotsInMarina = GetAvailableSpots(marinaId, boatId, startDate, endDate);
 
-                if (availableSpotsInMarina is not null)
+                if (availableSpotsInMarina.Any())
                 {
                     availableSpotsPerMarinaId.Add(marinaId, availableSpotsInMarina.Count());
                 }
