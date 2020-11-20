@@ -6,8 +6,7 @@ namespace WebApplication.BusinessLogic
 {
     public interface IBookingFormService
     {
-        public IList<Spot> GetAvailableSpots(Marina marina, Boat boat, DateTime startDate, DateTime endDate);
-
-        public bool DoesSpotFitBoat(Boat boat, Spot spot);
+        public Dictionary<int, int> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
+        public IList<Spot> GetAvailableSpots(int marinaId, int boatId, DateTime startDate, DateTime endDate);
     }
 }
