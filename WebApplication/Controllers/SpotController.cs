@@ -194,31 +194,6 @@ namespace WebApplication.Controllers
             return await _spotService.Exists(id);
         }
 
-        //[Route("spot/{id}")]
-        //public async Task<IActionResult> Spot(int id)
-        //{
-        //    ViewData["ViewName"] = "Spot";
-
-        //    var spot = _spotService.GetSingle(id);
-
-        //    var spotList = new List<Spot>();
-        //    spotList.Add(await spot);
-
-        //    return View("_ListLayout", spotList);
-        //}
-
-        //public async Task<IActionResult> Marina(int id)
-        //{
-        //    var spotsWithMarina = await _spotService.GetAll();
-        //    var spot = spotsWithMarina.ToList().Find(spot => spot.SpotId == id);
-
-        //    if (spot != null)
-        //    {
-        //        return View("~/Views/Marina/Marina.cshtml", spot.Marina);
-        //    }
-        //    return View("Error");
-        //}
-
         public bool SpotLocationIsSelected()
         {
             String Latitude = Request.Form["Latitude"];
