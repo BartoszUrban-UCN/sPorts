@@ -39,7 +39,7 @@ namespace WebApplication.BusinessLogic
 
             var marina = _context.Marinas
                 .Include(marina => marina.Location)
-                .Include(marina => marina.Spots.Where(spot => spot.LocationId != null))
+                .Include(marina => marina.Spots)
                 .FirstOrDefault(marina => marina.MarinaId == marinaId);
 
             var boat = _context.Boats.Find(boatId);
