@@ -283,17 +283,6 @@ namespace WebApplication.BusinessLogic
             return await bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
         }
 
-        // /// <summary>
-        // /// Gets unconfirmed booking lines by marina owner
-        // /// </summary>
-        // /// <param name="marinaOwnerId"></param>
-        // /// <returns>List of BookingLines</returns>
-        // public async Task<IEnumerable<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId)
-        // {
-        //     List<BookingLine> unconfirmedBookingLines = new List<BookingLine>(await GetBookingLinesByMarinaOwner(marinaOwnerId));
-        //     return unconfirmedBookingLines.FindAll(bl => !bl.Confirmed);
-        // }
-
         public void SendConfirmationMail(int bookingId)
         {
             IBookingConfirmationService bookingConfirmationService = new BookingConfirmationService(_context);
@@ -302,10 +291,6 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region IBookingLineService
-        // public async Task<List<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId)
-        // {
-        //     return await _bookingLineService.GetBookingLinesByMarinaOwner(marinaOwnerId);
-        // }
 
         public async Task<bool> CancelBookingLine(int? id)
         {

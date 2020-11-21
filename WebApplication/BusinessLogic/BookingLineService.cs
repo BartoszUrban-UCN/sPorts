@@ -48,14 +48,14 @@ namespace WebApplication.BusinessLogic
 
         public async Task<BookingLine> GetSingle(int? id)
         {
-            // *** If you got here because your code doesn't work
-            // I humbly apologise, the bookingLine doesn't load anything else,
-            // I didn't know what else was needed ***
-            
             if (id < 0)
                 throw new BusinessException("GetSingle", "The id is negative.");
-            
+
             var bookingLine = await _context.BookingLines
+                                             .Include(b => b.Spot)
+                                                .ThenInclude(s => s.Marina)
+                                                    .ThenInclude(m => m.MarinaOwner)
+                                                        .ThenInclude(m => m.Person)
                                             .FirstOrDefaultAsync(b => b.BookingLineId == id);
 
             if (bookingLine == null)
@@ -66,7 +66,13 @@ namespace WebApplication.BusinessLogic
 
         public async Task<IEnumerable<BookingLine>> GetAll()
         {
-            return await _context.BookingLines.ToListAsync();
+            var bookingLines = await _context.BookingLines
+                                             .Include(b => b.Spot)
+                                                .ThenInclude(s => s.Marina)
+                                                    .ThenInclude(m => m.MarinaOwner)
+                                                        .ThenInclude(m => m.Person)
+                                             .ToListAsync();
+            return bookingLines;
         }
 
         public async Task<BookingLine> Update(BookingLine bookingLine)
@@ -129,7 +135,7 @@ namespace WebApplication.BusinessLogic
 
                     return true;
                 }
-                
+
                 return false;
             }
             catch (DbUpdateConcurrencyException ex)
@@ -159,7 +165,7 @@ namespace WebApplication.BusinessLogic
 
                     return true;
                 }
-                
+
                 return false;
             }
             catch (DbUpdateConcurrencyException ex)
@@ -172,15 +178,6 @@ namespace WebApplication.BusinessLogic
             }
         }
 
-        // This one should be moved up in hierarchy
-
-        // public async Task<IEnumerable<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId)
-        // {
-        //     List<BookingLine> marinaOwnerBookings = new List<BookingLine>(await _context.BookingLines.ToListAsync());
-        //     marinaOwnerBookings.ForEach(bl => ExplicitLoad(bl));
-
-        //     return marinaOwnerBookings.FindAll(bl => bl.Spot.Marina.MarinaOwner.MarinaOwnerId == marinaOwnerId);
-        // }
         public async Task<bool> Exists(int? id)
         {
             if (id < 0)

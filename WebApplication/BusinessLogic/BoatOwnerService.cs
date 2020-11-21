@@ -131,6 +131,9 @@ namespace WebApplication.BusinessLogic
 
         public async Task<bool> Exists(int? id)
         {
+            if (id < 0)
+                throw new BusinessException("Exists", "The id is negative.");
+
             return await _context.BoatOwners.AnyAsync(b => b.BoatOwnerId == id);
         }
 
