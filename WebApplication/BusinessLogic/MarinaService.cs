@@ -19,7 +19,7 @@ namespace WebApplication.BusinessLogic
             //     throw new BusinessException("MarinaService", "The context argument was null.");
 
             // if (locationService == null)
-            //     throw new BusinessException("MarinaService", "The context argument was null.");
+            //     throw new BusinessException("MarinaService", "The locationService argument was null.");
 
             _context = context;
             _locationService = locationService;
