@@ -48,6 +48,9 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Boat> GetSingle(int? id)
         {
+            if (id < 0)
+                throw new BusinessException("GetSingle", "The id was negative.");
+                
             var boat = await _context.Boats
                                         .Include(b => b.Bookings)
                                             .ThenInclude(b => b.BookingLines)
@@ -112,6 +115,9 @@ namespace WebApplication.BusinessLogic
 
         public Task<bool> Exists(int? id)
         {
+            if (id < 0)
+                throw new BusinessException("Exists", "The id is negative.");
+
             return _context.Boats.AnyAsync(b => b.BoatId == id);
         }
     }

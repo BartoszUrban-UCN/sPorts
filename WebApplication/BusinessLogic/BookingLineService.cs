@@ -12,8 +12,8 @@ namespace WebApplication.BusinessLogic
 
         public BookingLineService(SportsContext context)
         {
-            if (context == null)
-                throw new BusinessException("BookingLineService", "The context argument was null.");
+            // if (context == null)
+            //     throw new BusinessException("BookingLineService", "The context argument was null.");
 
             _context = context;
         }
@@ -51,6 +51,10 @@ namespace WebApplication.BusinessLogic
             // *** If you got here because your code doesn't work
             // I humbly apologise, the bookingLine doesn't load anything else,
             // I didn't know what else was needed ***
+            
+            if (id < 0)
+                throw new BusinessException("GetSingle", "The id is negative.");
+            
             var bookingLine = await _context.BookingLines
                                             .FirstOrDefaultAsync(b => b.BookingLineId == id);
 
@@ -179,6 +183,9 @@ namespace WebApplication.BusinessLogic
         // }
         public async Task<bool> Exists(int? id)
         {
+            if (id < 0)
+                throw new BusinessException("Exists", "The id is negative.");
+
             return await _context.BookingLines.AnyAsync(b => b.BookingLineId == id);
         }
     }
