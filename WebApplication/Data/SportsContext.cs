@@ -35,7 +35,7 @@ namespace WebApplication.Data
             modelBuilder.Entity<Spot>().ToTable("Spot");
             modelBuilder.Entity<Booking>().ToTable("Booking");
             modelBuilder.Entity<BookingLine>().ToTable("BookingLine");
-            //modelBuilder.Entity<Location>().ToTable("Location").HasOne(l => l.Spot).WithOne(l => l.Location).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Location>().ToTable("Location");
         }
     }
 }

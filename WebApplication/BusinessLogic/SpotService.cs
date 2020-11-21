@@ -146,20 +146,14 @@ namespace WebApplication.BusinessLogic
                 _context.Update(location);
             }
 
-            //await _context.SaveChangesAsync();
-
             return spot;
         }
 
-        public async Task DeleteSpotLocation(Spot spot)
+        public async Task<Spot> DeleteSpotLocation(Spot spot)
         {
-            var locationId = spot.LocationId;
-
-            spot.LocationId = null;
-
-            await Update(spot);
-
-            await _locationService.Delete(locationId);
+            spot = await GetSingle(spot.SpotId);
+            await _locationService.Delete(spot.LocationId);
+            return spot;
         }
     }
 }

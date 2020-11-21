@@ -7,6 +7,6 @@ namespace WebApplication.BusinessLogic
     {
         Task<int> CreateWithLocation(Spot spot, Location location);
         Task<Spot> UpdateSpotLocation(Spot spot, Location location);
-        Task DeleteSpotLocation(Spot spot);
+        Task<Spot> DeleteSpotLocation(Spot spot);
     }
 }

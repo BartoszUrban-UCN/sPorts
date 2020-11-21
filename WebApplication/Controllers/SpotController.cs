@@ -136,7 +136,7 @@ namespace WebApplication.Controllers
                         if (spot.LocationId != null)
                         {
                             // Delete the spot's location
-                            await _spotService.DeleteSpotLocation(spot);
+                            spot = await _spotService.DeleteSpotLocation(spot);
                         }
                     }
 
