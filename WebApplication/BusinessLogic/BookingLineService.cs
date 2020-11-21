@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.Data;
@@ -13,91 +12,174 @@ namespace WebApplication.BusinessLogic
 
         public BookingLineService(SportsContext context)
         {
+            if (context == null)
+                throw new BusinessException("BookingLineService", "The context argument was null.");
+
             _context = context;
         }
 
-        public async Task<BookingLine> FindBookingLine(int id)
+        public async Task<int> Create(BookingLine bookingLine)
         {
-            var bookingLine = await _context.BookingLines
-                                            .FirstOrDefaultAsync(b => b.BookingLineId == id);
+            // TODO Might not be necesary
+            // TODO Remove if the caller already checks for null
             if (bookingLine == null)
             {
-                throw new BusinessException("bookinglineservice", $"The bookingline with id {id} was not found.");
+                throw new BusinessException("Create", "Booking Line object is null.");
             }
+
+            _context.BookingLines.Add(bookingLine);
+            try
+            {
+                var result = await _context.SaveChangesAsync();
+                if (result < 1)
+                    throw new BusinessException("Create", "The Booking Line was not created.");
+
+                return bookingLine.BookingLineId;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new BusinessException("Create", "Database problems, couldn't save changes.\n" + ex.ToString());
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new BusinessException("Create", "Concurrency problems, couldn't save change.\n" + ex.ToString());
+            }
+        }
+
+        public async Task<BookingLine> GetSingle(int? id)
+        {
+            // *** If you got here because your code doesn't work
+            // I humbly apologise, the bookingLine doesn't load anything else,
+            // I didn't know what else was needed ***
+            var bookingLine = await _context.BookingLines
+                                            .FirstOrDefaultAsync(b => b.BookingLineId == id);
+
+            if (bookingLine == null)
+                throw new BusinessException("GetSingle", $"Didn't find Booking Line with id {id}");
 
             return bookingLine;
         }
 
-        public async Task<bool> AddTime(int id, int amount)
+        public async Task<IEnumerable<BookingLine>> GetAll()
         {
-            var success = false;
+            return await _context.BookingLines.ToListAsync();
+        }
 
+        public async Task<BookingLine> Update(BookingLine bookingLine)
+        {
+            _context.BookingLines.Update(bookingLine);
+
+            try
+            {
+                var result = await _context.SaveChangesAsync();
+                if (result < 1)
+                    throw new BusinessException("Update", "The Booking Line was not updated.");
+
+                return bookingLine;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
+            }
+        }
+
+        public async Task Delete(int? id)
+        {
+            var bookingLine = await GetSingle(id);
+            _context.BookingLines.Remove(bookingLine);
+
+            try
+            {
+                var result = await _context.SaveChangesAsync();
+                if (result < 1)
+                    throw new BusinessException("Delete", "Couldn't delete the Booking Line.");
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
+            }
+        }
+
+        public async Task<bool> AddTime(int? id, int amount)
+        {
             try
             {
                 if (amount > 0)
                 {
-                    var bookingLine = await FindBookingLine(id);
+                    var bookingLine = await GetSingle(id);
 
                     bookingLine.EndDate = bookingLine.EndDate.AddMinutes(amount);
                     _context.BookingLines.Update(bookingLine);
+
                     var result = _context.SaveChanges();
-                    success = result > 0;
+                    if (result < 1)
+                        throw new BusinessException("AddTime", "Did not add time.");
+
+                    return true;
                 }
+                
+                return false;
             }
-            catch (Exception ex) when (ex is DbUpdateException
-                                    || ex is DbUpdateConcurrencyException
-                                    || ex is BusinessException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw new BusinessException("Booking line update", "Failed to add more time to your booking line.");
+                throw new BusinessException("AddTime", "Database problems, couldn't save changes.\n" + ex.ToString());
             }
-            return success;
+            catch (DbUpdateException ex)
+            {
+                throw new BusinessException("AddTime", "Concurrency problems, couldn't save change.\n" + ex.ToString());
+            }
         }
 
-        public async Task<bool> CancelBookingLine(int id)
+        public async Task<bool> CancelBookingLine(int? id)
         {
-            var success = false;
             try
             {
-                var bookingLine = await FindBookingLine(id);
+                var bookingLine = await GetSingle(id);
 
                 if (bookingLine.Ongoing)
                 {
                     bookingLine.Ongoing = false;
                     _context.BookingLines.Update(bookingLine);
+
                     var result = _context.SaveChanges();
-                    success = result > 0;
+                    if (result < 1)
+                        throw new BusinessException("CancelBookingLine", "The Booking Line was not cancelled.");
+
+                    return true;
                 }
+                
+                return false;
             }
-            catch (Exception ex) when (ex is DbUpdateException
-                                    || ex is DbUpdateConcurrencyException
-                                    || ex is BusinessException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw new BusinessException("Booking line cancellation", "Failed to cancel your booking line.");
+                throw new BusinessException("CancelBookingLine", "Database problems, couldn't save changes.\n" + ex.ToString());
             }
-            return success;
+            catch (DbUpdateException ex)
+            {
+                throw new BusinessException("CancelBookingLine", "Concurrency problems, couldn't save change.\n" + ex.ToString());
+            }
         }
 
-        private BookingLine ExplicitLoad(BookingLine bookingLine)
-        {
-            _context.Entry(bookingLine).Reference(bl => bl.Spot).Load();
-            _context.Entry(bookingLine.Spot).Reference(s => s.Location).Load();
-            _context.Entry(bookingLine.Spot).Reference(s => s.Marina).Load();
-            _context.Entry(bookingLine.Spot.Marina).Reference(m => m.Address).Load();
-            _context.Entry(bookingLine.Spot.Marina).Reference(m => m.MarinaOwner).Load();
-            _context.Entry(bookingLine.Spot.Marina.MarinaOwner).Reference(mo => mo.Person).Load();
-            _context.Entry(bookingLine).Reference(bl => bl.Booking).Load();
-            _context.Entry(bookingLine.Booking).Reference(b => b.Boat).Load();
-            _context.Entry(bookingLine.Booking.Boat).Reference(b => b.BoatOwner).Load();
-            _context.Entry(bookingLine.Booking.Boat.BoatOwner).Reference(bo => bo.Person).Load();
-            return bookingLine;
-        }
+        // This one should be moved up in hierarchy
 
-        public async Task<List<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId)
-        {
-            List<BookingLine> marinaOwnerBookings = new List<BookingLine>(await _context.BookingLines.ToListAsync());
-            marinaOwnerBookings.ForEach(bl => ExplicitLoad(bl));
+        // public async Task<IEnumerable<BookingLine>> GetBookingLinesByMarinaOwner(int marinaOwnerId)
+        // {
+        //     List<BookingLine> marinaOwnerBookings = new List<BookingLine>(await _context.BookingLines.ToListAsync());
+        //     marinaOwnerBookings.ForEach(bl => ExplicitLoad(bl));
 
-            return marinaOwnerBookings.FindAll(bl => bl.Spot.Marina.MarinaOwner.MarinaOwnerId == marinaOwnerId);
+        //     return marinaOwnerBookings.FindAll(bl => bl.Spot.Marina.MarinaOwner.MarinaOwnerId == marinaOwnerId);
+        // }
+        public async Task<bool> Exists(int? id)
+        {
+            return await _context.BookingLines.AnyAsync(b => b.BookingLineId == id);
         }
     }
 }

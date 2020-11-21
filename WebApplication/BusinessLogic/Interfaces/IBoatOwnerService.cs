@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using System;
 namespace WebApplication.BusinessLogic
 {
-    public interface IBoatOwnerService
+    public interface IBoatOwnerService : ICRUD<BoatOwner>
     {
-        IEnumerable<Booking> OngoingBookings(BoatOwner boatOwner);
-        Task<IEnumerable<Booking>> OngoingBookings(int boatOwnerId);
-        Task<IEnumerable<Booking>> Bookings(int boatOwnerId);
-        Task<BoatOwner> FindBoatOwner(int boatOwnerId);
+        Task<IEnumerable<Booking>> GetOngoingBookings(int? id);
+        Task<IEnumerable<Booking>> GetBookings(int? id);
+        Task<IEnumerable<Boat>> GetBoats(int? id);
+        Task<IEnumerable<BookingLine>> GetBookingLines(int? bookingId);
+        Task<IEnumerable<BookingLine>> GetOngoingBookingLines(int? bookingId);
         bool HasOngoing(Booking booking);
         double MoneySpent(BoatOwner boatOwner);
         TimeSpan TotalTime(BoatOwner boatOwner);

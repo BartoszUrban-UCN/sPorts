@@ -17,7 +17,7 @@ namespace WebApplication.Controllers
         }
         public async Task<IActionResult> Details(int id)
         {
-            var bookingLine = await _bookingLineService.FindBookingLine(id);
+            var bookingLine = await _bookingLineService.GetSingle(id);
             if (bookingLine == null)
             {
                 return NotFound();
@@ -40,7 +40,6 @@ namespace WebApplication.Controllers
             return Content("Not Added");
         }
 
-        [Route("bookingline/{id}/cancel", Name = "cancelbline")]
         public async Task<IActionResult> Cancel(int id)
         {
             var success = await _bookingLineService.CancelBookingLine(id);

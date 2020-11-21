@@ -65,28 +65,28 @@ namespace WebApplication.Controllers.RestApi
             return NotFound();
         }
 
-        /// <summary>
-        /// Get bookings by marina owner
-        /// </summary>
-        /// <returns>List of logged in marina owner bookings</returns>
-        [Produces("application/json")]
-        [HttpGet("marinaowner")]
-        public async Task<ActionResult<IEnumerable<BookingLine>>> GetBookingsByMarinaOwner()
-        {
-            // get logged marina owner
-            // var marinaOwner = await _marinaOwnerService.GetSingle(int loggedMarinaOwnerId);
-            // var bookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
+        // /// <summary>
+        // /// Get bookings by marina owner
+        // /// </summary>
+        // /// <returns>List of logged in marina owner bookings</returns>
+        // [Produces("application/json")]
+        // [HttpGet("marinaowner")]
+        // public async Task<ActionResult<IEnumerable<BookingLine>>> GetBookingsByMarinaOwner()
+        // {
+        //     // get logged marina owner
+        //     // var marinaOwner = await _marinaOwnerService.GetSingle(int loggedMarinaOwnerId);
+        //     // var bookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
 
-            int marinaOwnerId = 1;
-            var marinaOwnerBookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwnerId);
+        //     int marinaOwnerId = 1;
+        //     var marinaOwnerBookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwnerId);
 
-            if (marinaOwnerBookingLines != null)
-            {
-                return Ok(marinaOwnerBookingLines);
-            }
+        //     if (marinaOwnerBookingLines != null)
+        //     {
+        //         return Ok(marinaOwnerBookingLines);
+        //     }
 
-            return NotFound();
-        }
+        //     return NotFound();
+        // }
 
         /// <summary>
         /// Cancel booking based on booking id

@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Data;
-using WebApplication.Models;
 using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
@@ -14,25 +7,23 @@ namespace WebApplication.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BoatOwnerController : Controller
     {
-        private readonly SportsContext _context;
         private readonly IBoatOwnerService _boatOwnerService;
-        public BoatOwnerController(SportsContext context, IBoatOwnerService service)
+        public BoatOwnerController(IBoatOwnerService boatOwnerService)
         {
-            _context = context;
-            _boatOwnerService = service;
+            _boatOwnerService = boatOwnerService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var boatOwners = _context.BoatOwners.Include(b => b.Person);
-            return View(await boatOwners.ToListAsync());
+            var result = await _boatOwnerService.GetAll();
+            return View(result);
         }
 
-        public async Task<IActionResult> GetBookings(int id)
+        public async Task<IActionResult> GetBookings(int? id)
         {
             try
             {
-                var bookings = await _boatOwnerService.Bookings(id);
+                var bookings = await _boatOwnerService.GetBookings(id);
                 return View("~/Views/Booking/Index.cshtml", bookings);
             }
             catch (BusinessException)
@@ -41,11 +32,11 @@ namespace WebApplication.Controllers
             }
         }
 
-        public async Task<IActionResult> GetOngoingBookings(int id)
+        public async Task<IActionResult> GetOngoingBookings(int? id)
         {
             try
             {
-                var ongoingBookings = await _boatOwnerService.OngoingBookings(id);
+                var ongoingBookings = await _boatOwnerService.GetOngoingBookings(id);
                 return View("~/Views/Booking/Index.cshtml", ongoingBookings);
             }
             catch (BusinessException)
@@ -54,26 +45,56 @@ namespace WebApplication.Controllers
             }
         }
 
-        public async Task<IActionResult> GetBoats(int id)
-        {
-            var boatOwnerWithBoats = await _context.BoatOwners.Include(b => b.Boats)
-                                                        .ToListAsync();
-            var boatOwner = boatOwnerWithBoats.FirstOrDefault(b => b.BoatOwnerId == id);
-
-            if (boatOwner != null)
-            {
-                return View("~/Views/Boats/Index.cshtml", boatOwner.Boats);
-            }
-            return View("Error");
-        }
-
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> GetBookingLines(int? id)
         {
             try
             {
-                var boatOwner = await _boatOwnerService.FindBoatOwner(id);
+                var bookingLines = await _boatOwnerService.GetBookingLines(id);
+                return View("~Views/BookingLine/Index.cshtml", bookingLines);
+            }
+            catch(BusinessException)
+            {
+                return View("Error");
+            }
+        }
+
+        [Route("{id}/GetBookingLines")]
+        public async Task<IActionResult> GetOngoingBookingLines(int? id)
+        {
+            try
+            {
+                var ongoingBookingLines = await _boatOwnerService.GetOngoingBookingLines(id);
+                return View("~Views/BookingLine/Index.cshtml", ongoingBookingLines);
+            }
+            catch(BusinessException)
+            {
+                return View("Error");
+            }
+        }
+
+        [Route("{id}/GetBoats")]
+        public async Task<IActionResult> GetBoats(int? id)
+        {
+            try
+            {
+                var boats = await _boatOwnerService.GetBoats(id);
+                return View("~/Views/Boats/Index.cshtml", boats);
+            }
+            catch (BusinessException)
+            {
+                return View("Error");
+            }
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            try
+            {
+                var boatOwner = await _boatOwnerService.GetSingle(id);
+
                 ViewData["TotalSpent"] = _boatOwnerService.MoneySpent(boatOwner);
                 ViewData["TotalTime"] = _boatOwnerService.TotalTime(boatOwner);
+                
                 return View(boatOwner);
             }
             catch(BusinessException)

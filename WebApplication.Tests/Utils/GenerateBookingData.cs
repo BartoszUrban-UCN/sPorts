@@ -25,7 +25,7 @@ namespace WebApplication.Tests.Utils
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context, null);
                 Booking booking = new Booking();
                 booking.BookingLines = new List<BookingLine>();
                 return await bookingService.Create(booking) > 0;
@@ -36,7 +36,7 @@ namespace WebApplication.Tests.Utils
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context, null);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
                 Spot spot = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
@@ -55,7 +55,7 @@ namespace WebApplication.Tests.Utils
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context, null);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
                 Spot spot1 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
@@ -76,7 +76,7 @@ namespace WebApplication.Tests.Utils
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context);
+                IBookingService bookingService = new BookingService(context, null);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
 

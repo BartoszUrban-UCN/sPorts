@@ -5,16 +5,20 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public interface IBookingService : ICRUD<Booking>, IBookingConfirmationService, IBookingLineService
+    public interface IBookingService : ICRUD<Booking>
     {
         List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates);
 
-        Booking ExplicitLoad(Booking booking);
+        Task<BookingLine> GetBookingLine(int? id);
 
-        Task<BookingLine> GetBookingLine(int id);
+        // Task<List<BookingLine>> GetUnconfirmedBookingLines(int? marinaOwnerId);
 
-        Task<bool> CancelBooking(int id);
+        Task<IEnumerable<BookingLine>> GetBookingLines(int? id);
 
-        Task<List<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId);
+        Task<IEnumerable<BookingLine>> GetOngoingBookingLines(int? id);
+
+        Task<bool> ConfirmSpotBooked(int bookingLineId);
+
+        Task<bool> CancelBooking(int? id);
     }
 }

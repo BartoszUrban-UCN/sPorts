@@ -164,14 +164,12 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        [Route("Booking/{id}/GetBookingLines", Name = "blines")]
-        public async Task<IActionResult> GetBookingLines(int id)
+        public async Task<IActionResult> GetBookingLines(int? id)
         {
             try
             {
-                var booking = await _bookingService.GetSingle(id);
-
-                return View("~/Views/BookingLine/Index.cshtml", booking?.BookingLines);
+                var bookingLines = await _bookingService.GetBookingLines(id);
+                return View("~/Views/BookingLine/Index.cshtml", bookingLines);
             }
             catch (BusinessException)
             {
@@ -179,13 +177,12 @@ namespace WebApplication.Controllers
             }
         }
 
-        [Route("Booking/{id}/Cancel", Name = "cancel")]
-        public async Task<IActionResult> Cancel(int id)
+        public async Task<IActionResult> Cancel(int? id)
         {
             var success = await _bookingService.CancelBooking(id);
             if (success)
             {
-                return Content("Canceled!");
+               return Content("Canceled!");
             }
             return Content("Not Canceled!");
         }

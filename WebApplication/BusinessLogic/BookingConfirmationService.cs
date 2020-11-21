@@ -42,8 +42,8 @@ namespace WebApplication.BusinessLogic
         public void SendConfirmationMail(int bookingId)
         {
             Booking booking = _context.Bookings.Find(bookingId);
-            IBookingService bookingService = new BookingService(_context);
-            bookingService.ExplicitLoad(booking);
+            //IBookingService bookingService = new BookingService(_context);
+            //bookingService.ExplicitLoad(booking);
 
             IPDFService<Booking> service = new BookingPDFService();
             service.CreatePDFFile(booking);

@@ -105,12 +105,12 @@ namespace WebApplication.Controllers.RestApi
             return boatOwner;
         }
 
-        [HttpGet("{id}/bookings")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Booking>>> Bookings(int id)
         {
             try
             {
-                var bookings = await _boatOwnerService.Bookings(id);
+                var bookings = await _boatOwnerService.GetBookings(id);
                 return Ok(bookings);
             }
             catch (BusinessException)
@@ -119,12 +119,12 @@ namespace WebApplication.Controllers.RestApi
             }
         }
 
-        [HttpGet("{id}/ongbookings")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Booking>>> OngoingBookings(int id)
         {
             try
             {
-                var ongoingBookings = await _boatOwnerService.OngoingBookings(id);
+                var ongoingBookings = await _boatOwnerService.GetOngoingBookings(id);
                 return Ok(ongoingBookings);
             }
             catch (BusinessException)
@@ -133,7 +133,7 @@ namespace WebApplication.Controllers.RestApi
             }
         }
 
-        [HttpGet("{id}/boats")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Boat>>> Boats(int id)
         {
             var boatOwnerWithBoats = await _context.BoatOwners.Include(b => b.Boats)

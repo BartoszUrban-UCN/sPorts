@@ -273,6 +273,7 @@ namespace WebApplication.Controllers
             {
                 Latitude = Convert.ToDouble(Latitude),
                 Longitude = Convert.ToDouble(Longitude),
+                // Radius = double.Parse(Radius),
                 Radius = Convert.ToDouble(Radius),
             };
 

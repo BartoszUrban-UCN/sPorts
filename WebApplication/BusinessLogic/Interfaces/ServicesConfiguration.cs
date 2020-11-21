@@ -20,6 +20,7 @@ namespace WebApplication.BusinessLogic
             services.AddScoped<ISpotService, SpotService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IMarinaService, MarinaService>();
+            services.AddScoped<IBoatService, BoatService>();
         }
     }
 }

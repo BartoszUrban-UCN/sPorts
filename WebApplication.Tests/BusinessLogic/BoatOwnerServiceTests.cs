@@ -20,11 +20,11 @@ namespace WebApplication.Tests.BusinessLogic
             {
                 // Arrange
                 BoatOwner boatOwner;
-                var boatOwnerService = new BoatOwnerService(context);
+                var boatOwnerService = new BoatOwnerService(context, null);
                 // Act
                 boatOwner = null;
                 // Assert
-                Assert.Throws<BusinessException>(() => boatOwnerService.OngoingBookings(boatOwner));
+                Assert.Throws<BusinessException>(() => boatOwnerService.GetOngoingBookings(boatOwner));
             }
         }
 
@@ -35,7 +35,7 @@ namespace WebApplication.Tests.BusinessLogic
             {
                 // Arrange
                 Booking booking;
-                var boatOwnerService = new BoatOwnerService(context);
+                var boatOwnerService = new BoatOwnerService(context, null);
                 // Act
                 booking = null;
                 // Assert
@@ -49,7 +49,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 // Arrange
-                var boatOwnerService = new BoatOwnerService(context);
+                var boatOwnerService = new BoatOwnerService(context, null);
 
                 var booking = new Booking();
                 booking.BookingLines.AddRange(new List<BookingLine>
@@ -82,7 +82,7 @@ namespace WebApplication.Tests.BusinessLogic
                 var boatOwner = new BoatOwner() { Boats = new List<Boat> { boat } };
 
                 // Act
-                var result = new List<Booking>(boatOwnerService.OngoingBookings(boatOwner));
+                var result = new List<Booking>(boatOwnerService.GetOngoingBookings(boatOwner));
 
                 // Assert
                 Assert.Collection(result, item => Assert.Equal(booking, result[0]),
@@ -97,7 +97,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 // Arrange
-                var boatOwnerService = new BoatOwnerService(context);
+                var boatOwnerService = new BoatOwnerService(context, null);
 
                 var booking = new Booking();
                 booking.BookingLines.AddRange(new List<BookingLine>
@@ -124,7 +124,7 @@ namespace WebApplication.Tests.BusinessLogic
                 var boatOwner = new BoatOwner() { Boats = new List<Boat> { boat } };
 
                 // Act
-                var result = new List<Booking>(boatOwnerService.OngoingBookings(boatOwner));
+                var result = new List<Booking>(boatOwnerService.GetOngoingBookings(boatOwner));
 
                 // Assert
                 Assert.True(result.Count == 0);
@@ -137,7 +137,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 // Arrange
-                var boatOwnerService = new BoatOwnerService(context);
+                var boatOwnerService = new BoatOwnerService(context, null);
 
                 var booking = new Booking();
                 booking.BookingLines.AddRange(new List<BookingLine>
@@ -174,7 +174,7 @@ namespace WebApplication.Tests.BusinessLogic
                 var boatOwner = new BoatOwner() { Boats = new List<Boat> { boat, boat1 } };
 
                 // Act
-                var result = new List<Booking>(boatOwnerService.OngoingBookings(boatOwner));
+                var result = new List<Booking>(boatOwnerService.GetOngoingBookings(boatOwner));
 
                 // Assert
                 Assert.Collection(result, item => Assert.Equal(booking, result[0]),
@@ -190,7 +190,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 // Arrange
-                var boatOwnerService = new BoatOwnerService(context);
+                var boatOwnerService = new BoatOwnerService(context, null);
 
                 var booking = new Booking();
 
@@ -217,7 +217,7 @@ namespace WebApplication.Tests.BusinessLogic
             using (var context = Fixture.CreateContext())
             {
                 // Arrange
-                var boatOwnerService = new BoatOwnerService(context);
+                var boatOwnerService = new BoatOwnerService(context, null);
                 var booking = new Booking();
 
                 booking.BookingLines.AddRange(new List<BookingLine>
