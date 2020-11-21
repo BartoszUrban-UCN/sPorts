@@ -77,7 +77,7 @@ namespace WebApplication.BusinessLogic
             if (id < 0)
                 throw new BusinessException("GetSingle", "The id was negative.");
 
-            var location = await _context.Locations.FindAsync(id);
+            var location = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == id);
         
             if (location == null)
                 throw new BusinessException("GetSingle", $"Didn't find Location with id {id}");
@@ -107,12 +107,12 @@ namespace WebApplication.BusinessLogic
             }
         }
 
-        public Task<bool> Exists(int? id)
+        public async Task<bool> Exists(int? id)
         {
             if (id < 0)
                 throw new BusinessException("Exists", "The id is negative.");
 
-            return _context.Locations.AnyAsync(l => l.LocationId == id);
+            return await _context.Locations.AnyAsync(l => l.LocationId == id);
         }
     }
 }
