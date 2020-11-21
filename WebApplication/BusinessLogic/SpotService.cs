@@ -87,7 +87,13 @@ namespace WebApplication.BusinessLogic
 
         public async Task DeleteSpotLocation(Spot spot)
         {
-            await _locationService.Delete(spot.LocationId);
+            var locationId = spot.LocationId;
+
+            spot.LocationId = null;
+
+            await Update(spot);
+
+            await _locationService.Delete(locationId);
         }
     }
 }
