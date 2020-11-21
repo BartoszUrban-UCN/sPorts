@@ -64,11 +64,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="Location.Latitude" class="control-label"></label>
-                <input id="lat" class="form-control" name="Latitude" readonly />
+                <input asp-for="Location.Latitude" id="lat" class="form-control" name="Latitude" readonly />
             </div>
             <div class="form-group">
                 <label asp-for="Location.Longitude" class="control-label"></label>
-                <input id="long" class="form-control" name="Longitude" readonly />
+                <input asp-for="Location.Longitude" id="long" class="form-control" name="Longitude" readonly />
             </div>
 
             @* JavaScript to be able to click on map, select a Location and read the coordinates *@
@@ -83,10 +83,10 @@
                     currentMarker
                         .setLatLng(e.latlng)
                         .addTo(mymap)
-                        .bindPopup(`<b>Selected Location</b><br/> ${e.latlng.toString()} <br/><b>Double Click on marker to remove it</b>`).openPopup();
+                        .bindPopup(`<b>Selected Location</b><br /> ${e.latlng.toString()} <br /><b>Double Click on marker to remove it</b>`).openPopup();
 
-                    latitude.value = e.latlng.lat;
-                    longitude.value = e.latlng.lng;
+                    latitude.value = e.latlng.lat.toString().replace(/\./g, ',');
+                    longitude.value = e.latlng.lng.toString().replace(/\./g, ',');
                 }
 
                 function removeMarker(e) {
@@ -103,12 +103,12 @@
             @* If Spot has a location, add marker on the map to showcasing where it is currently and populate Latitude and Longitude fields *@
             @if (Model.Location != null)
             {
-                <script>
-                    currentMarker.setLatLng([@Model.Location.Latitude, @Model.Location.Longitude]).addTo(mymap);
+        <script>
+            console.log(latitude.value.toString().replace(/\./g, ','));
+            currentMarker.setLatLng([parseFloat(latitude.value.toString().replace(/\./g, ',')), parseFloat(longitude.value.toString().replace(/\./g, ','))]).addTo(mymap);
 
-                    latitude.value = @Model.Location.Latitude;
-                    longitude.value = @Model.Location.Longitude;
-                </script>
+
+        </script>
             }
 
             @* End of JavaScript *@
