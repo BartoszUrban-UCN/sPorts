@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
 {
@@ -38,7 +38,7 @@ namespace WebApplication.Controllers
             //        }
             //    }
             //}
-         
+
             return View(await _marinaService.GetAll());
         }
 

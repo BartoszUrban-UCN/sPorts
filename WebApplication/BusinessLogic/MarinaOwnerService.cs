@@ -1,12 +1,8 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication.BusinessLogic
 {
@@ -19,7 +15,7 @@ namespace WebApplication.BusinessLogic
         {
             // if (context == null)
             //     throw new BusinessException("MarinaOwnerService", "The context argument was null.");
-            
+
             // if (bookingLinesService == null)
             //     throw new BusinessException("MarinaOwnerService", "The bookingLinesService argument was null.");
 
@@ -139,7 +135,7 @@ namespace WebApplication.BusinessLogic
         {
             if (marinaOwnerId < 0)
                 throw new BusinessException("GetBookingLines", "The id is negative.");
-            
+
             var bookingLines = (List<BookingLine>)await _bookingLinesService.GetAll();
 
             return bookingLines.FindAll(b => b.Spot.Marina.MarinaOwner.MarinaOwnerId == marinaOwnerId);
@@ -147,15 +143,15 @@ namespace WebApplication.BusinessLogic
 
         public async Task<IEnumerable<BookingLine>> GetUnconfirmedBookingLines(int marinaOwnerId)
         {
-            var bookingLines = (List<BookingLine>) await GetBookingLines(marinaOwnerId);
+            var bookingLines = (List<BookingLine>)await GetBookingLines(marinaOwnerId);
 
-            return bookingLines.FindAll(b => !b.Confirmed); 
+            return bookingLines.FindAll(b => !b.Confirmed);
         }
         public async Task<IEnumerable<BookingLine>> GetConfirmedBookingLines(int marinaOwnerId)
         {
-            var bookingLines = (List<BookingLine>) await GetBookingLines(marinaOwnerId);
+            var bookingLines = (List<BookingLine>)await GetBookingLines(marinaOwnerId);
 
-            return bookingLines.FindAll(b => b.Confirmed); 
+            return bookingLines.FindAll(b => b.Confirmed);
         }
     }
 }

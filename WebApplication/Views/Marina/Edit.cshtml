@@ -82,7 +82,8 @@
                         @Html.DisplayFor(modelItem => item.Price)
                     </td>
                     <td>
-                    <input type="submit" value="Edit" class="btn btn-primary" onclick="location.href='@Url.Action("Edit","Spot", new { id = item.SpotId})'" />
+                        <input type="submit" value="Edit" class="btn btn-primary" onclick="location.href='@Url.Action("Edit","Spot", new { id = item.SpotId})'" />
+                        
                     </td>
                     <td>
                         <input type="submit" value="Delete" class="btn btn-primary" onclick="location.href='@Url.Action("Delete","Spot", new { id = item.SpotId})'" />

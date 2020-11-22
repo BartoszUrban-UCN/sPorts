@@ -1,7 +1,4 @@
 using WebApplication.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 namespace WebApplication.BusinessLogic
 {
     public interface IMarinaOwnerService : ICRUD<MarinaOwner>

@@ -21,14 +21,14 @@ namespace WebApplication.Controllers.RestApi
         /// <summary>
         /// Gets all the marinas in the database
         /// </summary>
-        [Produces("application/json")] 
+        [Produces("application/json")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Marina>>> GetMarinas()
         {
             return await _context.Marinas.ToListAsync();
         }
 
-        [Produces("application/json")] 
+        [Produces("application/json")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Marina>> GetMarina(int id)
         {
@@ -41,7 +41,7 @@ namespace WebApplication.Controllers.RestApi
             return NotFound();
         }
 
-        [Produces("application/json")] 
+        [Produces("application/json")]
         [HttpGet("{id}/spots")]
         public async Task<ActionResult<IEnumerable<Spot>>> GetMarinaSpots(int id)
         {

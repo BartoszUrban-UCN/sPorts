@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace WebApplication.BusinessLogic
 {
