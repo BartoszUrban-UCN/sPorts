@@ -26,8 +26,6 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> Create(Marina marina)
         {
-            // TODO Might not be necesary
-            // TODO Remove if the caller already checks for null
             if (marina == null)
             {
                 throw new BusinessException("Create", "Marina object is null.");
@@ -98,14 +96,14 @@ namespace WebApplication.BusinessLogic
             return await _context.Marinas.AnyAsync(m => m.MarinaId == id);
         }
 
+        // Get all Marinas and load their related entities also
         public async Task<IEnumerable<Marina>> GetAll()
         {
-            // Get all marinas, and if a marina does not have a location, load the marina's spots that do have a location
             var marinas = await _context.Marinas
                 .Include(marina => marina.Address)
                 .Include(marina => marina.MarinaOwner)
                 .Include(marina => marina.Location)
-                .Include(marina => marina.Spots.Where(spot => spot.LocationId != null))
+                .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
                     .ThenInclude(spot => spot.Location)
                 .ToListAsync();
 
@@ -114,6 +112,7 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Marina> GetSingle(int? id)
         {
+            // Gives error in the route if the id is negative
             if (id < 0)
                 throw new BusinessException("GetSingle", "The id was negative.");
 
@@ -121,9 +120,9 @@ namespace WebApplication.BusinessLogic
                 .Include(marina => marina.Address)
                 .Include(marina => marina.MarinaOwner)
                 .Include(marina => marina.Location)
-                .Include(marina => marina.Spots.Where(spot => spot.LocationId != null))
+                .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
                     .ThenInclude(spot => spot.Location)
-                .FirstOrDefaultAsync(m => m.MarinaId == id);
+                .FirstOrDefaultAsync(marina => marina.MarinaId == id);
 
             if (marina == null)
                 throw new BusinessException("GetSingle", $"Didn't find Marina with id {id}");

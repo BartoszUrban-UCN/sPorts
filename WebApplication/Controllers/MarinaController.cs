@@ -26,35 +26,18 @@ namespace WebApplication.Controllers
         // GET: Marina
         public async Task<IActionResult> Index()
         {
-
-
-            //foreach (Marina marina in sportsContext.ToList())
-            //{
-            //    if (marina.Location == null)
-            //    {
-            //        if (MarinaHasSpotsLocations(marina))
-            //        {
-            //            CalculateMarinaLocation(marina);
-            //        }
-            //    }
-            //}
-
             return View(await _marinaService.GetAll());
         }
 
         // GET: Marina/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || id < 0)
             {
                 return NotFound();
             }
 
-            var marina = await _context.Marinas
-                .Include(m => m.Spots)
-                .Include(m => m.Address)
-                .Include(m => m.MarinaOwner)
-                .FirstOrDefaultAsync(m => m.MarinaId == id);
+            var marina = await _marinaService.GetSingle(id);
 
             if (marina == null)
             {
@@ -77,7 +60,7 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId")] Marina marina)
+        public async Task<IActionResult> Create([Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId,LocationId")] Marina marina)
         {
             if (ModelState.IsValid)
             {
