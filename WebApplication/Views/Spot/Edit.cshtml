@@ -58,24 +58,29 @@
 
             @* End of initialization *@
 
-            <div class="form-group">
-                <label asp-for="LocationId" class="control-label"></label>
-                <input asp-for="LocationId" class="form-control" readonly />
+            <div id="locationform">
+                <div class="form-group">
+                    <label asp-for="LocationId" class="control-label"></label>
+                    <input asp-for="LocationId" id="locId" class="form-control" readonly />
+                    <span asp-validation-for="LocationId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Location.Latitude" class="control-label"></label>
+                    <input asp-for="Location.Latitude" id="lat" class="form-control" name="Latitude" readonly />
+                    <span asp-validation-for="Location.Latitude" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Location.Longitude" class="control-label"></label>
+                    <input asp-for="Location.Longitude" id="long" class="form-control" name="Longitude" readonly />
+                    <span asp-validation-for="Location.Longitude" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Location.Latitude" class="control-label"></label>
-                <input asp-for="Location.Latitude" id="lat" class="form-control" name="Latitude" readonly />
-            </div>
-            <div class="form-group">
-                <label asp-for="Location.Longitude" class="control-label"></label>
-                <input asp-for="Location.Longitude" id="long" class="form-control" name="Longitude" readonly />
-            </div>
-
             @* JavaScript to be able to click on map, select a Location and read the coordinates *@
 
             <script>
                 var currentMarker = L.marker();
-
+                var locationForm = document.getElementById("locationform");
+                var locationId = document.getElementById("locId");
                 var latitude = document.getElementById("lat");
                 var longitude = document.getElementById("long");
 
@@ -103,12 +108,10 @@
             @* If Spot has a location, add marker on the map to showcasing where it is currently and populate Latitude and Longitude fields *@
             @if (Model.Location != null)
             {
-        <script>
-            console.log(latitude.value.toString().replace(/\./g, ','));
-            currentMarker.setLatLng([parseFloat(latitude.value.toString().replace(/\./g, ',')), parseFloat(longitude.value.toString().replace(/\./g, ','))]).addTo(mymap);
-
-
-        </script>
+                <script>
+                    console.log(latitude.value.toString().replace(/\./g, ','));
+                    currentMarker.setLatLng([parseFloat(latitude.value.toString().replace(/\./g, ',')), parseFloat(longitude.value.toString().replace(/\./g, ','))]).addTo(mymap);
+                </script>
             }
 
             @* End of JavaScript *@
