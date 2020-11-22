@@ -112,7 +112,9 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Marina> GetSingle(int? id)
         {
-            // Gives error in the route if the id is negative
+            if (id == null)
+                throw new BusinessException("GetSingle", "Id is null.");
+
             if (id < 0)
                 throw new BusinessException("GetSingle", "The id was negative.");
 

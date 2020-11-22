@@ -58,10 +58,11 @@ namespace WebApplication.BusinessLogic
         public async Task<BoatOwner> GetSingle(int? id)
         {
             if (id == null)
-            {
                 throw new BusinessException("GetSingle", "Id is null.");
-            }
 
+            if (id < 0)
+                throw new BusinessException("GetSingle", "Id is negative.");
+            
             var boatOwner = await _context.BoatOwners
                                             .Include(b => b.Person)
                                             .Include(b => b.Boats)

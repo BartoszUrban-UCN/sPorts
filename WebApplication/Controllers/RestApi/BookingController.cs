@@ -23,7 +23,7 @@ namespace WebApplication.Controllers.RestApi
         /// <returns>List of bookings</returns>
         [Produces("application/json")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetBookings()
+        public async Task<ActionResult<IEnumerable<Booking>>> Bookings()
         {
             var bookings = await _bookingService.GetAll();
             return Ok(bookings);
@@ -36,7 +36,7 @@ namespace WebApplication.Controllers.RestApi
         /// <returns>Booking</returns>
         [Produces("application/json")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Booking>> GetBooking(int id)
+        public async Task<ActionResult<Booking>> Booking(int id)
         {
             var booking = await _bookingService.GetSingle(id);
 
@@ -54,7 +54,7 @@ namespace WebApplication.Controllers.RestApi
         /// <returns>List of booking lines of a specified booking</returns>
         [Produces("application/json")]
         [HttpGet("{id}/lines")]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetBookingLines(int id)
+        public async Task<ActionResult<IEnumerable<Booking>>> BookingLines(int id)
         {
             var booking = await _bookingService.GetSingle(id);
 
@@ -94,7 +94,7 @@ namespace WebApplication.Controllers.RestApi
         /// <param name="id">Booking id</param>
         /// <returns>True or false whether it was cancelled or not</returns>
         [HttpPut]
-        public async Task<ActionResult<bool>> Cancel(int id)
+        public async Task<ActionResult<bool>> CancelBooking(int id)
         {
             var success = await _bookingService.CancelBooking(id);
             return Ok();

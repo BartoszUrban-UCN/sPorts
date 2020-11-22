@@ -48,6 +48,9 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Boat> GetSingle(int? id)
         {
+            if (id == null)
+                throw new BusinessException("GetSingle", "Id is null.");
+
             if (id < 0)
                 throw new BusinessException("GetSingle", "The id was negative.");
                 

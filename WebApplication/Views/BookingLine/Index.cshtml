@@ -52,10 +52,10 @@
                     @Html.DisplayFor(modelItem => item.Ongoing)
                 </td>
                 <td>
-                    <a asp-action="Cancel" asp-route-id="@item.BookingLineId" class="btn btn-primary">Cancel</a> |
                     <a asp-action="Edit" asp-route-id="@item.BookingLineId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.BookingLineId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.BookingLineId">Delete</a>
+                    <a asp-action="Cancel" asp-route-id="@item.BookingLineId" class="btn btn-primary">Cancel</a>
                 </td>
             </tr>
         }

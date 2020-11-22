@@ -49,7 +49,7 @@
     </dl>
 </div>
 <div>
-    <form asp-action="AddTime">
+    <form asp-action="AddTime" asp-route-id="@Model.BookingLineId">
          <div class="form-group">
              <label class="control-label">Amount</label>
              <input name="amount" class="form-control"/>

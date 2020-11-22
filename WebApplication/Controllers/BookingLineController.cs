@@ -27,9 +27,8 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        [Route("bookingline/{id}/addtime", Name = "addtime")]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> AddTime(int id, [Bind("amount")] int amount)
+        public async Task<IActionResult> AddTime(int? id, [Bind("amount")] int amount)
         {
             var success = await _bookingLineService.AddTime(id, amount);
 

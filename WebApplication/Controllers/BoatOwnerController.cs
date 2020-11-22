@@ -45,34 +45,21 @@ namespace WebApplication.Controllers
             }
         }
 
-        public async Task<IActionResult> GetBookingLines(int? id)
+        public IActionResult GetBookingLines(int? id)
         {
-            try
-            {
-                var bookingLines = await _boatOwnerService.GetBookingLines(id);
-                return View("~Views/BookingLine/Index.cshtml", bookingLines);
-            }
-            catch(BusinessException)
-            {
-                return View("Error");
-            }
+            return RedirectToAction("GetBookingLines", "Booking", new {id = id});
         }
 
-        [Route("{id}/GetBookingLines")]
-        public async Task<IActionResult> GetOngoingBookingLines(int? id)
+        public IActionResult Cancel(int? id)
         {
-            try
-            {
-                var ongoingBookingLines = await _boatOwnerService.GetOngoingBookingLines(id);
-                return View("~Views/BookingLine/Index.cshtml", ongoingBookingLines);
-            }
-            catch(BusinessException)
-            {
-                return View("Error");
-            }
+            return RedirectToAction("Cancel", "Booking", new {id = id});
         }
 
-        [Route("{id}/GetBoats")]
+        public IActionResult GetOngoingBookingLines(int? id)
+        {
+            return RedirectToAction("GetOngoingBookingLines", "Booking", new {id = id});
+        }
+
         public async Task<IActionResult> GetBoats(int? id)
         {
             try

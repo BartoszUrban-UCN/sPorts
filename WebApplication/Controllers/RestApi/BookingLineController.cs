@@ -25,7 +25,7 @@ namespace WebApplication.Controllers.RestApi
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> Cancel(int id)
+        public async Task<ActionResult<bool>> CancelBookingLine(int id)
         {
             var success = await _bookingLineService.CancelBookingLine(id);
             return Ok(success);

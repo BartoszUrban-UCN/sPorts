@@ -148,21 +148,21 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        /// <summary>
-        /// Get Bookings of logged in Marina Owner
-        /// </summary>
-        /// <returns>View</returns>
-        // GET: Booking/marinaowner
-        [Route("{controller}/MarinaOwner")]
-        public async Task<IActionResult> BookingsByMarinaOwner()
-        {
-            // get logged in marina owner
-            // var marinaOwner = await _bookingService.GetSingle(int loggedMarinaOwnerId);
-            // var bookingLines = await _bookingService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
+        // /// <summary>
+        // /// Get Bookings of logged in Marina Owner
+        // /// </summary>
+        // /// <returns>View</returns>
+        // // GET: Booking/marinaowner
+        // [Route("{controller}/MarinaOwner")]
+        // public async Task<IActionResult> BookingsByMarinaOwner()
+        // {
+        //     // get logged in marina owner
+        //     // var marinaOwner = await _bookingService.GetSingle(int loggedMarinaOwnerId);
+        //     // var bookingLines = await _bookingService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
 
-            //return View(bookingLines);
-            return View();
-        }
+        //     //return View(bookingLines);
+        //     return View();
+        // }
 
         public async Task<IActionResult> GetBookingLines(int? id)
         {
@@ -175,6 +175,11 @@ namespace WebApplication.Controllers
             {
                 return View("Error");
             }
+        }
+
+        public IActionResult CancelBookingLine(int? id)
+        {
+            return RedirectToAction("Cancel", "BookingLine", new {id = id});
         }
 
         public async Task<IActionResult> Cancel(int? id)

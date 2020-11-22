@@ -61,9 +61,9 @@
                 @Html.DisplayFor(modelItem => item.BoatOwner.BoatOwnerId)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.BoatId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BoatId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BoatId">Delete</a>
+                <a asp-controller="Boat" asp-action="Edit" asp-route-id="@item.BoatId">Edit</a> |
+                <a asp-controller="Boat" asp-action="Details" asp-route-id="@item.BoatId">Details</a> |
+                <a asp-controller="Boat" asp-action="Delete" asp-route-id="@item.BoatId">Delete</a>
             </td>
         </tr>
 }

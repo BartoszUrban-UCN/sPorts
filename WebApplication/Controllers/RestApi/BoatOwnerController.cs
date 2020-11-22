@@ -26,14 +26,14 @@ namespace WebApplication.Controllers.RestApi
 
         // GET: api/BoatOwner
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BoatOwner>>> GetBoatOwners()
+        public async Task<ActionResult<IEnumerable<BoatOwner>>> BoatOwners()
         {
             return await _context.BoatOwners.ToListAsync();
         }
 
         // GET: api/BoatOwner/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BoatOwner>> GetBoatOwner(int id)
+        public async Task<ActionResult<BoatOwner>> BoatOwner(int id)
         {
             var boatOwner = await _context.BoatOwners.FindAsync(id);
 
@@ -49,7 +49,7 @@ namespace WebApplication.Controllers.RestApi
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBoatOwner(int id, BoatOwner boatOwner)
+        public async Task<IActionResult> BoatOwner(int id, BoatOwner boatOwner)
         {
             if (id != boatOwner.BoatOwnerId)
             {
