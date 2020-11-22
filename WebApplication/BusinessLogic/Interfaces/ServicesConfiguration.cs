@@ -11,16 +11,21 @@ namespace WebApplication.BusinessLogic
         /// <param name="services"></param>
         public static void AddBusinessServices(this IServiceCollection services)
         {
-            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingLineService, BookingLineService>();
             services.AddScoped<IBookingFormService, BookingFormService>();
             services.AddScoped<IBookingConfirmationService, BookingConfirmationService>();
+
             services.AddScoped<IBoatOwnerService, BoatOwnerService>();
-            services.AddScoped<IBookingService, BookingService>();
-            services.AddScoped<ISpotService, SpotService>();
-            services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IMarinaOwnerService, MarinaOwnerService>();
+
             services.AddScoped<IMarinaService, MarinaService>();
             services.AddScoped<IBoatService, BoatService>();
+
+            services.AddScoped<ISpotService, SpotService>();
+            services.AddScoped<ILocationService, LocationService>();
+
+            services.AddScoped<ILoginService, LoginService>();
         }
     }
 }
