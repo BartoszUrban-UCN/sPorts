@@ -78,7 +78,7 @@ namespace WebApplication.BusinessLogic
                 .Include(spot => spot.Location)
                 .ToListAsync();
 
-            return spots; 
+            return spots;
         }
 
         public async Task<Spot> GetSingle(int? id)
@@ -93,7 +93,7 @@ namespace WebApplication.BusinessLogic
 
             if (spot == null)
                 throw new BusinessException("GetSingle", $"Didn't find Spot with id {id}");
-            
+
             return spot;
         }
 
@@ -143,6 +143,7 @@ namespace WebApplication.BusinessLogic
             }
             else
             {
+                location.LocationId = (int)spot.LocationId;
                 _context.Update(location);
             }
 
