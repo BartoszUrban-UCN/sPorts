@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -26,74 +27,87 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> Create(Marina marina)
         {
-            if (marina == null)
+            if (marina is not null)
             {
-                throw new BusinessException("Create", "Marina object is null.");
-            }
+                _context.Marinas.Add(marina);
 
-            _context.Marinas.Add(marina);
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Create", "The Marina was not created.");
-
-                return marina.MarinaId;
+                await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Create", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Create", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
-        }
-
-        public async Task<int> CreateWithLocation(Marina marina, Location location)
-        {
-            // Create location for marina and take the Id
-            var locationForMarinaId = await _locationService.Create(location);
-            // Create marina
-            await Create(marina);
-            // Assign location to marina
-            marina.LocationId = locationForMarinaId;
 
             return marina.MarinaId;
         }
 
+        public async Task<int> CreateWithLocation(Marina marina, Location location)
+        {
+            if (marina is not null)
+                if (location is not null)
+                {
+                    // Create location for marina and take the Id
+                    var locationIdForMarina = await _locationService.Create(location);
+
+                    // Create marina
+                    await Create(marina);
+
+                    // Assign location to marina
+                    marina.LocationId = locationIdForMarina;
+
+                    await _context.SaveChangesAsync();
+
+                    return marina.MarinaId;
+                }
+
+            return marina.MarinaId;
+        }
+
+        // Delete a marina as well as its related location, if it has one
+        // Checks whether id is valid and whether a marina with that id exists
         public async Task Delete(int? id)
         {
-            var marina = await GetSingle(id);
-            _context.Marinas.Remove(marina);
+            if (id.IsValidId())
+                if (await Exists(id))
+                {
+                    // Find marina in the database by a given id
+                    var marina = await GetSingle(id);
 
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Delete", "Couldn't delete the Marina.");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+                    // Remove the marina's location from the database and remove associations, if it has one
+                    if (marina.LocationId is not null)
+                        await DeleteMarinaLocation(marina);
+
+                    // Remove the marina from the database
+                    _context.Marinas.Remove(marina);
+
+                    // Save the changes made
+                    await _context.SaveChangesAsync();
+                }
         }
 
         public async Task DeleteMarinaLocation(Marina marina)
         {
-            throw new System.NotImplementedException();
+            if (marina is not null)
+                if (marina.LocationId is not null)
+                {
+                    var locationId = marina.LocationId;
+
+                    marina.Location = null;
+                    marina.LocationId = null;
+
+                    await _locationService.Delete(locationId);
+                }
         }
 
         public async Task<bool> Exists(int? id)
         {
-            if (id < 0)
-                throw new BusinessException("Exists", "The id is negative.");
+            if (id.IsValidId())
+                return await _context.Marinas.AnyAsync(m => m.MarinaId == id);
 
-            return await _context.Marinas.AnyAsync(m => m.MarinaId == id);
+            return false;
+        }
+
+        public async Task<bool> NotExists(int? id)
+        {
+            id.ThrowIfInvalidId();
+
+            return !await _context.Marinas.AnyAsync(m => m.MarinaId == id);
         }
 
         // Get all Marinas and load their related entities also
@@ -112,85 +126,91 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Marina> GetSingle(int? id)
         {
-            if (id == null)
-                throw new BusinessException("GetSingle", "Id is null.");
+            if (id.IsValidId())
+            {
+                var marina = await _context.Marinas
+                    .Include(marina => marina.Address)
+                    .Include(marina => marina.MarinaOwner)
+                    .Include(marina => marina.Location)
+                    .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
+                        .ThenInclude(spot => spot.Location)
+                    .FirstOrDefaultAsync(marina => marina.MarinaId == id);
 
-            if (id < 0)
-                throw new BusinessException("GetSingle", "The id was negative.");
+                if (marina is not null)
+                    return marina;
+            }
 
-            var marina = await _context.Marinas
-                .Include(marina => marina.Address)
-                .Include(marina => marina.MarinaOwner)
-                .Include(marina => marina.Location)
-                .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
-                    .ThenInclude(spot => spot.Location)
-                .FirstOrDefaultAsync(marina => marina.MarinaId == id);
-
-            if (marina == null)
-                throw new BusinessException("GetSingle", $"Didn't find Marina with id {id}");
-
-            return marina;
+            throw new BusinessException("Error", "Not Found");
         }
 
         public async Task<Marina> Update(Marina marina)
         {
-            _context.Marinas.Update(marina);
+            if (marina is not null)
+            {
+                _context.Marinas.Update(marina);
 
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Update", "The Marina was not updated.");
+                await _context.SaveChangesAsync();
+            }
 
-                return marina;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return marina;
         }
 
-        public async Task<Spot> UpdateMarinaLocation(Marina marina, Location location)
+        public async Task<Marina> UpdateMarinaLocation(Marina marina, Location location)
         {
-            throw new System.NotImplementedException();
+            if (marina is not null)
+                if (location is not null)
+                {
+                    await _locationService.Update(location);
+
+                    await _context.SaveChangesAsync();
+                }
+
+            return marina;
         }
 
         /// <summary>
         /// Calculate a marina's location based on the locations that its spots have, if it has any.
         /// </summary>
         /// <remarks>
-        /// Uses a mathematical algorithm in order to determine the smallest enclosing circle of a number of points.
+        /// Uses a algorithm in order to determine the smallest enclosing circle of a number of points.
         /// </remarks>
         /// <param name="marina"></param>
         public static void CalculateMarinaLocation(Marina marina)
         {
-            IList<Point> locations = new List<Point>();
+            if (marina is not null)
+                if (MarinaSpotsHaveLocations(marina))
+                {
+                    IList<Point> locations = new List<Point>();
 
-            // Verify for spots with locations once again
-            // (When the method gets called it is made sure that the spots inside have a valid location, but let's verify again)
-            marina.Spots
-                .FindAll(spot => spot.LocationId != null)
-                .ForEach(spot => locations.Add(new Point(spot.Location.Latitude, spot.Location.Longitude)));
+                    // Verify for spots with locations once again
+                    // (When the method gets called it is made sure that the spots inside have a valid location, but let's verify again)
+                    marina.Spots
+                        .FindAll(spot => spot.LocationId.IsValidId())
+                        .ForEach(spot => locations.Add(new Point(spot.Location.Latitude, spot.Location.Longitude)));
 
-            Circle circle = SmallestEnclosingCircle.MakeCircle(locations);
+                    Circle circle = SmallestEnclosingCircle.MakeCircle(locations);
 
-            if (circle.r * 8000 < 10000)
-            {
-                circle.r = 10;
-            }
+                    if (circle.r * 8000 < 10000)
+                        circle.r = 10;
 
-            Location marinaLocation = new Location
-            {
-                Latitude = circle.c.x,
-                Longitude = circle.c.y,
-                Radius = circle.r,
-            };
+                    Location marinaLocation = new Location
+                    {
+                        Latitude = circle.c.x,
+                        Longitude = circle.c.y,
+                        Radius = circle.r,
+                    };
 
-            marina.Location = marinaLocation;
+                    marina.Location = marinaLocation;
+                }
+        }
+
+        public static bool MarinaSpotsHaveLocations(Marina marina)
+        {
+            foreach (Spot spot in marina.Spots)
+                if (spot.LocationId.IsValidId())
+                    return true;
+
+            return false;
         }
     }
 }

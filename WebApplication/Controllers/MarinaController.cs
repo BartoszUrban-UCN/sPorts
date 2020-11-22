@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.Controllers
 {
@@ -32,19 +33,16 @@ namespace WebApplication.Controllers
         // GET: Marina/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || id < 0)
-            {
-                return NotFound();
-            }
+            if (id.IsValidId())
+                if (await _marinaService.Exists(id))
+                {
+                    var marina = await _marinaService.GetSingle(id);
 
-            var marina = await _marinaService.GetSingle(id);
+                    if (marina is not null)
+                        return View(marina);
+                }
 
-            if (marina == null)
-            {
-                return NotFound();
-            }
-
-            return View(marina);
+            return NotFound();
         }
 
         // GET: Marina/Create
@@ -60,19 +58,19 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId,LocationId")] Marina marina)
+        public async Task<IActionResult> Create([Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId")] Marina marina)
         {
             if (ModelState.IsValid)
             {
                 if (MarinaLocationIsSelected())
                 {
                     var marinaLocation = GetLocationFormData();
-                    await _marinaService.CreateWithLocation(marina, marinaLocation);
+
+                    if (marinaLocation is not null)
+                        await _marinaService.CreateWithLocation(marina, marinaLocation);
                 }
                 else
-                {
                     await _marinaService.Create(marina);
-                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -85,16 +83,14 @@ namespace WebApplication.Controllers
         // GET: Marina/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
+            if (id.IsNotValidId() || await _marinaService.NotExists(id))
                 return NotFound();
-            }
 
             var marina = await _context.Marinas.Include(m => m.Spots).FirstOrDefaultAsync(m => m.MarinaId == id);
+
             if (marina == null)
-            {
                 return NotFound();
-            }
+
             ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "AddressId", marina.AddressId);
             ViewData["MarinaOwnerId"] = new SelectList(_context.MarinaOwners, "MarinaOwnerId", "MarinaOwnerId", marina.MarinaOwnerId);
             return View(marina);
@@ -108,9 +104,7 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId")] Marina marina)
         {
             if (id != marina.MarinaId)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -121,14 +115,10 @@ namespace WebApplication.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MarinaExists(marina.MarinaId))
-                    {
+                    if (!await _marinaService.Exists(marina.MarinaId))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -140,21 +130,16 @@ namespace WebApplication.Controllers
         // GET: Marina/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id.IsValidId())
+                if (await _marinaService.Exists(id))
+                {
+                    var marina = await _marinaService.GetSingle(id);
 
-            var marina = await _context.Marinas
-                .Include(m => m.Address)
-                .Include(m => m.MarinaOwner)
-                .FirstOrDefaultAsync(m => m.MarinaId == id);
-            if (marina == null)
-            {
-                return NotFound();
-            }
+                    if (marina is not null)
+                        return View(marina);
+                }
 
-            return View(marina);
+            return NotFound();
         }
 
         // POST: Marina/Delete/5
@@ -162,15 +147,18 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var marina = await _context.Marinas.FindAsync(id);
-            _context.Marinas.Remove(marina);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            if (await _marinaService.Exists(id))
+            {
+                var marina = await _marinaService.GetSingle(id);
 
-        private bool MarinaExists(int id)
-        {
-            return _context.Marinas.Any(e => e.MarinaId == id);
+                if (marina.LocationId is not null)
+                    await _marinaService.DeleteMarinaLocation(marina);
+
+                // The delete method in the service checks whether the id is: null, negative, not assigned to any marina
+                await _marinaService.Delete(id);
+            }    
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> MarinaSpots(int id)
@@ -202,65 +190,37 @@ namespace WebApplication.Controllers
             return View("Error");
         }
 
-        public async Task CreateAssignLocationToMarina(Marina marina)
-        {
-            string Latitude = Request.Form["Latitude"];
-            string Longitude = Request.Form["Longitude"];
-
-            Location spotLocation = new Location
-            {
-                Latitude = Convert.ToDouble(Latitude),
-                Longitude = Convert.ToDouble(Longitude)
-            };
-
-            //var locationController = new LocationController(_context);
-            //IActionResult result = await locationController.Create(spotLocation);
-
-            marina.LocationId = spotLocation.LocationId;
-        }
-
-        public bool MarinaHasSpotsLocations(Marina marina)
-        {
-            foreach (Spot spot in marina.Spots)
-            {
-                if (spot.LocationId != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public bool MarinaLocationIsSelected()
         {
-            string Latitude = Request.Form["Latitude"];
-            string Longitude = Request.Form["Longitude"];
-            string Radius = Request.Form["Radius"];
+            string latitude = Request.Form["Latitude"];
+            string longitude = Request.Form["Longitude"];
+            string radius = Request.Form["Radius"];
 
-            if (String.IsNullOrEmpty(Latitude) || String.IsNullOrEmpty(Longitude) || String.IsNullOrEmpty(Radius))
-            {
+            if (latitude.IsNotNullOrEmpty() && longitude.IsNotNullOrEmpty() && radius.IsNotNullOrEmpty())
                 return false;
-            }
 
             return true;
         }
 
         private Location GetLocationFormData()
         {
-            string Latitude = Request.Form["Latitude"];
-            string Longitude = Request.Form["Longitude"];
-            string Radius = Request.Form["Radius"];
+            string latitude = Request.Form["Latitude"];
+            string longitude = Request.Form["Longitude"];
+            string radius = Request.Form["Radius"];
 
-            Location spotLocation = new Location
+            if (latitude.IsNotNullOrEmpty() && longitude.IsNotNullOrEmpty() && radius.IsNotNullOrEmpty())
             {
-                Latitude = Convert.ToDouble(Latitude),
-                Longitude = Convert.ToDouble(Longitude),
-                // Radius = double.Parse(Radius),
-                Radius = Convert.ToDouble(Radius),
-            };
+                Location spotLocation = new Location
+                {
+                    Latitude = Convert.ToDouble(latitude),
+                    Longitude = Convert.ToDouble(longitude),
+                    Radius = Convert.ToDouble(radius),
+                };
 
-            return spotLocation;
+                return spotLocation;
+            }
+
+            return null;
         }
     }
 }

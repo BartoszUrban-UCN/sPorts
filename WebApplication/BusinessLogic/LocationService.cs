@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -18,53 +19,32 @@ namespace WebApplication.BusinessLogic
             _context = context;
         }
 
+        // Persist a location to the database
         public async Task<int> Create(Location location)
         {
-            // TODO Might not be necesary
-            // TODO Remove if the caller already checks for null
-            if (location == null)
-            {
-                throw new BusinessException("Create", "Location is null.");
-            }
+            // If location is null throw an error
+            location.ThrowIfNull();
 
+            // Add the location to the database and save the changes made
             _context.Locations.Add(location);
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Create", "The Location was not created.");
+            await _context.SaveChangesAsync();
 
-                return location.LocationId;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Create", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Create", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            // Return the newly created location's id
+            return location.LocationId;
         }
 
         public async Task Delete(int? id)
         {
+            // If id is null or negative, throw an error
+            id.ThrowIfInvalidId();
+
+            // Find location in the database
             var location = await GetSingle(id);
+            // Remove the location from the database
             _context.Locations.Remove(location);
 
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Delete", "Couldn't delete the Location.");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            // Save the changes made
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Location>> GetAll()
@@ -74,46 +54,28 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Location> GetSingle(int? id)
         {
-            if (id == null)
-                throw new BusinessException("GetSingle", "Id is null.");
-
-            if (id < 0)
-                throw new BusinessException("GetSingle", "The id was negative.");
+            id.ThrowIfInvalidId();
 
             var location = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == id);
-        
-            if (location == null)
-                throw new BusinessException("GetSingle", $"Didn't find Location with id {id}");
+
+            location.ThrowIfNull();
 
             return location;
         }
 
         public async Task<Location> Update(Location location)
         {
+            location.ThrowIfNull();
+
             _context.Locations.Update(location);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Update", "The Location was not updated.");
-
-                return location;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return location;
         }
 
         public async Task<bool> Exists(int? id)
         {
-            if (id < 0)
-                throw new BusinessException("Exists", "The id is negative.");
+            id.ThrowIfInvalidId();
 
             return await _context.Locations.AnyAsync(l => l.LocationId == id);
         }
