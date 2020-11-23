@@ -186,5 +186,10 @@ namespace WebApplication.Controllers
             ViewData["Marinas"] = await _bookingService.GetAll();
             return View();
         }
+
+        public IActionResult BookingLineDetails(int? id)
+        {
+            return RedirectToAction("Details", "BookingLine", new {id = id});
+        }
     }
 }

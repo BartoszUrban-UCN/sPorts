@@ -1,63 +1,58 @@
 @model IEnumerable<BookingLine>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "sPorts";
 }
 
-<h1>Index</h1>
+<h1>
+    Your Places
+</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.BookingLineId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DiscountedTotalPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ongoing)
-            </th>
-            <th>
-                Add Time
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+<hr />
+<style type=text/css>
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+        transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
+
+    .card:active {
+        transform: scale(1.03);
+    }
+</style>
+
+<div class="container-fluid bcontent" style="margin-top: 5rem;">
+    <div class="row row-cols-1 row-cols-md-2 no-gutters justify-content-center">
+        @foreach (var bookingLine in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BookingLineId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DiscountedTotalPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Ongoing)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.BookingLineId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.BookingLineId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.BookingLineId">Delete</a>
-                    <a asp-action="Cancel" asp-route-id="@item.BookingLineId" class="btn btn-primary">Cancel</a>
-                </td>
-            </tr>
+            <div class="col-md-10 mx-auto" style="margin-bottom: 3rem;">
+                <div class="card border-light shadow" style="width: 45rem;">
+                    <a asp-action="BookingLineDetails" asp-route-id="@bookingLine.BookingLineId" class="stretched-link"></a>
+                    <div class="row no-gutters">
+                        <div class="col-md-5">
+                            <img class="card-img"
+                                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.androidapps.com%2Fwp-content%2Fuploads%2F2017%2F05%2Fbook.jpg&f=1&nofb=1"
+                                alt="A booking line">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body">
+                                <h5 class="card-title">@bookingLine.BookingLineId
+                                </h5>
+                                <p class="card-text">@bookingLine.AppliedDiscounts</p>
+                                <h6 class="card-text">@bookingLine.Ongoing</h6>
+                                <h6 class="card-text">@bookingLine.StartDate</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>
+@* <a asp-action="Edit" asp-route-id="@item.BookingLineId">Edit</a> |
+    <a asp-action="Details" asp-route-id="@item.BookingLineId">Details</a> |
+    <a asp-action="Delete" asp-route-id="@item.BookingLineId">Delete</a>
+    <a asp-action="Cancel" asp-route-id="@item.BookingLineId" class="btn btn-primary">Cancel</a> *@

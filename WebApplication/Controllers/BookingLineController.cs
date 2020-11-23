@@ -15,13 +15,9 @@ namespace WebApplication.Controllers
             _context = context;
             _bookingLineService = bookingLineService;
         }
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
             var bookingLine = await _bookingLineService.GetSingle(id);
-            if (bookingLine == null)
-            {
-                return NotFound();
-            }
 
             return View(bookingLine);
         }
@@ -33,6 +29,7 @@ namespace WebApplication.Controllers
             try
             {
                 await _bookingLineService.AddTime(id, amount);
+                await _bookingLineService.Save();
                 return Content("Added");
             }
             catch (BusinessException ex)

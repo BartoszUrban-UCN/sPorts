@@ -70,7 +70,7 @@ namespace WebApplication.BusinessLogic
         {
             var bookingLine = await GetSingle(id);
 
-            bookingLine.EndDate = bookingLine.EndDate.AddMinutes(amount);
+            bookingLine.EndDate = bookingLine.EndDate.AddSeconds(amount);
 
             _context.Update(bookingLine);
         }
