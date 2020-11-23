@@ -1,0 +1,28 @@
+﻿@model WebApplication.Models.Boat
+@{
+    ViewBag.Title = "Select your boat";
+}
+
+<div class="container">
+    <div class="row justify-content-md-center">
+        <h1>@ViewBag.Title</h1>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="row-cols-lg" style="width:20rem">
+            <form asp-action="Index">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label">Your Boat for the Trip</label>
+                    <select asp-for="Name" class="form-control" asp-items="ViewBag.Boat"></select>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Go to next step" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
