@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WebApplication.Data;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -10,18 +11,20 @@ namespace WebApplication.BusinessLogic
 
         public ServiceBase(SportsContext context)
         {
+            context.ThrowIfNull();
+
             _context = context;
         }
         public async Task<int> Save()
         {
-            var result = 0;
             try
             {
-                result = await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync();
                 if (result < 1)
                 {
                     throw new BusinessException(string.Empty, "There were some problems saving changes to the database");
                 }
+                return result;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -31,8 +34,6 @@ namespace WebApplication.BusinessLogic
             {
                 throw new BusinessException(string.Empty, "Concurrency problems, couldn't save change.\n" + ex.ToString());
             }
-
-            return result;
         }
     }
 }

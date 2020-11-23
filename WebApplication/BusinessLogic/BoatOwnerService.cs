@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -14,29 +15,22 @@ namespace WebApplication.BusinessLogic
 
         public BoatOwnerService(SportsContext context, IBookingService bookingService) : base(context)
         {
+            bookingService.ThrowIfNull();
             _bookingService = bookingService;
         }
 
         public async Task<int> Create(BoatOwner boatOwner)
         {
-            // TODO Might not be necesary
-            // TODO Remove if the caller already checks for null
-            if (boatOwner == null)
-            {
-                throw new BusinessException("Create", "Boat Owner object is null.");
-            }
+            boatOwner.ThrowIfNull();
 
-            _context.BoatOwners.Add(boatOwner);
+            await _context.BoatOwners.AddAsync(boatOwner);
+
             return boatOwner.BoatOwnerId;
         }
 
         public async Task<BoatOwner> GetSingle(int? id)
         {
-            if (id == null)
-                throw new BusinessException("GetSingle", "Id is null.");
-
-            if (id < 0)
-                throw new BusinessException("GetSingle", "Id is negative.");
+            id.ThrowIfInvalidId();
 
             var boatOwner = await _context.BoatOwners
                                             .Include(b => b.Person)
@@ -45,8 +39,7 @@ namespace WebApplication.BusinessLogic
                                                     .ThenInclude(b => b.BookingLines)
                                             .FirstOrDefaultAsync(b => b.BoatOwnerId == id);
 
-            if (boatOwner == null)
-                throw new BusinessException("GetSingle", $"Didn't find Boat Owner with id {id}");
+            boatOwner.ThrowIfNull();
 
             return boatOwner;
         }
@@ -62,22 +55,23 @@ namespace WebApplication.BusinessLogic
             return boatsOwners;
         }
 
-        public async Task<BoatOwner> Update(BoatOwner boatOwner)
+        public BoatOwner Update(BoatOwner boatOwner)
         {
-            _context.BoatOwners.Update(boatOwner);
+            _context.Update(boatOwner);
+            
             return boatOwner;
         }
 
         public async Task Delete(int? id)
         {
             var boatOwner = await GetSingle(id);
-            _context.BoatOwners.Remove(boatOwner);
+
+            _context.Remove(boatOwner);
         }
 
         public async Task<bool> Exists(int? id)
         {
-            if (id < 0)
-                throw new BusinessException("Exists", "The id is negative.");
+            id.ThrowIfInvalidId();
 
             return await _context.BoatOwners.AnyAsync(b => b.BoatOwnerId == id);
         }
@@ -104,8 +98,7 @@ namespace WebApplication.BusinessLogic
 
         public IEnumerable<Booking> GetOngoingBookings(BoatOwner boatOwner)
         {
-            if (boatOwner == null)
-                throw new BusinessException("GetOngoingBookings", "The boatOwner argument was null.");
+            boatOwner.ThrowIfNull();
 
             var boats = boatOwner.Boats;
             var bookingsToReturn = from boat in boats
@@ -135,25 +128,18 @@ namespace WebApplication.BusinessLogic
         }
         public bool HasOngoing(Booking booking)
         {
-            if (booking == null)
-            {
-                throw new BusinessException("HasOngoing", "The parameter can't be null.");
-            }
+            booking.ThrowIfNull();
 
             foreach (var bookingLine in booking.BookingLines)
-            {
                 if (bookingLine.Ongoing)
                     return true;
-            }
+
             return false;
         }
 
         public double MoneySpent(BoatOwner boatOwner)
         {
-            if (boatOwner == null)
-            {
-                throw new BusinessException("MoneySpent", "The parameter can't be null.");
-            }
+            boatOwner.ThrowIfNull();
 
             var boats = boatOwner.Boats;
             var moneySpent = (from boat in boats
@@ -165,10 +151,7 @@ namespace WebApplication.BusinessLogic
 
         public TimeSpan TotalTime(BoatOwner boatOwner)
         {
-            if (boatOwner == null)
-            {
-                throw new BusinessException("TotalTime", "The parameter can't be null.");
-            }
+            boatOwner.ThrowIfNull();
 
             TimeSpan totalTime = new TimeSpan();
 
@@ -178,36 +161,26 @@ namespace WebApplication.BusinessLogic
                             select booking).ToList();
 
             foreach (var booking in bookings)
-            {
                 totalTime += TotalTime(booking);
-            }
 
             return totalTime;
         }
 
         public TimeSpan TotalTime(Booking booking)
         {
-            if (booking == null)
-            {
-                throw new BusinessException("TotalTime", "The parameter can't be null.");
-            }
+            booking.ThrowIfNull();
 
             TimeSpan totalTime = new TimeSpan();
 
             foreach (var bookingLine in booking.BookingLines)
-            {
                 totalTime += TotalTime(bookingLine);
-            }
 
             return totalTime;
         }
 
         public TimeSpan TotalTime(BookingLine bookingLine)
         {
-            if (bookingLine == null)
-            {
-                throw new BusinessException("TotalTime", "The parameter can't be null.");
-            }
+            bookingLine.ThrowIfNull();
 
             return bookingLine.EndDate - bookingLine.StartDate;
         }

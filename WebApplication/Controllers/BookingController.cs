@@ -98,7 +98,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    await _bookingService.Update(booking);
+                    _bookingService.Update(booking);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -164,12 +164,15 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> Cancel(int? id)
         {
-            var success = await _bookingService.CancelBooking(id);
-            if (success)
+            try
             {
+                await _bookingService.CancelBooking(id);
                 return Content("Canceled!");
             }
-            return Content("Not Canceled!");
+            catch(BusinessException ex)
+            {
+                return Content(ex.ToString());
+            }
         }
 
         // Random method

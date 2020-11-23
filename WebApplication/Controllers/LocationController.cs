@@ -98,7 +98,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    await _service.Update(location);
+                    _service.Update(location);
                 }
                 catch (BusinessException ex)
                 {

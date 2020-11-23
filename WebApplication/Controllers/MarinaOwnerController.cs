@@ -104,7 +104,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    await _marinaOwnerService.Update(marinaOwner);
+                    _marinaOwnerService.Update(marinaOwner);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

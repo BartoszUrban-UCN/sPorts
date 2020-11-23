@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
 using static WebApplication.BusinessLogic.EmailService;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -24,7 +25,7 @@ namespace WebApplication.BusinessLogic
             _pdfService = pdfService;
         }
 
-        private async Task<int> CreateBooking(Booking booking)
+        private async Task<Booking> CreateBooking(Booking booking)
         {
             int rowsAffected = 0;
             // get booking lines from the booking
@@ -55,16 +56,16 @@ namespace WebApplication.BusinessLogic
                 pdfService.DeleteBookingFiles(booking.BookingReferenceNo);
             }
 
-            return rowsAffected > 0 ? booking.BookingId : throw new BusinessException("Booking", "Failed to create booking.");
+            return booking;
         }
 
         public double BookingCalculatePrice(List<BookingLine> bookingLines)
         {
+            bookingLines.ThrowIfNull();
+
             double totalPrice = 0;
             foreach (var bookingLine in bookingLines)
-            {
                 totalPrice += bookingLine.DiscountedTotalPrice;
-            }
 
             return totalPrice;
         }
@@ -133,53 +134,29 @@ namespace WebApplication.BusinessLogic
             var ongoingBookingLines = new List<BookingLine>();
 
             foreach (var bookingLine in bookingLines)
-            {
                 if (bookingLine.Ongoing)
-                {
                     ongoingBookingLines.Add(bookingLine);
-                }
-            }
 
             return ongoingBookingLines;
         }
-        public async Task<bool> CancelBooking(int? id)
+        public async Task CancelBooking(int? id)
         {
-            var success = false;
-            try
-            {
-                var booking = await GetSingle(id);
+            var booking = await GetSingle(id);
 
-                foreach (var bookingLine in booking.BookingLines)
-                {
-                    bookingLine.Ongoing = false;
-                }
-
-                var result = _context.SaveChanges();
-                success = result > 0;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Cancel", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Cancel", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
-            return success;
+            foreach (var bookingLine in booking.BookingLines)
+                bookingLine.Ongoing = false;
         }
 
         public async Task<int> Create(Booking booking)
         {
-            return await CreateBooking(booking);
+            await CreateBooking(booking);
+
+            return booking.BookingId;
         }
 
         public async Task<Booking> GetSingle(int? id)
         {
-            if (id == null)
-                throw new BusinessException("GetSingle", "Id is null.");
-
-            if (id < 0)
-                throw new BusinessException("GetSingle", "The id is negative.");
+            id.ThrowIfInvalidId();
 
             var booking = await _context.Bookings
                                             .Include(b => b.Boat)
@@ -191,10 +168,7 @@ namespace WebApplication.BusinessLogic
                                             .Include(b => b.BookingLines).ThenInclude(b => b.Spot).ThenInclude(s => s.Location)
                                             .FirstOrDefaultAsync(b => b.BookingId == id);
 
-            if (booking == null)
-            {
-                throw new BusinessException("GetSingle", $"Didn't find Booking with id {id}");
-            }
+            booking.ThrowIfNull();
 
             return booking;
         }
@@ -213,26 +187,24 @@ namespace WebApplication.BusinessLogic
             return bookings;
         }
 
-        public async Task<Booking> Update(Booking booking)
+        public Booking Update(Booking booking)
         {
-            _context.Bookings.Update(booking);
+            _context.Update(booking);
+
             return booking;
         }
 
         public async Task Delete(int? id)
         {
-            if (id < 0)
-                throw new BusinessException("Delete", "The id argument is negative.");
-
             var booking = await GetSingle(id);
-            _context.Bookings.Remove(booking);
+
+            _context.Remove(booking);
         }
 
         public async Task<bool> Exists(int? id)
         {
-            if (id < 0)
-                throw new BusinessException("Exists", "The id is negative.");
-
+            id.ThrowIfInvalidId();
+            
             return await _context.Bookings.AnyAsync(b => b.BookingId == id);
         }
 
@@ -255,14 +227,14 @@ namespace WebApplication.BusinessLogic
 
         #region IBookingLineService
 
-        public async Task<bool> CancelBookingLine(int? id)
+        public async Task CancelBookingLine(int? id)
         {
-            return await _bookingLineService.CancelBookingLine(id);
+            await _bookingLineService.CancelBookingLine(id);
         }
 
-        public async Task<bool> AddTime(int? bookingLineId, int amount)
+        public async Task AddTime(int? bookingLineId, int amount)
         {
-            return await _bookingLineService.AddTime(bookingLineId, amount);
+            await _bookingLineService.AddTime(bookingLineId, amount);
         }
         #endregion
 

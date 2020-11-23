@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -16,16 +17,15 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> Create(Spot spot)
         {
-            if (spot is not null)
-                await _context.Spots.AddAsync(spot);
-
+            spot.ThrowIfNull();
+            await _context.AddAsync(spot);
             return spot.SpotId;
         }
 
         public async Task Delete(int? id)
         {
             var spot = await GetSingle(id);
-            _context.Spots.Remove(spot);
+            _context.Remove(spot);
         }
 
         public async Task<IEnumerable<Spot>> GetAll()
@@ -40,34 +40,27 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Spot> GetSingle(int? id)
         {
-            if (id == null)
-                throw new BusinessException("GetSingle", "Id is null.");
-
-            if (id < 0)
-                throw new BusinessException("GetSingle", "The id was negative.");
+            id.ThrowIfInvalidId();
 
             var spot = await _context.Spots
                 .Include(s => s.Marina)
                 .Include(s => s.Location)
                 .FirstOrDefaultAsync(s => s.SpotId == id);
 
-            if (spot == null)
-                throw new BusinessException("GetSingle", $"Didn't find Spot with id {id}");
+            spot.ThrowIfNull();
 
             return spot;
         }
 
-        public async Task<Spot> Update(Spot spot)
+        public Spot Update(Spot spot)
         {
-            _context.Spots.Update(spot);
+            _context.Update(spot);
             return spot;
         }
 
         public Task<bool> Exists(int? id)
         {
-            if (id < 0)
-                throw new BusinessException("Exists", "The id is negative.");
-
+            id.ThrowIfInvalidId();
             return _context.Spots.AnyAsync(l => l.SpotId == id);
         }
 

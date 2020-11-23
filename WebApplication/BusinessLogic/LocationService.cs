@@ -10,8 +10,7 @@ namespace WebApplication.BusinessLogic
     public class LocationService : ServiceBase, ILocationService
     {
         public LocationService(SportsContext context) : base(context)
-        {
-        }
+        { }
 
         // Persist a location to the database
         public async Task<int> Create(Location location)
@@ -20,7 +19,7 @@ namespace WebApplication.BusinessLogic
             location.ThrowIfNull();
 
             // Add the location to the database and save the changes made
-            _context.Locations.Add(location);
+            await _context.AddAsync(location);
 
             // Return the newly created location's id
             return location.LocationId;
@@ -28,9 +27,6 @@ namespace WebApplication.BusinessLogic
 
         public async Task Delete(int? id)
         {
-            // If id is null or negative, throw an error
-            id.ThrowIfInvalidId();
-
             // Find location in the database
             var location = await GetSingle(id);
             // Remove the location from the database
@@ -53,11 +49,11 @@ namespace WebApplication.BusinessLogic
             return location;
         }
 
-        public async Task<Location> Update(Location location)
+        public Location Update(Location location)
         {
             location.ThrowIfNull();
 
-            _context.Locations.Update(location);
+            _context.Update(location);
 
             return location;
         }

@@ -4,35 +4,39 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
     public class LoginService : ServiceBase, ILoginService
     {
         public LoginService(SportsContext context) : base(context)
-        {
-        }
+        { }
 
         public async Task<int> Create(Person person)
         {
+            person.ThrowIfNull();
+
             if (_context.Persons.AsQueryable().Any(p => p.Email.Equals(person.Email)))
             {
                 throw new BusinessException("Email", "This email is already taken.");
             }
 
-            _context.Add(person);
+            await _context.AddAsync(person);
+
             return person.PersonId;
         }
 
         public async Task Delete(int? id)
         {
-            var person = await _context.Persons.FindAsync(id);
+            var person = await GetSingle(id);
             _context.Remove(person);
         }
 
-        public Task<bool> Exists(int? id)
+        public async Task<bool> Exists(int? id)
         {
-            return _context.Persons.AnyAsync(l => l.PersonId == id);
+            id.ThrowIfInvalidId();
+            return await _context.Persons.AnyAsync(l => l.PersonId == id);
         }
 
         public async Task<IEnumerable<Person>> GetAll()
@@ -44,14 +48,20 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Person> GetSingle(int? id)
         {
-            var spot = _context.Persons
+            id.ThrowIfInvalidId();
+
+            var spot = await _context.Persons
                  .FirstOrDefaultAsync(s => s.PersonId == id);
 
-            return await spot;
+            spot.ThrowIfNull();
+
+            return spot;
         }
 
         public async Task<BoatOwner> MakePersonBoatOwner(Person person)
         {
+            person.ThrowIfNull();
+
             if (_context.BoatOwners.AsQueryable().Any(p => p.PersonId.Equals(person.PersonId)))
             {
                 throw new BusinessException("Email", "You are already registered as a boat owner!");
@@ -59,8 +69,7 @@ namespace WebApplication.BusinessLogic
 
             var boatOwner = new BoatOwner { PersonId = person.PersonId };
 
-            _context.BoatOwners.Add(boatOwner);
-            await Save();
+            await _context.BoatOwners.AddAsync(boatOwner);
 
             return boatOwner;
         }
@@ -74,15 +83,17 @@ namespace WebApplication.BusinessLogic
 
             var marinaOwner = new MarinaOwner { PersonId = person.PersonId };
 
-            _context.MarinaOwners.Add(marinaOwner);
-            await Save();
+            await _context.MarinaOwners.AddAsync(marinaOwner);
 
             return marinaOwner;
         }
 
-        public async Task<Person> Update(Person person)
+        public Person Update(Person person)
         {
+            person.ThrowIfNull();
+
             _context.Update(person);
+            
             return person;
         }
     }

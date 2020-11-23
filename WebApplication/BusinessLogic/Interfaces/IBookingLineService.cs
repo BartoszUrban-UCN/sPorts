@@ -5,7 +5,7 @@ namespace WebApplication.BusinessLogic
 {
     public interface IBookingLineService : ICRUD<BookingLine>
     {
-        Task<bool> CancelBookingLine(int? id);
-        Task<bool> AddTime(int? id, int amount);
+        Task CancelBookingLine(int? id);
+        Task AddTime(int? id, int amount);
     }
 }

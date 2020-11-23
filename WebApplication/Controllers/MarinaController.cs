@@ -113,7 +113,7 @@ namespace WebApplication.Controllers
                         {
                             if (marina.LocationId.IsValidId())
                             {
-                                await _marinaService.UpdateMarinaLocation(marina, marinaLocation);
+                                _marinaService.UpdateMarinaLocation(marina, marinaLocation);
                             }
                             else
                             {
@@ -129,7 +129,7 @@ namespace WebApplication.Controllers
                         }
                     }
 
-                    await _marinaService.Update(marina);
+                    _marinaService.Update(marina);
 
                     return RedirectToAction(nameof(Index));
                 }

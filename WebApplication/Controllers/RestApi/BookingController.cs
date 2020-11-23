@@ -96,7 +96,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpPut]
         public async Task<ActionResult<bool>> CancelBooking(int id)
         {
-            var success = await _bookingService.CancelBooking(id);
+            await _bookingService.CancelBooking(id);
             return Ok();
         }
 

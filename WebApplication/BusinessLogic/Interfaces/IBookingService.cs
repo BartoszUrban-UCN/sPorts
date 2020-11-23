@@ -17,7 +17,7 @@ namespace WebApplication.BusinessLogic
 
         Task<bool> ConfirmSpotBooked(int bookingLineId);
 
-        Task<bool> CancelBooking(int? id);
+        Task CancelBooking(int? id);
 
         Dictionary<int, int> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
     }

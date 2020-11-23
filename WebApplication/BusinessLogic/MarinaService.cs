@@ -18,53 +18,40 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> Create(Marina marina)
         {
-            if (marina is not null)
-                await _context.Marinas.AddAsync(marina);
+            marina.ThrowIfNull();
+
+            await _context.AddAsync(marina);
 
             return marina.MarinaId;
         }
 
         public async Task<int> CreateWithLocation(Marina marina, Location location)
         {
-            if (marina is not null)
-                if (location is not null)
-                {
-                    // Create location for marina and take the Id
-                    var marinaLocation = await _locationService.Create(location);
+            marina.ThrowIfNull();
+            location.ThrowIfNull();
 
-                    // Create marina
-                    await Create(marina);
+            // Create location for marina and take the Id
+            var locationIdForMarina = await _locationService.Create(location);
 
-                    // Assign location to marina
-                    marina.LocationId = marinaLocation;
+            // Create marina
+            await Create(marina);
 
-                    //this might need to be a Get from that service?
-                    marina.Location = await _locationService.GetSingle(marinaLocation);
-
-                    await Save();
-
-                    return marina.MarinaId;
-                }
+            // Assign location to marina
+            marina.LocationId = locationIdForMarina;
 
             return marina.MarinaId;
         }
 
         public async Task<int> CreateLocationForMarina(Marina marina, Location location)
         {
-            if (location is not null)
-                if (marina is not null)
-                {
-                    // Create location for marina and take the Id
-                    var marinaLocation = await _locationService.Create(location);
+            marina.ThrowIfNull();
+            location.ThrowIfNull();
+            // Create location for marina and take the Id
+            var locationIdForMarina = await _locationService.Create(location);
 
-                    // Assign location to marina
-                    marina.LocationId = marinaLocation;
-                    marina.Location = await _locationService.GetSingle(marinaLocation);
-
-                    await Save();
-
-                    return marina.MarinaId;
-                }
+            // Assign location to marina
+            marina.LocationId = locationIdForMarina;
+            marina.Location = await _locationService.GetSingle(locationIdForMarina);
 
             return marina.MarinaId;
         }
@@ -73,44 +60,35 @@ namespace WebApplication.BusinessLogic
         // Checks whether id is valid and whether a marina with that id exists
         public async Task Delete(int? id)
         {
-            if (id.IsValidId())
-                if (await Exists(id))
-                {
-                    // Find marina in the database by a given id
-                    var marina = await GetSingle(id);
+            // Find marina in the database by a given id
+            var marina = await GetSingle(id);
 
-                    // Remove the marina's location from the database and remove associations, if it has one
-                    if (marina.LocationId is not null)
-                        await DeleteMarinaLocation(marina);
+            // Remove the marina's location from the database and remove associations, if it has one
+            await DeleteMarinaLocation(marina);
 
-                    // Remove the marina from the database
-                    _context.Marinas.Remove(marina);
+            // Remove the marina from the database
+            _context.Marinas.Remove(marina);
 
-                    // Save the changes made
-                    await Save();
-                }
+            // Save the changes made
+            await Save();
+
         }
 
         public async Task DeleteMarinaLocation(Marina marina)
         {
-            if (marina is not null)
-                if (marina.LocationId is not null)
-                {
-                    var locationId = marina.LocationId;
+            marina.ThrowIfNull();
+            var locationId = marina.LocationId;
 
-                    marina.Location = null;
-                    marina.LocationId = null;
+            marina.Location = null;
+            marina.LocationId = null;
 
-                    await _locationService.Delete(locationId);
-                }
+            await _locationService.Delete(locationId);
         }
 
         public async Task<bool> Exists(int? id)
         {
-            if (id.IsValidId())
-                return await _context.Marinas.AnyAsync(m => m.MarinaId == id);
-
-            return false;
+            id.ThrowIfInvalidId();
+            return await _context.Marinas.AnyAsync(m => m.MarinaId == id);
         }
 
         public async Task<bool> NotExists(int? id)
@@ -136,44 +114,32 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Marina> GetSingle(int? id)
         {
-            if (id.IsValidId())
-            {
-                var marina = await _context.Marinas
-                    .Include(marina => marina.Address)
-                    .Include(marina => marina.MarinaOwner)
-                    .Include(marina => marina.Location)
-                    .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
-                        .ThenInclude(spot => spot.Location)
-                    .FirstOrDefaultAsync(marina => marina.MarinaId == id);
-
-                if (marina is not null)
-                    return marina;
-            }
-
-            throw new BusinessException("Error", "Not Found");
+            id.ThrowIfInvalidId();
+            var marina = await _context.Marinas
+                .Include(marina => marina.Address)
+                .Include(marina => marina.MarinaOwner)
+                .Include(marina => marina.Location)
+                .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
+                    .ThenInclude(spot => spot.Location)
+                .FirstOrDefaultAsync(marina => marina.MarinaId == id);
+            marina.ThrowIfNull();
+            return marina;
         }
 
-        public async Task<Marina> Update(Marina marina)
+        public Marina Update(Marina marina)
         {
-            if (marina is not null)
-            {
-                _context.Marinas.Update(marina);
-
-                await Save();
-            }
+            marina.ThrowIfNull();
+            _context.Update(marina);
 
             return marina;
         }
 
-        public async Task<Marina> UpdateMarinaLocation(Marina marina, Location location)
+        public Marina UpdateMarinaLocation(Marina marina, Location location)
         {
-            if (marina is not null)
-                if (location is not null)
-                {
-                    await _locationService.Update(location);
-
-                    await Save();
-                }
+            marina.ThrowIfNull();
+            location.ThrowIfNull();
+            
+            _locationService.Update(location);
 
             return marina;
         }
@@ -216,6 +182,7 @@ namespace WebApplication.BusinessLogic
 
         public static bool MarinaSpotsHaveLocations(Marina marina)
         {
+            marina.ThrowIfNull();
             foreach (Spot spot in marina.Spots)
                 if (spot.LocationId.IsValidId())
                     return true;

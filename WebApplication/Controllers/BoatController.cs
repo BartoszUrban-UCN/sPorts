@@ -93,7 +93,7 @@ namespace WebApplication.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _boatService.Update(boat);
+                    _boatService.Update(boat);
                     var boatOwnerId = ViewData["BoatOwnerId"];
                     return View(boat);
                 }

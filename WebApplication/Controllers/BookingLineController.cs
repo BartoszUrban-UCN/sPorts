@@ -30,23 +30,28 @@ namespace WebApplication.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> AddTime(int? id, [Bind("amount")] int amount)
         {
-            var success = await _bookingLineService.AddTime(id, amount);
-
-            if (success)
+            try
             {
+                await _bookingLineService.AddTime(id, amount);
                 return Content("Added");
             }
-            return Content("Not Added");
+            catch (BusinessException ex)
+            {
+                return Content(ex.ToString());
+            }
         }
 
         public async Task<IActionResult> Cancel(int id)
         {
-            var success = await _bookingLineService.CancelBookingLine(id);
-            if (success)
+            try
             {
-                return Content("Canceled!");
+                await _bookingLineService.CancelBookingLine(id);
+                return Content("Cancel");
             }
-            return Content("Not Canceled!");
+            catch (BusinessException ex)
+            {
+                return Content(ex.ToString());
+            }
         }
     }
 }

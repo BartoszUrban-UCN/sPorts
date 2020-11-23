@@ -140,7 +140,7 @@ namespace WebApplication.Controllers
                         }
                     }
 
-                    await _spotService.Update(spot);
+                    _spotService.Update(spot);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
