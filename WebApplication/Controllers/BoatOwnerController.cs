@@ -24,7 +24,7 @@ namespace WebApplication.Controllers
             try
             {
                 var bookings = await _boatOwnerService.GetBookings(id);
-                return View("~/Views/Booking/Index.cshtml", bookings);
+                return View("Bookings", bookings);
             }
             catch (BusinessException)
             {
