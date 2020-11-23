@@ -35,7 +35,7 @@
         {
             WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(marina);
 
-            <script>AddMarinaOnMap(@Html.Raw(HelperMethods.Serialize(marina)))</script>
+            <script>MarinaBookingPrompt(@Html.Raw(HelperMethods.Serialize(marina)))</script>
         }
 }
 

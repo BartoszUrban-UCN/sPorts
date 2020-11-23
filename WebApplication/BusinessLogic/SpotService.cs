@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -19,17 +20,12 @@ namespace WebApplication.BusinessLogic
             _locationService = locationService;
         }
 
-        public async Task<Spot> Create(Spot spot)
+        public async Task<int> Create(Spot spot)
         {
-            // TODO Might not be necesary
-            // TODO Remove if the caller already checks for null
-            if (spot == null)
-            {
-                throw new BusinessException("Create", "Spot object is null.");
-            }
+            if (spot is not null)
+                await _context.Spots.AddAsync(spot);
 
-            _context.Spots.Add(spot);
-            return spot;
+            return spot.SpotId;
         }
 
         public async Task Delete(int? id)

@@ -7,12 +7,11 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class MarinaService : IMarinaService
+    public class MarinaService : ServiceBase, IMarinaService
     {
-        private readonly SportsContext _context;
         private readonly ILocationService _locationService;
 
-        public MarinaService(SportsContext context, ILocationService locationService)
+        public MarinaService(SportsContext context, ILocationService locationService) : base(context)
         {
             // if (context == null)
             //     throw new BusinessException("MarinaService", "The context argument was null.");
@@ -20,18 +19,13 @@ namespace WebApplication.BusinessLogic
             // if (locationService == null)
             //     throw new BusinessException("MarinaService", "The locationService argument was null.");
 
-            _context = context;
             _locationService = locationService;
         }
 
         public async Task<int> Create(Marina marina)
         {
             if (marina is not null)
-            {
-                _context.Marinas.Add(marina);
-
-                await _context.SaveChangesAsync();
-            }
+                await _context.Marinas.AddAsync(marina);
 
             return marina.MarinaId;
         }
@@ -42,13 +36,14 @@ namespace WebApplication.BusinessLogic
                 if (location is not null)
                 {
                     // Create location for marina and take the Id
-                    var locationIdForMarina = await _locationService.Create(location);
+                    var marinaLocation = await _locationService.Create(location);
 
                     // Create marina
                     await Create(marina);
 
                     // Assign location to marina
-                    marina.LocationId = locationIdForMarina;
+                    marina.LocationId = marinaLocation.LocationId;
+                    marina.Location = marinaLocation;
 
                     await _context.SaveChangesAsync();
 
@@ -64,11 +59,11 @@ namespace WebApplication.BusinessLogic
                 if (marina is not null)
                 {
                     // Create location for marina and take the Id
-                    var locationIdForMarina = await _locationService.Create(location);
+                    var marinaLocation = await _locationService.Create(location);
 
                     // Assign location to marina
-                    marina.LocationId = locationIdForMarina;
-                    marina.Location = await _locationService.GetSingle(locationIdForMarina);
+                    marina.LocationId = marinaLocation.LocationId;
+                    marina.Location = await _locationService.GetSingle(marinaLocation.LocationId);
 
                     await _context.SaveChangesAsync();
 

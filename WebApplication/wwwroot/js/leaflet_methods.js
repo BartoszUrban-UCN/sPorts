@@ -1,4 +1,4 @@
-﻿function AddMarinaOnMap(marina) {
+﻿function MarinaBookingPrompt(marina) {
     var marinaPopup = `\
         <div class="text-center" style="width: 100px">\
             <p style="font-weight: bold">${marina.Name}</p>\
