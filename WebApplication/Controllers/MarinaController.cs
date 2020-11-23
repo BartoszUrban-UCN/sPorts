@@ -208,7 +208,7 @@ namespace WebApplication.Controllers
             string longitude = Request.Form["Longitude"];
             string radius = Request.Form["Radius"];
 
-            if (latitude.IsNotNullOrEmpty() && longitude.IsNotNullOrEmpty() && radius.IsNotNullOrEmpty())
+            if (latitude.IsNotNullEmptyWhitespace() && longitude.IsNotNullEmptyWhitespace() && radius.IsNotNullEmptyWhitespace())
                 return true;
 
             return false;
@@ -220,7 +220,7 @@ namespace WebApplication.Controllers
             string longitude = Request.Form["Longitude"];
             string radius = Request.Form["Radius"];
 
-            if (latitude.IsNotNullOrEmpty() && longitude.IsNotNullOrEmpty() && radius.IsNotNullOrEmpty())
+            if (latitude.IsNotNullEmptyWhitespace() && longitude.IsNotNullEmptyWhitespace() && radius.IsNotNullEmptyWhitespace())
             {
                 Location spotLocation = new Location
                 {

@@ -44,7 +44,15 @@ namespace WebApplication.BusinessLogic.Shared
     {
         public static bool IsNullEmptyWhitespace(this string @this)
         {
-            if (String.IsNullOrEmpty(@this) && String.IsNullOrWhiteSpace(@this))
+            if (String.IsNullOrEmpty(@this) || String.IsNullOrWhiteSpace(@this))
+                return true;
+
+            return false;
+        }
+
+        public static bool IsNotNullEmptyWhitespace(this string @this)
+        {
+            if (!String.IsNullOrEmpty(@this) && !String.IsNullOrWhiteSpace(@this))
                 return true;
 
             return false;
