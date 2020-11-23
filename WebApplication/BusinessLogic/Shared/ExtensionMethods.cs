@@ -42,12 +42,12 @@ namespace WebApplication.BusinessLogic.Shared
 
     public static class StringExtensions
     {
-        public static bool IsNotNullOrEmpty(this string @this)
+        public static bool IsNullEmptyWhitespace(this string @this)
         {
-            if (String.IsNullOrEmpty(@this))
-                return false;
+            if (String.IsNullOrEmpty(@this) && String.IsNullOrWhiteSpace(@this))
+                return true;
 
-            return true;
+            return false;
         }
     }
 }
