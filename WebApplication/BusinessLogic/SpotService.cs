@@ -6,23 +6,20 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class SpotService : ISpotService
+    public class SpotService : ServiceBase, ISpotService
     {
-        private readonly SportsContext _context;
         private readonly ILocationService _locationService;
-        public SpotService(SportsContext context, ILocationService locationService)
+        public SpotService(SportsContext context, ILocationService locationService) : base(context)
         {
             // if (context == null)
             //     throw new BusinessException("SpotService", "The context argument was null.");
 
             // if (locationService == null)
             //     throw new BusinessException("SpotService", "The locationService argument was null.");
-
-            _context = context;
             _locationService = locationService;
         }
 
-        public async Task<int> Create(Spot spot)
+        public async Task<Spot> Create(Spot spot)
         {
             // TODO Might not be necesary
             // TODO Remove if the caller already checks for null
@@ -32,43 +29,13 @@ namespace WebApplication.BusinessLogic
             }
 
             _context.Spots.Add(spot);
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Create", "The Spot was not created.");
-
-                return spot.SpotId;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Create", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Create", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return spot;
         }
 
         public async Task Delete(int? id)
         {
             var spot = await GetSingle(id);
             _context.Spots.Remove(spot);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Delete", "Couldn't delete the Spot.");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
         }
 
         public async Task<IEnumerable<Spot>> GetAll()
@@ -103,23 +70,7 @@ namespace WebApplication.BusinessLogic
         public async Task<Spot> Update(Spot spot)
         {
             _context.Spots.Update(spot);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Update", "The Spot was not updated.");
-
-                return spot;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return spot;
         }
 
         public Task<bool> Exists(int? id)
@@ -130,10 +81,10 @@ namespace WebApplication.BusinessLogic
             return _context.Spots.AnyAsync(l => l.SpotId == id);
         }
 
-        public async Task<int> CreateWithLocation(Spot spot, Location location)
+        public async Task<Spot> CreateWithLocation(Spot spot, Location location)
         {
-            var locationId = _locationService.Create(location);
-            spot.LocationId = await locationId;
+            var locationId = await _locationService.Create(location);
+            spot.LocationId = locationId.LocationId;
 
             return await Create(spot);
         }
@@ -142,7 +93,7 @@ namespace WebApplication.BusinessLogic
         {
             if (spot.LocationId == null)
             {
-                spot.LocationId = await _locationService.Create(location);
+                spot.LocationId = (await _locationService.Create(location)).LocationId;
             }
             else
             {
