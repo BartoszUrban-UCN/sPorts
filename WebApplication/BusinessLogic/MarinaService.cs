@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -50,6 +49,26 @@ namespace WebApplication.BusinessLogic
 
                     // Assign location to marina
                     marina.LocationId = locationIdForMarina;
+
+                    await _context.SaveChangesAsync();
+
+                    return marina.MarinaId;
+                }
+
+            return marina.MarinaId;
+        }
+
+        public async Task<int> CreateLocationForMarina(Marina marina, Location location)
+        {
+            if (location is not null)
+                if (marina is not null)
+                {
+                    // Create location for marina and take the Id
+                    var locationIdForMarina = await _locationService.Create(location);
+
+                    // Assign location to marina
+                    marina.LocationId = locationIdForMarina;
+                    marina.Location = await _locationService.GetSingle(locationIdForMarina);
 
                     await _context.SaveChangesAsync();
 

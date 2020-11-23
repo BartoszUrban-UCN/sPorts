@@ -1,12 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-
 using WebApplication.Data;
 using WebApplication.Models;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication.BusinessLogic
 {
@@ -19,7 +17,7 @@ namespace WebApplication.BusinessLogic
         {
             // if (context == null)
             //     throw new BusinessException("BoatOwnerService", "The context argument was null.");
-            
+
             // if (bookingService == null)
             //     throw new BusinessException("BoatOwnerService", "The bookingService argument was null.");
 
@@ -62,7 +60,7 @@ namespace WebApplication.BusinessLogic
 
             if (id < 0)
                 throw new BusinessException("GetSingle", "Id is negative.");
-            
+
             var boatOwner = await _context.BoatOwners
                                             .Include(b => b.Person)
                                             .Include(b => b.Boats)
@@ -162,7 +160,7 @@ namespace WebApplication.BusinessLogic
         {
             if (boatOwner == null)
                 throw new BusinessException("GetOngoingBookings", "The boatOwner argument was null.");
-                
+
             var boats = boatOwner.Boats;
             var bookingsToReturn = from boat in boats
                                    from booking in boat.Bookings

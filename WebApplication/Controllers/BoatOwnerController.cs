@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
@@ -47,17 +47,17 @@ namespace WebApplication.Controllers
 
         public IActionResult GetBookingLines(int? id)
         {
-            return RedirectToAction("GetBookingLines", "Booking", new {id = id});
+            return RedirectToAction("GetBookingLines", "Booking", new { id = id });
         }
 
         public IActionResult Cancel(int? id)
         {
-            return RedirectToAction("Cancel", "Booking", new {id = id});
+            return RedirectToAction("Cancel", "Booking", new { id = id });
         }
 
         public IActionResult GetOngoingBookingLines(int? id)
         {
-            return RedirectToAction("GetOngoingBookingLines", "Booking", new {id = id});
+            return RedirectToAction("GetOngoingBookingLines", "Booking", new { id = id });
         }
 
         public async Task<IActionResult> GetBoats(int? id)
@@ -81,10 +81,10 @@ namespace WebApplication.Controllers
 
                 ViewData["TotalSpent"] = _boatOwnerService.MoneySpent(boatOwner);
                 ViewData["TotalTime"] = _boatOwnerService.TotalTime(boatOwner);
-                
+
                 return View(boatOwner);
             }
-            catch(BusinessException)
+            catch (BusinessException)
             {
                 return View("Error");
             }

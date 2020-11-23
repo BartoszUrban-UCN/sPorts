@@ -112,7 +112,7 @@ namespace WebApplication.BusinessLogic
                 {
                     context.Bookings.Add(booking);
                     booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
-                    
+
                     rowsAffected = await context.SaveChangesAsync();
                     //ExplicitLoad(booking);
                 }
@@ -130,8 +130,8 @@ namespace WebApplication.BusinessLogic
 
         public async Task<IEnumerable<BookingLine>> GetBookingLines(int? id)
         {
-           var booking = await GetSingle(id);
-           return booking.BookingLines;
+            var booking = await GetSingle(id);
+            return booking.BookingLines;
         }
 
         public async Task<IEnumerable<BookingLine>> GetOngoingBookingLines(int? id)
@@ -139,7 +139,7 @@ namespace WebApplication.BusinessLogic
             var bookingLines = await GetBookingLines(id);
             var ongoingBookingLines = new List<BookingLine>();
 
-            foreach(var bookingLine in bookingLines)
+            foreach (var bookingLine in bookingLines)
             {
                 if (bookingLine.Ongoing)
                 {
@@ -151,19 +151,19 @@ namespace WebApplication.BusinessLogic
         }
         public async Task<bool> CancelBooking(int? id)
         {
-           var success = false;
-           try
-           {
-               var booking = await GetSingle(id);
+            var success = false;
+            try
+            {
+                var booking = await GetSingle(id);
 
-               foreach (var bookingLine in booking.BookingLines)
-               {
-                   bookingLine.Ongoing = false;
-               }
+                foreach (var bookingLine in booking.BookingLines)
+                {
+                    bookingLine.Ongoing = false;
+                }
 
-               var result = _context.SaveChanges();
-               success = result > 0;
-           }
+                var result = _context.SaveChanges();
+                success = result > 0;
+            }
             catch (DbUpdateConcurrencyException ex)
             {
                 throw new BusinessException("Cancel", "Database problems, couldn't save changes.\n" + ex.ToString());
@@ -172,7 +172,7 @@ namespace WebApplication.BusinessLogic
             {
                 throw new BusinessException("Cancel", "Concurrency problems, couldn't save change.\n" + ex.ToString());
             }
-           return success;
+            return success;
         }
 
         public async Task<int> Create(Booking booking)
@@ -184,7 +184,7 @@ namespace WebApplication.BusinessLogic
         {
             if (id == null)
                 throw new BusinessException("GetSingle", "Id is null.");
-                
+
             if (id < 0)
                 throw new BusinessException("GetSingle", "The id is negative.");
 

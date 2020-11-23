@@ -53,7 +53,7 @@ namespace WebApplication.BusinessLogic
 
             if (id < 0)
                 throw new BusinessException("GetSingle", "The id was negative.");
-                
+
             var boat = await _context.Boats
                                         .Include(b => b.Bookings)
                                             .ThenInclude(b => b.BookingLines)

@@ -179,7 +179,7 @@ namespace WebApplication.Controllers
 
         public IActionResult CancelBookingLine(int? id)
         {
-            return RedirectToAction("Cancel", "BookingLine", new {id = id});
+            return RedirectToAction("Cancel", "BookingLine", new { id = id });
         }
 
         public async Task<IActionResult> Cancel(int? id)
@@ -187,7 +187,7 @@ namespace WebApplication.Controllers
             var success = await _bookingService.CancelBooking(id);
             if (success)
             {
-               return Content("Canceled!");
+                return Content("Canceled!");
             }
             return Content("Not Canceled!");
         }

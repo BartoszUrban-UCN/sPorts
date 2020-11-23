@@ -32,7 +32,7 @@ namespace WebApplication.Tests.BusinessLogic
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
 
-                var marinaOwnerBookings = (List<BookingLine>) await marinaOwnerService.GetBookingLines(marinaOwner.MarinaOwnerId);
+                var marinaOwnerBookings = (List<BookingLine>)await marinaOwnerService.GetBookingLines(marinaOwner.MarinaOwnerId);
                 bool actual = marinaOwnerBookings == null ? false : marinaOwnerBookings.Count > 0 ? true : false;
 
                 Assert.True(spotsCreated);
@@ -50,12 +50,12 @@ namespace WebApplication.Tests.BusinessLogic
                 var bookingLineService = new BookingLineService(context);
                 var bookingService = new BookingService(context, bookingLineService);
                 var marinaOwnerService = new MarinaOwnerService(context, bookingService);
-                
+
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
 
-                var spotsToConfirm = (List<BookingLine>) await marinaOwnerService.GetConfirmedBookingLines(marinaOwner.MarinaOwnerId);
+                var spotsToConfirm = (List<BookingLine>)await marinaOwnerService.GetConfirmedBookingLines(marinaOwner.MarinaOwnerId);
                 bool actual = spotsToConfirm == null ? false : spotsToConfirm.Count > 0 ? true : false;
 
                 Assert.True(spotsCreated);
@@ -74,8 +74,8 @@ namespace WebApplication.Tests.BusinessLogic
                 var bookingLineService = new BookingLineService(context);
                 var bookingService = new BookingService(context, bookingLineService);
                 var marinaOwnerService = new MarinaOwnerService(context, bookingService);
-                
-                var unconfirmedBookingLines = (List<BookingLine>) await marinaOwnerService.GetUnconfirmedBookingLines(1);
+
+                var unconfirmedBookingLines = (List<BookingLine>)await marinaOwnerService.GetUnconfirmedBookingLines(1);
                 bool actual = await bookingService.ConfirmSpotBooked(unconfirmedBookingLines.First().BookingLineId);
 
                 Assert.True(spotsCreated);

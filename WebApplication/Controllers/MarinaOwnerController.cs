@@ -34,7 +34,7 @@ namespace WebApplication.Controllers
 
             var marinaOwner = await _context.MarinaOwners
                 .Include(m => m.Person)
-                .Include(m=> m.Marina)
+                .Include(m => m.Marina)
                 .FirstOrDefaultAsync(m => m.MarinaOwnerId == id);
             if (marinaOwner == null)
             {

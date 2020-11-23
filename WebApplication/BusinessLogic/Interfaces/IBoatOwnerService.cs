@@ -1,7 +1,7 @@
-using WebApplication.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
+using WebApplication.Models;
 namespace WebApplication.BusinessLogic
 {
     public interface IBoatOwnerService : ICRUD<BoatOwner>

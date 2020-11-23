@@ -38,6 +38,98 @@
                 <select asp-for="AddressId" class="form-control" asp-items="ViewBag.AddressId"></select>
                 <span asp-validation-for="AddressId" class="text-danger"></span>
             </div>
+
+            @* Initialize Leaflet Map and set the view with Denmark's coordinates *@
+
+            <div id="mapid" style="height: 600px"></div>
+
+            <script src="~/js/leaflet_map.js"></script>
+            <script>mymap.setView([56.2639, 9.5018], 7)</script>
+
+            @* End of initialization *@
+
+            <div class="form-group">
+                <label asp-for="LocationId" class="control-label"></label>
+                <input asp-for="LocationId" class="form-control" type="number" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.Latitude" class="control-label"></label>
+                <input id="location-latitude" class="form-control" name="Latitude" type="number" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.Longitude" class="control-label"></label>
+                <input id="location-longitude" class="form-control" name="Longitude" type="number" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.Radius" class="control-label"></label>
+                <input id="location-radius" class="form-control" name="Radius" type="number" readonly />
+            </div>
+
+            @* JavaScript to be able to click on map, select a Location and read the coordinates *@
+
+            <script>
+                var marinaPopup = '\
+                    <div class="text-center" style="width: 200px">\
+                        <b>Selected Location</b>\
+                        <div style="display: flex; align-items: baseline; justify-content: space-evenly;">\
+                            <label class="control-label" style="padding-right: 10px;">Size</label>\
+                            <input id="popup-location-radius" class="form-control form-control-sm popup-input" type="number" style="margin: 10px 0px 10px 0px" placeholder="Radius" min="7"/>\
+                        </div>\
+                        <button type="button" class="btn btn-primary btn-sm" onclick=removeCircleMarker()>Remove</button>\
+                    </div>\
+                ';
+
+                var currentMarker = L.marker();
+                var currentCircleMarker = L.circle();
+
+                var latitude = document.getElementById("location-latitude");
+                var longitude = document.getElementById("location-longitude");
+                var radius = document.getElementById("location-radius");
+                var popupRadius;
+
+                function onMapClick(e) {
+                    currentCircleMarker
+                        .setLatLng(e.latlng)
+                        .setStyle({
+                            color: 'cadetblue',
+                            fillColor: 'aquamarine',
+                            fillOpacity: 0.5,
+                        })
+                        .addTo(mymap)
+                        .bindPopup(marinaPopup)
+                        .openPopup();
+
+                    latitude.value = e.latlng.lat;
+                    longitude.value = e.latlng.lng;
+
+                    popupRadius = document.getElementById("popup-location-radius");
+                    popupRadius.addEventListener('change', updateLocationRadius);
+                    popupRadius.addEventListener('input', updateLocationRadius);
+
+                    popupRadius.value = 10;
+
+                    updateLocationRadius();
+                }
+
+                function removeCircleMarker(e) {
+                    currentCircleMarker.removeFrom(mymap);
+
+                    latitude.value = null;
+                    longitude.value = null;
+                    radius.value = null;
+                }
+
+                function updateLocationRadius(e) {
+                    currentCircleMarker
+                        .setRadius(popupRadius.value * 1000);
+                    radius.value = popupRadius.value;
+                }
+
+                mymap.on('click', onMapClick);
+            </script>
+
+            @* End of JavaScript *@
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

@@ -3,12 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.Controllers
 {
@@ -86,7 +85,7 @@ namespace WebApplication.Controllers
             if (id.IsNotValidId() || await _marinaService.NotExists(id))
                 return NotFound();
 
-            var marina = await _context.Marinas.Include(m => m.Spots).FirstOrDefaultAsync(m => m.MarinaId == id);
+            var marina = await _marinaService.GetSingle(id);
 
             if (marina == null)
                 return NotFound();
@@ -101,27 +100,40 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId")] Marina marina)
+        public async Task<IActionResult> Edit(int id, [Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId,LocationId")] Marina marina)
         {
-            if (id != marina.MarinaId)
-                return NotFound();
+            if (id == marina.MarinaId)
+                if (ModelState.IsValid)
+                {
+                    if (MarinaLocationIsSelected())
+                    {
+                        var marinaLocation = GetLocationFormData();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(marina);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await _marinaService.Exists(marina.MarinaId))
-                        return NotFound();
+                        if (marinaLocation is not null)
+                        {
+                            if (marina.LocationId.IsValidId())
+                            {
+                                await _marinaService.UpdateMarinaLocation(marina, marinaLocation);
+                            }
+                            else
+                            {
+                                await _marinaService.CreateLocationForMarina(marina, marinaLocation);
+                            }
+                        }
+                    }
                     else
-                        throw;
+                    {
+                        if (marina.LocationId.IsValidId())
+                        {
+                            await _marinaService.DeleteMarinaLocation(marina);
+                        }
+                    }
+
+                    await _marinaService.Update(marina);
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
-            }
+
             ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "AddressId", marina.AddressId);
             ViewData["MarinaOwnerId"] = new SelectList(_context.MarinaOwners, "MarinaOwnerId", "MarinaOwnerId", marina.MarinaOwnerId);
             return View(marina);
@@ -151,12 +163,12 @@ namespace WebApplication.Controllers
             {
                 var marina = await _marinaService.GetSingle(id);
 
-                if (marina.LocationId is not null)
+                if (marina.LocationId.IsValidId())
                     await _marinaService.DeleteMarinaLocation(marina);
 
                 // The delete method in the service checks whether the id is: null, negative, not assigned to any marina
                 await _marinaService.Delete(id);
-            }    
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -197,9 +209,9 @@ namespace WebApplication.Controllers
             string radius = Request.Form["Radius"];
 
             if (latitude.IsNotNullOrEmpty() && longitude.IsNotNullOrEmpty() && radius.IsNotNullOrEmpty())
-                return false;
+                return true;
 
-            return true;
+            return false;
         }
 
         private Location GetLocationFormData()

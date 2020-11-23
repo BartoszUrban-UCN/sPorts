@@ -1,11 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using System.Data.Common;
-using System;
-
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
-
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Data.Common;
+using System.Runtime.InteropServices;
 using WebApplication.Data;
 
 namespace WebApplication.Tests.Utils
