@@ -13,8 +13,11 @@ namespace WebApplication.BusinessLogic
     {
         private readonly SportsContext _context;
         private readonly IBookingLineService _bookingLineService;
+        private readonly IBookingConfirmationService _bookingConfirmationService;
+        private readonly IBookingFormService _bookingFormService;
+        private readonly IPDFService<Booking> _pdfService;
 
-        public BookingService(SportsContext context, IBookingLineService bookingLineService)
+        public BookingService(SportsContext context, IBookingLineService bookingLineService, IBookingConfirmationService bookingConfirmationService, IBookingFormService bookingFormService, IPDFService<Booking> pdfService)
         {
             // if (context == null)
             //     throw new BusinessException("BookingService", "The context argument was null.");
@@ -24,6 +27,9 @@ namespace WebApplication.BusinessLogic
 
             _context = context;
             _bookingLineService = bookingLineService;
+            _bookingConfirmationService = bookingConfirmationService;
+            _bookingFormService = bookingFormService;
+            _pdfService = pdfService;
         }
 
         private async Task<int> CreateBooking(Booking booking)
@@ -282,14 +288,12 @@ namespace WebApplication.BusinessLogic
         #region IBookingConfirmationService
         public async Task<bool> ConfirmSpotBooked(int bookingLineId)
         {
-            IBookingConfirmationService bookingConfirmationService = new BookingConfirmationService(_context);
-            return await bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
+            return await _bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
         }
 
         public void SendConfirmationMail(int bookingId)
         {
-            IBookingConfirmationService bookingConfirmationService = new BookingConfirmationService(_context);
-            bookingConfirmationService.SendConfirmationMail(bookingId);
+            _bookingConfirmationService.SendConfirmationMail(bookingId);
         }
         #endregion
 
@@ -303,6 +307,13 @@ namespace WebApplication.BusinessLogic
         public async Task<bool> AddTime(int? bookingLineId, int amount)
         {
             return await _bookingLineService.AddTime(bookingLineId, amount);
+        }
+        #endregion
+
+        #region IBookingFormService
+        public Dictionary<int, int> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
+        {
+            return _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate);
         }
         #endregion
     }

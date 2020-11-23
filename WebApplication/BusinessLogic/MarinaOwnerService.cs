@@ -9,9 +9,9 @@ namespace WebApplication.BusinessLogic
     public class MarinaOwnerService : IMarinaOwnerService
     {
         private readonly SportsContext _context;
-        private readonly IBookingService _bookingLinesService;
+        private readonly IBookingLineService _bookingLineService;
 
-        public MarinaOwnerService(SportsContext context, IBookingService bookingLinesService)
+        public MarinaOwnerService(SportsContext context, IBookingLineService bookingLineService)
         {
             // if (context == null)
             //     throw new BusinessException("MarinaOwnerService", "The context argument was null.");
@@ -20,7 +20,7 @@ namespace WebApplication.BusinessLogic
             //     throw new BusinessException("MarinaOwnerService", "The bookingLinesService argument was null.");
 
             _context = context;
-            _bookingLinesService = bookingLinesService;
+            _bookingLineService = bookingLineService;
         }
 
         public async Task<int> Create(MarinaOwner marinaOwner)
@@ -137,7 +137,7 @@ namespace WebApplication.BusinessLogic
             if (marinaOwnerId < 0)
                 throw new BusinessException("GetBookingLines", "The id is negative.");
 
-            var bookingLines = (List<BookingLine>)await _bookingLinesService.GetAll();
+            var bookingLines = (List<BookingLine>)await _bookingLineService.GetAll();
 
             return bookingLines.FindAll(b => b.Spot.Marina.MarinaOwner.MarinaOwnerId == marinaOwnerId);
         }

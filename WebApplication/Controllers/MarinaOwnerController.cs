@@ -1,27 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
-using WebApplication.Data;
+using WebApplication.BusinessLogic;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
     public class MarinaOwnerController : Controller
     {
-        private readonly SportsContext _context;
+        private readonly IMarinaOwnerService _marinaOwnerService;
 
-        public MarinaOwnerController(SportsContext context)
+        public MarinaOwnerController(IMarinaOwnerService marinaOwnerService)
         {
-            _context = context;
+            _marinaOwnerService = marinaOwnerService;
         }
 
         // GET: MarinaOwner
         public async Task<IActionResult> Index()
         {
-            var sportsContext = _context.MarinaOwners.Include(m => m.Person);
-            return View(await sportsContext.ToListAsync());
+            var marinaOwners = await _marinaOwnerService.GetAll();
+            return View(marinaOwners);
         }
 
         // GET: MarinaOwner/Details/5
@@ -32,10 +31,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var marinaOwner = await _context.MarinaOwners
-                .Include(m => m.Person)
-                .Include(m => m.Marina)
-                .FirstOrDefaultAsync(m => m.MarinaOwnerId == id);
+            var marinaOwner = await _marinaOwnerService.GetSingle(id);
             if (marinaOwner == null)
             {
                 return NotFound();
@@ -45,9 +41,11 @@ namespace WebApplication.Controllers
         }
 
         // GET: MarinaOwner/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["PersonId"] = new SelectList(_context.Persons, "PersonId", "Email");
+            // should get all people, personService??
+            var people = await _marinaOwnerService.GetAll();
+            ViewData["PersonId"] = new SelectList(people, "PersonId", "Email");
             return View();
         }
 
@@ -60,11 +58,13 @@ namespace WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(marinaOwner);
-                await _context.SaveChangesAsync();
+                await _marinaOwnerService.Create(marinaOwner);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PersonId"] = new SelectList(_context.Persons, "PersonId", "Email", marinaOwner.PersonId);
+
+            // should get all people, personService??
+            var people = await _marinaOwnerService.GetAll();
+            ViewData["PersonId"] = new SelectList(people, "PersonId", "Email", marinaOwner.PersonId);
             return View(marinaOwner);
         }
 
@@ -76,12 +76,15 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var marinaOwner = await _context.MarinaOwners.Include(m => m.Marina).FirstOrDefaultAsync(m => m.MarinaOwnerId == id);
+            var marinaOwner = await _marinaOwnerService.GetSingle(id);
             if (marinaOwner == null)
             {
                 return NotFound();
             }
-            ViewData["PersonId"] = new SelectList(_context.Persons, "PersonId", "Email", marinaOwner.PersonId);
+
+            // should get all people, personService??
+            var people = await _marinaOwnerService.GetAll();
+            ViewData["PersonId"] = new SelectList(people, "PersonId", "Email", marinaOwner.PersonId);
             return View(marinaOwner);
         }
 
@@ -101,12 +104,11 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    _context.Update(marinaOwner);
-                    await _context.SaveChangesAsync();
+                    await _marinaOwnerService.Update(marinaOwner);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MarinaOwnerExists(marinaOwner.MarinaOwnerId))
+                    if (!await _marinaOwnerService.Exists(marinaOwner.MarinaOwnerId))
                     {
                         return NotFound();
                     }
@@ -117,7 +119,10 @@ namespace WebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PersonId"] = new SelectList(_context.Persons, "PersonId", "Email", marinaOwner.PersonId);
+
+            // should get all people, personService??
+            var people = await _marinaOwnerService.GetAll();
+            ViewData["PersonId"] = new SelectList(people, "PersonId", "Email", marinaOwner.PersonId);
             return View(marinaOwner);
         }
 
@@ -129,9 +134,7 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            var marinaOwner = await _context.MarinaOwners
-                .Include(m => m.Person)
-                .FirstOrDefaultAsync(m => m.MarinaOwnerId == id);
+            var marinaOwner = await _marinaOwnerService.GetSingle(id);
             if (marinaOwner == null)
             {
                 return NotFound();
@@ -145,15 +148,22 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var marinaOwner = await _context.MarinaOwners.FindAsync(id);
-            _context.MarinaOwners.Remove(marinaOwner);
-            await _context.SaveChangesAsync();
+            await _marinaOwnerService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MarinaOwnerExists(int id)
+        /// <summary>
+        /// Get Bookings of logged in Marina Owner
+        /// </summary>
+        /// <returns>View</returns>
+        // GET: Booking/marinaowner
+        [Route("{controller}/bookingLines")]
+        public async Task<IActionResult> BookingsByMarinaOwner()
         {
-            return _context.MarinaOwners.Any(e => e.MarinaOwnerId == id);
+            // get logged in marina 
+            var bookingLines = await _marinaOwnerService.GetUnconfirmedBookingLines(1);
+
+            return View(bookingLines);
         }
     }
 }

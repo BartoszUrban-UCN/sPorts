@@ -12,14 +12,10 @@ namespace WebApplication.Controllers
     public class BookingController : Controller
     {
         private readonly IBookingService _bookingService;
-        private readonly IBookingFormService _bookingFormService;
-        private readonly IMarinaService _marinaService;
 
-        public BookingController(IBookingService bookingService, IBookingFormService bookingFormService, IMarinaService marinaService)
+        public BookingController(IBookingService bookingService)
         {
             _bookingService = bookingService;
-            _bookingFormService = bookingFormService;
-            _marinaService = marinaService;
         }
 
         // GET: Booking
@@ -148,22 +144,6 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // /// <summary>
-        // /// Get Bookings of logged in Marina Owner
-        // /// </summary>
-        // /// <returns>View</returns>
-        // // GET: Booking/marinaowner
-        // [Route("{controller}/MarinaOwner")]
-        // public async Task<IActionResult> BookingsByMarinaOwner()
-        // {
-        //     // get logged in marina owner
-        //     // var marinaOwner = await _bookingService.GetSingle(int loggedMarinaOwnerId);
-        //     // var bookingLines = await _bookingService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
-
-        //     //return View(bookingLines);
-        //     return View();
-        // }
-
         public async Task<IActionResult> GetBookingLines(int? id)
         {
             try
@@ -199,8 +179,8 @@ namespace WebApplication.Controllers
             DateTime startDate = DateTime.Now;
             DateTime endDate = DateTime.MaxValue;
 
-            ViewData["AvailableMarinas"] = _bookingFormService.GetAllAvailableSpotsCount(new List<int>() { 1, 2, 3, 4 }, 1, startDate, endDate);
-            ViewData["Marinas"] = await _marinaService.GetAll();
+            ViewData["AvailableMarinas"] = _bookingService.GetAllAvailableSpotsCount(new List<int>() { 1, 2, 3, 4 }, 1, startDate, endDate);
+            ViewData["Marinas"] = await _bookingService.GetAll();
             return View();
         }
     }

@@ -74,6 +74,10 @@ namespace WebApplication.BusinessLogic
                                                 .ThenInclude(s => s.Marina)
                                                     .ThenInclude(m => m.MarinaOwner)
                                                         .ThenInclude(m => m.Person)
+                                                .Include(b => b.Booking)
+                                                    .ThenInclude(bk => bk.Boat)
+                                                        .ThenInclude(bt => bt.BoatOwner)
+                                                            .ThenInclude(bo => bo.Person)
                                              .ToListAsync();
             return bookingLines;
         }

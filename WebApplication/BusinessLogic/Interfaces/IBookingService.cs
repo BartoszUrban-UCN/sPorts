@@ -11,8 +11,6 @@ namespace WebApplication.BusinessLogic
 
         Task<BookingLine> GetBookingLine(int? id);
 
-        // Task<List<BookingLine>> GetUnconfirmedBookingLines(int? marinaOwnerId);
-
         Task<IEnumerable<BookingLine>> GetBookingLines(int? id);
 
         Task<IEnumerable<BookingLine>> GetOngoingBookingLines(int? id);
@@ -20,5 +18,7 @@ namespace WebApplication.BusinessLogic
         Task<bool> ConfirmSpotBooked(int bookingLineId);
 
         Task<bool> CancelBooking(int? id);
+
+        Dictionary<int, int> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace WebApplication.BusinessLogic
 {
-    internal interface IPDFService<T>
+    public interface IPDFService<T>
     {
         void CreatePDFFile(T fileToMakePDFFrom);
 
