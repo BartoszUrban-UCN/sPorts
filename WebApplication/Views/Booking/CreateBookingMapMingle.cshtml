@@ -1,4 +1,5 @@
 ﻿@model WebApplication.Models.Booking
+@using WebApplication.BusinessLogic.Shared;
 
 @{
     ViewData["Title"] = "Create";
@@ -16,6 +17,7 @@
 <div id="mapid" style="height: 600px"></div>
 
 <script src="~/js/leaflet_map.js"></script>
+<script src="/js/leaflet_methods.js"></script>
 <script>mymap.setView([56.2639, 9.5018], 7)</script>
 
 @* End of initialization *@
@@ -23,26 +25,18 @@
 @foreach (KeyValuePair<int, int> marinaNumberOfSpotsPair in availableMarinas)
 {
     var marina = marinas.FirstOrDefault(marina => marina.MarinaId == marinaNumberOfSpotsPair.Key);
-    if (marina.LocationId == null && marina.Spots.Count > 0)
+
+    if (marina.LocationId is not null)
     {
-        WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(marina);
+        <script>AddMarinaOnMap(@marina)</script>
     }
+    else if (marina.Spots.Count > 0)
+        if (marina.Spots.Any(spot => spot.LocationId != null))
+        {
+            WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(marina);
 
-    <script>
-    var marinaPopup = '\
-        <div class="text-center" style="width: 100px">\
-            <p style="font-weight: bold">@marina.Name</p>\
-            <a href="Marina/Details/@marina.MarinaId" class="btn btn-primary text-white">Details</a>\
-        </div>\
-    ';
-
-    L.circle([@marina.Location.Latitude, @marina.Location.Longitude], {
-        color: 'pink',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: @(marina.Location.Radius * 1000),
-    }).bindPopup(marinaPopup).openTooltip().addTo(mymap);
-    </script>
+            <script>AddMarinaOnMap(@Html.Raw(HelperMethods.Serialize(marina)))</script>
+        }
 }
 
 @section Scripts {
