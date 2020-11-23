@@ -31,7 +31,7 @@ namespace WebApplication.Tests.BusinessLogic
 
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
-                bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
+                bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina() != null;
 
                 var marinaOwnerBookings = (List<BookingLine>)await _bookingService.GetBookingLines(marinaOwner.MarinaOwnerId);
                 bool actual = marinaOwnerBookings == null ? false : marinaOwnerBookings.Count > 0 ? true : false;
@@ -50,7 +50,7 @@ namespace WebApplication.Tests.BusinessLogic
 
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
-                bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
+                bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina() != null;
 
                 var spotsToConfirm = (List<BookingLine>)await _marinaOwnerService.GetUnconfirmedBookingLines(marinaOwner.MarinaOwnerId);
                 bool actual = spotsToConfirm == null ? false : spotsToConfirm.Count > 0 ? true : false;
@@ -65,7 +65,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-                bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot();
+                bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot() != null;
                 bool expected = true;
 
                 var unconfirmedBookingLines = (List<BookingLine>)await _marinaOwnerService.GetUnconfirmedBookingLines(1);

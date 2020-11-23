@@ -13,12 +13,6 @@ namespace WebApplication.BusinessLogic
 
         public MarinaService(SportsContext context, ILocationService locationService) : base(context)
         {
-            // if (context == null)
-            //     throw new BusinessException("MarinaService", "The context argument was null.");
-
-            // if (locationService == null)
-            //     throw new BusinessException("MarinaService", "The locationService argument was null.");
-
             _locationService = locationService;
         }
 
@@ -42,10 +36,12 @@ namespace WebApplication.BusinessLogic
                     await Create(marina);
 
                     // Assign location to marina
-                    marina.LocationId = marinaLocation.LocationId;
-                    marina.Location = marinaLocation;
+                    marina.LocationId = marinaLocation;
 
-                    await _context.SaveChangesAsync();
+                    //this might need to be a Get from that service?
+                    marina.Location = await _locationService.GetSingle(marinaLocation);
+
+                    await Save();
 
                     return marina.MarinaId;
                 }
@@ -62,10 +58,10 @@ namespace WebApplication.BusinessLogic
                     var marinaLocation = await _locationService.Create(location);
 
                     // Assign location to marina
-                    marina.LocationId = marinaLocation.LocationId;
-                    marina.Location = await _locationService.GetSingle(marinaLocation.LocationId);
+                    marina.LocationId = marinaLocation;
+                    marina.Location = await _locationService.GetSingle(marinaLocation);
 
-                    await _context.SaveChangesAsync();
+                    await Save();
 
                     return marina.MarinaId;
                 }
@@ -91,7 +87,7 @@ namespace WebApplication.BusinessLogic
                     _context.Marinas.Remove(marina);
 
                     // Save the changes made
-                    await _context.SaveChangesAsync();
+                    await Save();
                 }
         }
 
@@ -163,7 +159,7 @@ namespace WebApplication.BusinessLogic
             {
                 _context.Marinas.Update(marina);
 
-                await _context.SaveChangesAsync();
+                await Save();
             }
 
             return marina;
@@ -176,7 +172,7 @@ namespace WebApplication.BusinessLogic
                 {
                     await _locationService.Update(location);
 
-                    await _context.SaveChangesAsync();
+                    await Save();
                 }
 
             return marina;

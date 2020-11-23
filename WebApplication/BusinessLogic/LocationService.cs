@@ -7,16 +7,10 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class LocationService : ILocationService
+    public class LocationService : ServiceBase, ILocationService
     {
-        private readonly SportsContext _context;
-
-        public LocationService(SportsContext context)
+        public LocationService(SportsContext context) : base(context)
         {
-            // if (context == null)
-            //     throw new BusinessException("LocationService", "The context argument was null.");
-
-            _context = context;
         }
 
         // Persist a location to the database
@@ -27,7 +21,6 @@ namespace WebApplication.BusinessLogic
 
             // Add the location to the database and save the changes made
             _context.Locations.Add(location);
-            await _context.SaveChangesAsync();
 
             // Return the newly created location's id
             return location.LocationId;
@@ -42,9 +35,6 @@ namespace WebApplication.BusinessLogic
             var location = await GetSingle(id);
             // Remove the location from the database
             _context.Locations.Remove(location);
-
-            // Save the changes made
-            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Location>> GetAll()
@@ -68,7 +58,6 @@ namespace WebApplication.BusinessLogic
             location.ThrowIfNull();
 
             _context.Locations.Update(location);
-            await _context.SaveChangesAsync();
 
             return location;
         }

@@ -6,16 +6,10 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingLineService : IBookingLineService
+    public class BookingLineService : ServiceBase, IBookingLineService
     {
-        private readonly SportsContext _context;
-
-        public BookingLineService(SportsContext context)
+        public BookingLineService(SportsContext context) : base(context)
         {
-            // if (context == null)
-            //     throw new BusinessException("BookingLineService", "The context argument was null.");
-
-            _context = context;
         }
 
         public async Task<int> Create(BookingLine bookingLine)
@@ -28,22 +22,7 @@ namespace WebApplication.BusinessLogic
             }
 
             _context.BookingLines.Add(bookingLine);
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Create", "The Booking Line was not created.");
-
-                return bookingLine.BookingLineId;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Create", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Create", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return bookingLine.BookingLineId;
         }
 
         public async Task<BookingLine> GetSingle(int? id)
@@ -85,44 +64,13 @@ namespace WebApplication.BusinessLogic
         public async Task<BookingLine> Update(BookingLine bookingLine)
         {
             _context.BookingLines.Update(bookingLine);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Update", "The Booking Line was not updated.");
-
-                return bookingLine;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return bookingLine;
         }
 
         public async Task Delete(int? id)
         {
             var bookingLine = await GetSingle(id);
             _context.BookingLines.Remove(bookingLine);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Delete", "Couldn't delete the Booking Line.");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
         }
 
         public async Task<bool> AddTime(int? id, int amount)

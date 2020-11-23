@@ -7,13 +7,10 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingFormService : IBookingFormService
+    public class BookingFormService : ServiceBase, IBookingFormService
     {
-        private readonly SportsContext _context;
-
-        public BookingFormService(SportsContext context)
+        public BookingFormService(SportsContext context) : base(context)
         {
-            _context = context;
         }
 
         public Dictionary<int, int> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)

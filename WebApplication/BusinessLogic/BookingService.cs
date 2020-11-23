@@ -9,23 +9,15 @@ using static WebApplication.BusinessLogic.EmailService;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingService : IBookingService
+    public class BookingService : ServiceBase, IBookingService
     {
-        private readonly SportsContext _context;
         private readonly IBookingLineService _bookingLineService;
         private readonly IBookingConfirmationService _bookingConfirmationService;
         private readonly IBookingFormService _bookingFormService;
         private readonly IPDFService<Booking> _pdfService;
 
-        public BookingService(SportsContext context, IBookingLineService bookingLineService, IBookingConfirmationService bookingConfirmationService, IBookingFormService bookingFormService, IPDFService<Booking> pdfService)
+        public BookingService(SportsContext context, IBookingLineService bookingLineService, IBookingConfirmationService bookingConfirmationService, IBookingFormService bookingFormService, IPDFService<Booking> pdfService) : base(context)
         {
-            // if (context == null)
-            //     throw new BusinessException("BookingService", "The context argument was null.");
-
-            // if (bookingLineService == null)
-            //     throw new BusinessException("BookingService", "The context argument was null.");
-
-            _context = context;
             _bookingLineService = bookingLineService;
             _bookingConfirmationService = bookingConfirmationService;
             _bookingFormService = bookingFormService;
@@ -111,22 +103,17 @@ namespace WebApplication.BusinessLogic
         private async Task<int> StoreBookingInDb(Booking booking)
         {
             int rowsAffected = 0;
-
-            using (SportsContext context = _context)
+            try
             {
-                try
-                {
-                    context.Bookings.Add(booking);
-                    booking.BookingLines.ForEach(bl => context.BookingLines.Add(bl));
+                _context.Bookings.Add(booking);
+                booking.BookingLines.ForEach(bl => _context.BookingLines.Add(bl));
 
-                    rowsAffected = await context.SaveChangesAsync();
-                    //ExplicitLoad(booking);
-                }
-                catch (Exception)
-                {
-
-                    throw new BusinessException("Booking", "Something went wrong when creating your booking. Please try again. If problem persists please contact our techincal service."); ;
-                }
+                rowsAffected = await Save();
+                //ExplicitLoad(booking);
+            }
+            catch (Exception)
+            {
+                throw new BusinessException("Booking", "Something went wrong when creating your booking. Please try again. If problem persists please contact our techincal service."); ;
             }
 
             return rowsAffected;
@@ -229,23 +216,7 @@ namespace WebApplication.BusinessLogic
         public async Task<Booking> Update(Booking booking)
         {
             _context.Bookings.Update(booking);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Update", "The Booking was not updated.");
-
-                return booking;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return booking;
         }
 
         public async Task Delete(int? id)
@@ -255,21 +226,6 @@ namespace WebApplication.BusinessLogic
 
             var booking = await GetSingle(id);
             _context.Bookings.Remove(booking);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Delete", "Couldn't delete the Booking.");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
         }
 
         public async Task<bool> Exists(int? id)

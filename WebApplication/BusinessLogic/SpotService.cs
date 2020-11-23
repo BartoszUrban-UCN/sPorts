@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -12,11 +11,6 @@ namespace WebApplication.BusinessLogic
         private readonly ILocationService _locationService;
         public SpotService(SportsContext context, ILocationService locationService) : base(context)
         {
-            // if (context == null)
-            //     throw new BusinessException("SpotService", "The context argument was null.");
-
-            // if (locationService == null)
-            //     throw new BusinessException("SpotService", "The locationService argument was null.");
             _locationService = locationService;
         }
 
@@ -77,10 +71,10 @@ namespace WebApplication.BusinessLogic
             return _context.Spots.AnyAsync(l => l.SpotId == id);
         }
 
-        public async Task<Spot> CreateWithLocation(Spot spot, Location location)
+        public async Task<int> CreateWithLocation(Spot spot, Location location)
         {
-            var locationId = await _locationService.Create(location);
-            spot.LocationId = locationId.LocationId;
+            var locationId = _locationService.Create(location);
+            spot.LocationId = await locationId;
 
             return await Create(spot);
         }
@@ -89,7 +83,7 @@ namespace WebApplication.BusinessLogic
         {
             if (spot.LocationId == null)
             {
-                spot.LocationId = (await _locationService.Create(location)).LocationId;
+                spot.LocationId = await _locationService.Create(location);
             }
             else
             {

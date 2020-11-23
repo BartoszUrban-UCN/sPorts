@@ -5,13 +5,10 @@ using static WebApplication.BusinessLogic.EmailService;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BookingConfirmationService : IBookingConfirmationService
+    public class BookingConfirmationService : ServiceBase, IBookingConfirmationService
     {
-        private readonly SportsContext _context;
-
-        public BookingConfirmationService(SportsContext context)
+        public BookingConfirmationService(SportsContext context) : base(context)
         {
-            _context = context;
         }
 
         #region Confirm spot booked by boatOnwer
@@ -28,7 +25,7 @@ namespace WebApplication.BusinessLogic
                 bookingLine = _context.BookingLines.Find(bookingLineId);
                 bookingLine.Confirmed = true;
                 _context.BookingLines.Update(bookingLine);
-                var success = await _context.SaveChangesAsync() > 0;
+                var success = await Save() > 0;
                 SendConfirmationMail(bookingLine.BookingId);
                 return success;
             }

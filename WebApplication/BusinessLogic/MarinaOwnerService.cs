@@ -6,20 +6,12 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class MarinaOwnerService : IMarinaOwnerService
+    public class MarinaOwnerService : ServiceBase, IMarinaOwnerService
     {
-        private readonly SportsContext _context;
         private readonly IBookingLineService _bookingLineService;
 
-        public MarinaOwnerService(SportsContext context, IBookingLineService bookingLineService)
+        public MarinaOwnerService(SportsContext context, IBookingLineService bookingLineService) : base(context)
         {
-            // if (context == null)
-            //     throw new BusinessException("MarinaOwnerService", "The context argument was null.");
-
-            // if (bookingLinesService == null)
-            //     throw new BusinessException("MarinaOwnerService", "The bookingLinesService argument was null.");
-
-            _context = context;
             _bookingLineService = bookingLineService;
         }
 
@@ -33,22 +25,7 @@ namespace WebApplication.BusinessLogic
             }
 
             _context.MarinaOwners.Add(marinaOwner);
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Create", "The Marina Owner was not created.");
-
-                return marinaOwner.MarinaOwnerId;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Create", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Create", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return marinaOwner.MarinaOwnerId;
         }
 
         public async Task<MarinaOwner> GetSingle(int? id)
@@ -84,44 +61,13 @@ namespace WebApplication.BusinessLogic
         public async Task<MarinaOwner> Update(MarinaOwner marinaOwner)
         {
             _context.MarinaOwners.Update(marinaOwner);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Update", "The Marina Owner was not updated.");
-
-                return marinaOwner;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return marinaOwner;
         }
 
         public async Task Delete(int? id)
         {
             var marinaOwner = await GetSingle(id);
             _context.MarinaOwners.Remove(marinaOwner);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Delete", "Couldn't delete the Marina Owner.");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Delete", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Delete", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
         }
 
         public async Task<bool> Exists(int? id)

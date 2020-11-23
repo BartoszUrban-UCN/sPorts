@@ -7,13 +7,10 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class LoginService : ILoginService
+    public class LoginService : ServiceBase, ILoginService
     {
-        private readonly SportsContext _context;
-
-        public LoginService(SportsContext context)
+        public LoginService(SportsContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<int> Create(Person person)
@@ -24,9 +21,6 @@ namespace WebApplication.BusinessLogic
             }
 
             _context.Add(person);
-
-            await _context.SaveChangesAsync();
-
             return person.PersonId;
         }
 
@@ -34,7 +28,6 @@ namespace WebApplication.BusinessLogic
         {
             var person = await _context.Persons.FindAsync(id);
             _context.Remove(person);
-            await _context.SaveChangesAsync();
         }
 
         public Task<bool> Exists(int? id)
@@ -67,7 +60,7 @@ namespace WebApplication.BusinessLogic
             var boatOwner = new BoatOwner { PersonId = person.PersonId };
 
             _context.BoatOwners.Add(boatOwner);
-            await _context.SaveChangesAsync();
+            await Save();
 
             return boatOwner;
         }
@@ -82,7 +75,7 @@ namespace WebApplication.BusinessLogic
             var marinaOwner = new MarinaOwner { PersonId = person.PersonId };
 
             _context.MarinaOwners.Add(marinaOwner);
-            await _context.SaveChangesAsync();
+            await Save();
 
             return marinaOwner;
         }
@@ -90,7 +83,6 @@ namespace WebApplication.BusinessLogic
         public async Task<Person> Update(Person person)
         {
             _context.Update(person);
-            await _context.SaveChangesAsync();
             return person;
         }
     }

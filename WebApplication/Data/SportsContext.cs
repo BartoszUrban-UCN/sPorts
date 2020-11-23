@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
-using WebApplication.BusinessLogic;
 using WebApplication.Models;
 
 namespace WebApplication.Data
@@ -39,26 +36,6 @@ namespace WebApplication.Data
             modelBuilder.Entity<Booking>().ToTable("Booking");
             modelBuilder.Entity<BookingLine>().ToTable("BookingLine");
             modelBuilder.Entity<Location>().ToTable("Location");
-        }
-
-        public async override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var result = await base.SaveChangesAsync(cancellationToken);
-                if (result < 1)
-                    throw new BusinessException("Error", "Nothing was modified.");
-
-                return result;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Error", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Error", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
         }
     }
 }

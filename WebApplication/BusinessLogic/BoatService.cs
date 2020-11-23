@@ -6,16 +6,10 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class BoatService : IBoatService
+    public class BoatService : ServiceBase, IBoatService
     {
-        private readonly SportsContext _context;
-
-        public BoatService(SportsContext context)
+        public BoatService(SportsContext context) : base(context)
         {
-            // if (context == null)
-            //     throw new BusinessException("BoatService", "The context argument was null.");
-
-            _context = context;
         }
 
         public async Task<int> Create(Boat boat)
@@ -28,22 +22,7 @@ namespace WebApplication.BusinessLogic
             }
 
             _context.Boats.Add(boat);
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Create", "The Boat was not created.");
-
-                return boat.BoatId;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Create", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Create", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return boat.BoatId;
         }
 
         public async Task<Boat> GetSingle(int? id)
@@ -92,44 +71,13 @@ namespace WebApplication.BusinessLogic
         public async Task<Boat> Update(Boat boat)
         {
             _context.Boats.Update(boat);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Update", "The Boat was not updated.");
-
-                return boat;
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
+            return boat;
         }
 
         public async Task Delete(int? id)
         {
             var boat = await GetSingle(id);
             _context.Boats.Remove(boat);
-
-            try
-            {
-                var result = await _context.SaveChangesAsync();
-                if (result < 1)
-                    throw new BusinessException("Delete", "Couldn't delete the Boat.");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new BusinessException("Update", "Database problems, couldn't save changes.\n" + ex.ToString());
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new BusinessException("Update", "Concurrency problems, couldn't save change.\n" + ex.ToString());
-            }
         }
 
         public Task<bool> Exists(int? id)
