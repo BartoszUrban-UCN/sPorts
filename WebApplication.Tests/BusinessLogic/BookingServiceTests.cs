@@ -25,7 +25,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             bool expected = true;
 
-            bool actual = await GenerateBookingData.CreateBookingWithOneSpot();
+            bool actual = await GenerateBookingData.CreateBookingWithOneSpot() != null;
 
             Assert.Equal(expected, actual);
         }
@@ -35,7 +35,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             bool expected = true;
 
-            bool actual = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina();
+            bool actual = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina() != null;
 
             Assert.Equal(expected, actual);
         }
@@ -45,7 +45,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             bool expected = true;
 
-            bool actual = await GenerateBookingData.CreateBookingWithThreeSpotsInDifferentMarinas();
+            bool actual = await GenerateBookingData.CreateBookingWithThreeSpotsInDifferentMarinas() != null;
 
             Assert.Equal(expected, actual);
         }

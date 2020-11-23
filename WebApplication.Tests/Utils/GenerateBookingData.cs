@@ -9,7 +9,13 @@ namespace WebApplication.Tests.Utils
 {
     public class GenerateBookingData
     {
+        private static IBookingService _bookingService;
         public static SharedDatabaseFixture Fixture { get; set; }
+
+        public GenerateBookingData(IBookingService bookingService)
+        {
+            _bookingService = bookingService;
+        }
 
         //public IEnumerator<object[]> GetEnumerator()
         //{
@@ -25,18 +31,18 @@ namespace WebApplication.Tests.Utils
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context, null);
+                //IBookingService bookingService = new BookingService(context, null)
                 Booking booking = new Booking();
                 booking.BookingLines = new List<BookingLine>();
-                return await bookingService.Create(booking) > 0;
+                return await _bookingService.Create(booking) > 0;
             }
         }
 
-        public static async Task<bool> CreateBookingWithOneSpot()
+        public static async Task<Booking> CreateBookingWithOneSpot()
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context, null);
+                //IBookingService bookingService = new BookingService(context, null);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
                 Spot spot = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
@@ -45,17 +51,17 @@ namespace WebApplication.Tests.Utils
                     { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot }
                 };
                 Booking booking = new Booking { Boat = boat };
-                booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
+                booking.BookingLines = _bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.Create(booking) > 0;
+                return await _bookingService.Create(booking);
             }
         }
 
-        public async static Task<bool> CreateBookingWithTwoSpotsInSameMarina()
+        public async static Task<Booking> CreateBookingWithTwoSpotsInSameMarina()
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context, null);
+                //IBookingService bookingService = new BookingService(context, null);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
                 Spot spot1 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
@@ -66,17 +72,17 @@ namespace WebApplication.Tests.Utils
                     { new DateTime[2] { DateTime.Now.AddDays(1), DateTime.Now.AddDays(2) }, spot2 }
                 };
                 Booking booking = new Booking { Boat = boat };
-                booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
+                booking.BookingLines = _bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.Create(booking) > 0;
+                return await _bookingService.Create(booking);
             }
         }
 
-        public async static Task<bool> CreateBookingWithThreeSpotsInDifferentMarinas()
+        public async static Task<Booking> CreateBookingWithThreeSpotsInDifferentMarinas()
         {
             using (var context = Fixture.CreateContext())
             {
-                IBookingService bookingService = new BookingService(context, null);
+                //IBookingService bookingService = new BookingService(context, null);
                 BoatOwner boatOwner = context.BoatOwners.Where(b => b.BoatOwnerId == 1).FirstOrDefault();
                 Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
 
@@ -90,9 +96,9 @@ namespace WebApplication.Tests.Utils
                     { new DateTime[2] { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) }, spot3 }
                 };
                 Booking booking = new Booking { Boat = boat };
-                booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
+                booking.BookingLines = _bookingService.CreateBookingLines(marinaSpotStayDates);
 
-                return await bookingService.Create(booking) > 0;
+                return await _bookingService.Create(booking);
             }
         }
 
