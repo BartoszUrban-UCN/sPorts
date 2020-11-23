@@ -65,6 +65,22 @@ namespace WebApplication.BusinessLogic
             return boat;
         }
 
+        public async Task<Boat> GetSingleByName(string name)
+        {
+            if (name == null)
+                throw new BusinessException("GetSingle", "Name is null.");
+
+            var boat = await _context.Boats
+                                        .Include(b => b.Bookings)
+                                            .ThenInclude(b => b.BookingLines)
+                                        .FirstOrDefaultAsync(b => b.Name == name);
+
+            if (boat == null)
+                throw new BusinessException("GetSingle", $"Didn't find Boat with name {name}");
+
+            return boat;
+        }
+
         public async Task<IEnumerable<Boat>> GetAll()
         {
             var boats = await _context.Boats
