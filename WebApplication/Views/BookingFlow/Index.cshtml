@@ -1,27 +1,60 @@
-﻿@model WebApplication.Models.Boat
+﻿@model Booking
 @{
-    ViewBag.Title = "Select your boat";
+    ViewBag.Title = "Book your trip";
 }
-
-<div class="container">
-    <div class="row justify-content-md-center">
-        <h1>@ViewBag.Title</h1>
-    </div>
-    <div class="row justify-content-md-center">
-        <div class="row-cols-lg" style="width:20rem">
-            <form asp-action="Index">
-                <div class="form-group">
-                    <label asp-for="Name" class="control-label">Your Boat for the Trip</label>
-                    <select asp-for="Name" class="form-control" asp-items="ViewBag.Boat"></select>
-                    <span asp-validation-for="Name" class="text-danger"></span>
+<div class="row justify-content-md-center">
+    <h1>@ViewBag.Title</h1>
+</div>
+<form asp-action="Index" id="booking">
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="row-cols-lg" style="width:20rem">
+                <div class="tab-content step" id="step1">
+                    <div class="form-group">
+                        <label asp-for="Boat.Name" class="control-label">Select your boat</label>
+                        <select asp-for="Boat.Name" class="form-control" asp-items="ViewBag.Boat"></select>
+                        <span asp-validation-for="Boat" class="text-danger"></span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Go to next step" class="btn btn-primary" />
+                <div class="tab-content step" id="step2">
+                    <div class="form-group">
+                        <label asp-for="BookingLines[0].StartDate" class="control-label">Select your boat</label>
+                        <input id="start-date" asp-for="BookingLines[0].StartDate" type="date" class="form-control" asp-items="ViewBag.Boat" value="@DateTime.Now.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="BookingLines[0].StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BookingLines[0].EndDate" class="control-label">Select your boat</label>
+                        <input id="end-date" asp-for="BookingLines[0].EndDate" type="date" class="form-control" asp-items="ViewBag.Boat" value="@DateTime.Now.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="BookingLines[0].EndDate" class="text-danger"></span>
+                    </div>
                 </div>
-            </form>
+                <div class="tab-content step" id="step3">
+                    <button type="button" id="checkMarinaMap">TEXT</button>
+                </div>
+                <div id="marinas">
+                    @ViewBag.Marinas
+                    Test
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</form>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+
+        $("#checkMarinaMap").click(function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CreateMarinaMap", "BookingFlow")',
+                data:{ start: $("#start-date").val(), end: $("#end-date").val() },
+                dataType: "json",
+                success: function (response) { alert('Success'); $("#marinas").html(`<p>${response}</p>`); console.log(response)},
+                error: function () {}
+            });
+        });
+    })
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
