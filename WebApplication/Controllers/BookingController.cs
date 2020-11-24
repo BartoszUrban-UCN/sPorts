@@ -175,21 +175,9 @@ namespace WebApplication.Controllers
             }
         }
 
-        // Random method
-        // GET: Booking/CreateBookingMapMingle
-        public async Task<IActionResult> CreateBookingMapMingle()
-        {
-            DateTime startDate = DateTime.Now;
-            DateTime endDate = DateTime.MaxValue;
-
-            ViewData["AvailableMarinas"] = _bookingService.GetAllAvailableSpotsCount(new List<int>() { 1, 2, 3, 4 }, 1, startDate, endDate);
-            ViewData["Marinas"] = await _bookingService.GetAll();
-            return View();
-        }
-
         public IActionResult BookingLineDetails(int? id)
         {
-            return RedirectToAction("Details", "BookingLine", new {id = id});
+            return RedirectToAction("Details", "BookingLine", new { id = id });
         }
     }
 }

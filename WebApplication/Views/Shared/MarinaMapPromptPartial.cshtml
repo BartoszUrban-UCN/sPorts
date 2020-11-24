@@ -1,0 +1,29 @@
+﻿@model WebApplication.Models.BookingLine
+@using WebApplication.BusinessLogic.Shared;
+
+@* Data Necessary *@
+@{
+    Dictionary<int, int> availableMarinas = (Dictionary<int, int>)ViewData["AvailableMarinas"];
+    ICollection<Marina> marinas = (ICollection<Marina>)ViewData["AllMarinas"];
+}
+
+@* Leaflet Map Include *@
+@await Html.PartialAsync("~/Views/Shared/LeafletMapPartial.cshtml")
+
+@* Logic for putting marina locations on the map *@
+@foreach (KeyValuePair<int, int> marinaNumberOfSpotsPair in availableMarinas)
+{
+    var marina = marinas.FirstOrDefault(marina => marina.MarinaId == marinaNumberOfSpotsPair.Key);
+
+    if (marina.LocationId is not null)
+    {
+        <script>MarinaBookingPrompt(@Html.Raw(HelperMethods.Serialize(marina)), @marinaNumberOfSpotsPair.Value)</script>
+    }
+    else if (marina.Spots.Count > 0)
+        if (marina.Spots.Any(spot => spot.LocationId != null))
+        {
+            WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(marina);
+
+            <script>MarinaBookingPrompt(@Html.Raw(HelperMethods.Serialize(marina)), @marinaNumberOfSpotsPair.Value)</script>
+        }
+}

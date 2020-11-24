@@ -1,8 +1,9 @@
-﻿function MarinaBookingPrompt(marina) {
+﻿function MarinaBookingPrompt(marina, numberOfAvailableSpots) {
     var marinaPopup = `\
-        <div class="text-center" style="width: 100px">\
-            <p style="font-weight: bold">${marina.Name}</p>\
-            <a href="/Marina/Details/${marina.MarinaId}" class="btn btn-primary text-white">Details</a>\
+        <div class="text-center" style="width: 130px">\
+            <p style="font-weight: bold; color: #737373">${marina.Name}</p>\
+            <p style="font-weight: bold; color: #376186">${numberOfAvailableSpots} spots available!</p>\
+            <button id="bookButton" class="btn btn-primary btn-sm">Book</button>\
         </div>\
     `;
 
@@ -11,5 +12,5 @@
         fillColor: '#f03',
         fillOpacity: 0.5,
         radius: (marina.Location.Radius * 1000),
-    }).bindPopup(marinaPopup).openTooltip().addTo(mymap);
+    }).bindPopup(marinaPopup).addTo(mymap);
 }
