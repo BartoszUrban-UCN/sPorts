@@ -1,5 +1,5 @@
 {
   "typeAcquisition": {
-    "include": [ "leaflet" ]
+    "include": [ "leaflet", "jquery" ]
   }
 }

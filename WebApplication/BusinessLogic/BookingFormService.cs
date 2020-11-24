@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -112,6 +113,27 @@ namespace WebApplication.BusinessLogic
             }
 
             return areDatesValid;
+        }
+
+        public async Task<Booking> CreateBooking()
+        {
+            var booking = new Booking { CreationDate = DateTime.Now, BookingReferenceNo = 123 };
+            var bookingLine = new BookingLine { Booking = booking };
+            booking.BookingLines.Add(bookingLine);
+
+            _context.Add(booking);
+            return booking;
+        }
+
+        public async Task<BookingLine> GetBookingLine(Booking booking)
+        {
+            return (await _context.Bookings.FindAsync(booking.BookingId)).BookingLines.Last();
+        }
+
+        public BookingLine UpdateBookingLine(BookingLine bookingLine)
+        {
+            _context.BookingLines.Update(bookingLine);
+            return bookingLine;
         }
     }
 }
