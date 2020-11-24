@@ -73,7 +73,7 @@ else
                         @Html.DisplayFor(modelItem => item.Confirmed)
                     </td>
                     <td>
-                        <input class="btn btn-outline-success confirmBtn" type="button" value="Confirm" onclick="confirmSpot(@item.BookingLineId)" />
+                        <input class="btn btn-outline-success confirmBtn" data-bookingline-id="@item.BookingLineId" type="button" value="Confirm" />
                     </td>
                 </tr>
             }
@@ -82,9 +82,11 @@ else
     </table>
 }
 
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript">
-    function confirmSpot(bookingLineId) {
+    $(document).ready(function () {
         $("input.confirmBtn").click(function () {
+            var bookingLineId = $(this).attr("data-bookingLine-id")
             $.ajax({
                 type: "PUT",
                 url: "/api/booking/" + bookingLineId + "/bookinglineconfirmation",
@@ -103,5 +105,6 @@ else
                 }
             });
         })
-    };
+    })
+
 </script>
