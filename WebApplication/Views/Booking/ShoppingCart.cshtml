@@ -1,0 +1,66 @@
+@model IEnumerable<Spot>
+
+@{
+    ViewData["Title"] = "sPorts";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/listview.css" />
+}
+
+<div class="container-fluid bcontent">
+    <div class="row">
+            <div class="col-8">
+        @foreach (var spot in Model)
+        {
+                <div class="card border-light shadow ">
+                    <div class="card-header border-light bg-info">Spectacular View</div>
+                    <div class="card-body">
+                        <p class="card-title">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                            doloremque laudantium.</p>
+                        <div class="row">
+                            <div class="col">
+                                <img class="card-img"
+                                    src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweknowyourdreams.com%2Fimages%2Fboat%2Fboat-01.jpg&f=1&nofb=1"
+                                    alt="A spot">
+                            </div>
+                            <div class="col">
+                                <span class="card-text">Price per Day: </span>
+                                <span class="bg-light shadow">@spot.Price</span> kr.
+                                <br><br>
+                                <span>Start Date: </span>
+                                <span class="bg-light shadow"> 12 </span>/
+                                <span class="bg-light shadow"> 05 </span>
+                                <br>
+                                <span>End Date: </span>
+                                <span class="bg-light shadow"> 24 </span>/
+                                <span class="bg-light shadow"> 05</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-right bg-white border-white">
+                        <div class="row">
+                            <div class="col-min">
+                                <h4 class="card-text">Total: 420 kr.</h4>
+                            </div>
+                            <div class="col">
+                                <a asp-controller="Spot" asp-action="Details" asp-route-id="@spot.SpotId"
+                                    class="btn">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        }
+        </div>
+        <div class="col">
+            <div class="card border-light shadow">
+                <div class="card-header border-light bg-info">Header</div>
+                <div class="card-body">
+                    <h5 class="card-title">Total Price: 0.00$</h5>
+                    <p class="card-text">Discounts: 0.00$</p>
+                    <br> <br>
+                    <h4 class="card-title">Discounted Price: 0.00$</h4>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,14 +1,14 @@
-.card-columns .card-body {
-    height: 100px;
-  }
-  
-  .card-columns .card-img {
-    height: 330px;
-    vertical-align: bottom;
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
+.card {
+    transition: transform 0.2s;
+    margin-top: 3rem;
+}
 
-  .card-img {
-      padding: 1rem;
-  }
+.card-header {
+    color: white;
+    background-color: azure;
+}
+
+.btn {
+    background-color: #6a983c;
+    color: white;
+}

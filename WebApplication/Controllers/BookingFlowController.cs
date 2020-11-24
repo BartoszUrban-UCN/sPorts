@@ -169,5 +169,20 @@ namespace WebApplication.Controllers
         //    ViewBag.Spots = _bookingFormService.GetAvailableSpots(marina.MarinaId, bookingLine.Booking.BoatId, bookingLine.StartDate, bookingLine.EndDate);
         //    return View(bookingLine);
         //}
+
+
+        public async Task<IActionResult> ShoppingCart()
+        {
+            // for demonstration puroposes;
+            var marinas = (System.Collections.Generic.List<Marina>) await _marinaService.GetAll();
+            var spots = new System.Collections.Generic.List<Spot>();
+
+            foreach(var marina in marinas)
+            {
+                spots.AddRange(marina.Spots);
+            }
+
+            return View("~/Views/Booking/ShoppingCart.cshtml", spots);
+        }
     }
 }
