@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace WebApplication.Controllers
     public class BookingController : Controller
     {
         private readonly IBookingService _bookingService;
+        private readonly IBoatService _boatService;
 
-        public BookingController(IBookingService bookingService)
+        public BookingController(IBookingService bookingService, IBoatService boatService)
         {
             _bookingService = bookingService;
+            _boatService = boatService;
         }
 
         // GET: Booking
@@ -37,10 +40,10 @@ namespace WebApplication.Controllers
         }
 
         // GET: Booking/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            //var boats = await _bookingService.GetBoatsByBoatOwner(int boatOwnerId);
-            //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId");
+            var boats = await _boatService.GetAll();
+            ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId");
             return View();
         }
 
@@ -169,7 +172,7 @@ namespace WebApplication.Controllers
                 await _bookingService.CancelBooking(id);
                 return Content("Canceled!");
             }
-            catch(BusinessException ex)
+            catch (BusinessException ex)
             {
                 return Content(ex.ToString());
             }

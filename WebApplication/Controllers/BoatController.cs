@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
@@ -37,10 +38,10 @@ namespace WebApplication.Controllers
         }
 
         // GET: Boats/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var boatOwners = _boatOwnerService.GetAll();
-            var boatOwnerId = ViewData["BoatOwnerId"];
+            var boatOwners = await _boatOwnerService.GetAll();
+            var boatOwnerId = new SelectList(boatOwners, "BoatOwnerId", "BoatOwnerId");
             return View();
         }
 
