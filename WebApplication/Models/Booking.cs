@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models
 {
@@ -9,6 +10,9 @@ namespace WebApplication.Models
 
         public int BookingReferenceNo { get; set; }
 
+        [Range(1, 100)]
+        [Display(Name = "Total Price")]
+        [Required]
         public double TotalPrice { get; set; }
 
         public string PaymentStatus { get; set; }
@@ -19,6 +23,7 @@ namespace WebApplication.Models
 
         public int BoatId { get; set; }
 
+        [Required]
         public Boat Boat { get; set; }
     }
 }
