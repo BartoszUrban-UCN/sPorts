@@ -15,14 +15,14 @@
       "destination": "wwwroot/lib/cldrjs/"
     }
   ,
-{
-  "provider": "unpkg",
-  "library": "jquery-validation-globalize@0.1.1",
-  "destination": "wwwroot/lib/jquery-validation-globalize/",
-  "files": [
-    "jquery.validate.globalize.min.js",
-    "jquery.validate.globalize.js"
+  {
+    "provider": "unpkg",
+    "library": "jquery-validation-globalize@0.1.1",
+    "destination": "wwwroot/lib/jquery-validation-globalize/",
+    "files": [
+      "jquery.validate.globalize.min.js",
+      "jquery.validate.globalize.js"
+    ]
+  }
   ]
-}
-]
 }
