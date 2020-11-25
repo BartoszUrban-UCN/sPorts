@@ -10,7 +10,7 @@ namespace WebApplication.Models
 
         public int BookingReferenceNo { get; set; }
 
-        [Range(1, 100)]
+        [Range(0.0, Double.MaxValue)]
         [Display(Name = "Total Price")]
         [Required]
         public double TotalPrice { get; set; }
