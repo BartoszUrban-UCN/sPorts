@@ -56,19 +56,6 @@ namespace WebApplication.Controllers
         }
 
         public async Task<IActionResult> ShoppingCart()
-<<<<<<< Updated upstream
-        {
-            // for demonstration puroposes;
-            var marinas = (System.Collections.Generic.List<Marina>)await _marinaService.GetAll();
-            var spots = new System.Collections.Generic.List<Spot>();
-
-            foreach (var marina in marinas)
-            {
-                spots.AddRange(marina.Spots);
-            }
-
-            return View("~/Views/Booking/ShoppingCart.cshtml", spots);
-=======
         {            
             var now = DateTime.Now;
             var then = now.AddDays(1);
@@ -96,7 +83,6 @@ namespace WebApplication.Controllers
             dict.Add(key:marina2, new List<BookingLine>{bookingLine4});
 
             return View("~/Views/Booking/ShoppingCart.cshtml", dict);
->>>>>>> Stashed changes
         }
     }
 }
