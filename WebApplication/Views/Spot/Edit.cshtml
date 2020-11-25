@@ -90,8 +90,8 @@
                         .addTo(mymap)
                         .bindPopup(`<b>Selected Location</b><br /> ${e.latlng.toString()} <br /><b>Double Click on marker to remove it</b>`).openPopup();
 
-                    latitude.value = e.latlng.lat.toString().replace(/\./g, ',');
-                    longitude.value = e.latlng.lng.toString().replace(/\./g, ',');
+                    latitude.value = e.latlng.lat;
+                    longitude.value = e.latlng.lng;
                 }
 
                 function removeMarker(e) {
@@ -109,8 +109,7 @@
             @if (Model.Location != null)
             {
                 <script>
-                    console.log(latitude.value.toString().replace(/\./g, ','));
-                    currentMarker.setLatLng([parseFloat(latitude.value.toString().replace(/\./g, ',')), parseFloat(longitude.value.toString().replace(/\./g, ','))]).addTo(mymap);
+                    currentMarker.setLatLng([parseFloat(latitude.value), parseFloat(longitude.value)]).addTo(mymap);
                 </script>
             }
 

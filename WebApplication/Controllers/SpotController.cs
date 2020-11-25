@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
@@ -74,6 +75,7 @@ namespace WebApplication.Controllers
                         await _spotService.Create(spot);
                     }
 
+                    await _spotService.Save();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (BusinessException exception)
@@ -186,7 +188,7 @@ namespace WebApplication.Controllers
         {
             // TODO: This deletion type could be replaced by a delete on cascade (Spot -> Location)
             await _spotService.Delete(id);
-
+            await _spotService.Save();
             return RedirectToAction(nameof(Index));
         }
 
@@ -215,8 +217,8 @@ namespace WebApplication.Controllers
 
             Location spotLocation = new Location
             {
-                Latitude = Convert.ToDouble(Latitude),
-                Longitude = Convert.ToDouble(Longitude)
+                Latitude = Convert.ToDouble(Latitude, CultureInfo.InvariantCulture),
+                Longitude = Convert.ToDouble(Longitude, CultureInfo.InvariantCulture)
             };
 
             return spotLocation;

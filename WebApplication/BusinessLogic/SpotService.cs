@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -66,8 +66,8 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> CreateWithLocation(Spot spot, Location location)
         {
-            var locationId = _locationService.Create(location);
-            spot.LocationId = await locationId;
+            await _locationService.Create(location);
+            spot.Location = location;
 
             return await Create(spot);
         }
@@ -76,7 +76,8 @@ namespace WebApplication.BusinessLogic
         {
             if (spot.LocationId == null)
             {
-                spot.LocationId = await _locationService.Create(location);
+                await _locationService.Create(location);
+                spot.Location = location;
             }
             else
             {

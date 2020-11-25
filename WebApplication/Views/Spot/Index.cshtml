@@ -22,11 +22,11 @@
     {
         if (item.Available)
         {
-            <script> L.marker([@item.Location.Latitude, @item.Location.Longitude]).addTo(mymap) </script>
+            <script> L.marker([parseFloat(@item.Location.Latitude), parseFloat(@item.Location.Longitude)]).addTo(mymap) </script>
         }
         else
         {
-            <script> L.marker([@item.Location.Latitude, @item.Location.Longitude], { icon: unavailableMarkerIcon }).addTo(mymap) </script>
+            <script> L.marker([parseFloat(@item.Location.Latitude), parseFloat(@item.Location.Longitude)], { icon: unavailableMarkerIcon }).addTo(mymap) </script>
         }
     }
 }
