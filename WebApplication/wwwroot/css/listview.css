@@ -1,5 +1,4 @@
 .card {
-    transition: transform 0.2s;
     margin-top: 3rem;
 }
 
@@ -11,4 +10,13 @@
 .btn {
     background-color: #6a983c;
     color: white;
+}
+
+#Total {
+    position: fixed;
+}
+
+#checkbox {
+    width: 20px;
+    height: 20px;
 }

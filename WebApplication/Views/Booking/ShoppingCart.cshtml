@@ -1,7 +1,8 @@
-@model IEnumerable<Spot>
+@model Dictionary<Marina, IEnumerable<BookingLine>>
 
 @{
     ViewData["Title"] = "sPorts";
+    var discount = ViewData["Discount"];
 }
 
 @section Styles{
@@ -10,57 +11,84 @@
 
 <div class="container-fluid bcontent">
     <div class="row">
-            <div class="col-8">
-        @foreach (var spot in Model)
-        {
-                <div class="card border-light shadow ">
-                    <div class="card-header border-light bg-info">Spectacular View</div>
-                    <div class="card-body">
-                        <p class="card-title">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                            doloremque laudantium.</p>
+        <div class="col-8">
+            <div class="card border-ligth shadow">
+                <div class="card-header border-light bg-info">
+                    <h4 class="card-text">Shopping Cart (2)</h4>
+                </div>
+                <div class="card-body">
+                    <h5>
+                        <input id="checkbox" type="checkbox"> Select All
+                    </h5>
+                </div>
+            </div>
+            @foreach (var pair in Model)
+            {
+            <div class="card border-light shadow ">
+                <div class="card-header border-light bg-info">Spectacular View</div>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <input id="checkbox" type="checkbox"> @pair.Key.Name
+                    </h5>
+                    @foreach (var bookingLine in pair.Value)
+                    {
+                        <hr>
+                        <br>
                         <div class="row">
-                            <div class="col">
-                                <img class="card-img"
-                                    src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweknowyourdreams.com%2Fimages%2Fboat%2Fboat-01.jpg&f=1&nofb=1"
-                                    alt="A spot">
+                            <div class="col-min" style="padding-left: 1rem;">
+                                <input id="checkbox" type="checkbox">
                             </div>
-                            <div class="col">
+                            <div class="col align-self-start">
+                                <img class="card-img" src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fweknowyourdreams.com%2Fimages%2Fboat%2Fboat-01.jpg&f=1&nofb=1" alt="A spot">
+                            </div>
+                            <div class="col align-self-center">
+                                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
                                 <span class="card-text">Price per Day: </span>
-                                <span class="bg-light shadow">@spot.Price</span> kr.
+                                <span class="bg-light shadow">@bookingLine.Spot.Price</span> kr.
                                 <br><br>
                                 <span>Start Date: </span>
-                                <span class="bg-light shadow"> 12 </span>/
-                                <span class="bg-light shadow"> 05 </span>
+                                <span class="bg-light shadow">@bookingLine.StartDate.Day</span>/
+                                <span class="bg-light shadow">@bookingLine.StartDate.Month</span>
                                 <br>
                                 <span>End Date: </span>
-                                <span class="bg-light shadow"> 24 </span>/
-                                <span class="bg-light shadow"> 05</span>
+                                <span class="bg-light shadow">@bookingLine.EndDate.Day</span>/
+                                <span class="bg-light shadow">@bookingLine.EndDate.Month</span>
+                            </div>
+                            <div class="w-100"></div>
+                            <div class="col align-self-end text-right">
+                                <a href="#" class="btn btn-lg">Details</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer text-right bg-white border-white">
-                        <div class="row">
-                            <div class="col-min">
-                                <h4 class="card-text">Total: 420 kr.</h4>
-                            </div>
-                            <div class="col">
-                                <a asp-controller="Spot" asp-action="Details" asp-route-id="@spot.SpotId"
-                                    class="btn">Details</a>
-                            </div>
+                    }
+                </div>
+                <div class="card-footer bg-light border-white"></div>
+            </div>
+            }
+        </div>
+        <div class="col">
+            <div class="card border-light shadow" id="Total">
+                <div class="card-header border-light bg-info text-center">Booking Summary</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="card-title">Subtotal</h5>
+                            <h5 class="card-title">Discounts</h5>
+                        </div>
+                        <div class="col">
+                            <h5 class="card-text col">$ 0.00</h5>
+                            <h5 class="card-text col">% @discount</h5>
                         </div>
                     </div>
                 </div>
-        }
-        </div>
-        <div class="col">
-            <div class="card border-light shadow">
-                <div class="card-header border-light bg-info">Header</div>
-                <div class="card-body">
-                    <h5 class="card-title">Total Price: 0.00$</h5>
-                    <p class="card-text">Discounts: 0.00$</p>
-                    <br> <br>
-                    <h4 class="card-title">Discounted Price: 0.00$</h4>
+                <div class="card-footer border-light bg-white">
+                    <div class="row">
+                        <h5 class="card-text font-weight-bold col">Total</h5>
+                        <h4 class="card-text font-weight-bold col">$ 0.00</h4>
+                    </div>
+                    <br>
+                    <a href="#" class="btn btn-block btn-lg text-center">Checkout (0)</a>
                 </div>
             </div>
         </div>
     </div>
+</div>
