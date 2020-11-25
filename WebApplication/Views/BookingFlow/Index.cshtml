@@ -12,7 +12,7 @@
                 <div class="tab-content step" id="step1">
                     <div class="form-group">
                         <label asp-for="Boat.Name" class="control-label">Select your boat</label>
-                        <select asp-for="Boat.Name" class="form-control" asp-items="ViewBag.Boat"></select>
+                        <select id="boat-name" asp-for="Boat.Name" class="form-control" asp-items="ViewBag.Boat"></select>
                         <span asp-validation-for="Boat" class="text-danger"></span>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("CreateMarinaMap", "BookingFlow")',
-                data:{ start: $("#start-date").val(), end: $("#end-date").val() },
+                data:{ boatName: $("#boat-name").val() , start: $("#start-date").val(), end: $("#end-date").val() },
                 dataType: "json",
                 success: function (response) { alert('Success'); $("#marinas").html(`<p>${response}</p>`); console.log(response)},
                 error: function () {}
