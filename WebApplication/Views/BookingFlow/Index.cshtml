@@ -118,7 +118,7 @@
             document.getElementById("nextBtn").innerHTML = "Next";
         }
         //... and run a function that will display the correct step indicator:
-        fixStepIndicator(n);
+        updateStepIndicator(n);
     }
 
     function nextPrev(n) {
@@ -155,7 +155,7 @@
         return valid; // return the valid status
     }
 
-    function fixStepIndicator(n) {
+    function updateStepIndicator(n) {
         // This function removes the "active" class of all steps...
         var i, x = document.getElementsByClassName("step");
         for (i = 0; i < x.length; i++) {
