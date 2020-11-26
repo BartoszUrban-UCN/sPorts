@@ -33,6 +33,21 @@ function showTab(n) {
 
     //... and run a function that will display the correct step indicator:
     updateStepIndicator(n);
+    updateTitle(n);
+}
+
+function updateTitle(n) {
+    $("#dynamic-title").fadeOut("fast", function () {
+        if (n == 0)
+            $(this).html("Choose your boat");
+        else if (n == 1)
+            $(this).html("Choose your booking's dates");
+        else if (n == 2)
+            $(this).html("Which marina?");
+        else if (n == 3)
+            $(this).html("Now... Which spot?");
+        $(this).fadeIn("fast");
+    });
 }
 
 function fireFunction(n) {

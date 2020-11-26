@@ -1,8 +1,4 @@
 ﻿@model Booking
-@{
-    ViewBag.Title = "Book your trip";
-}
-@using WebApplication.BusinessLogic.Shared;
 
 @section Styles{
     <style>
@@ -36,7 +32,7 @@
 }
 
 <div class="row justify-content-md-center">
-    <h1>@ViewBag.Title</h1>
+    <h1 id="dynamic-title" style="margin: 20px 0px;"></h1>
 </div>
 
 <form asp-action="Index" id="booking">
@@ -84,7 +80,6 @@
 
                 <!-- Pick marina for the booking; Depends on the boat size and picked dates -->
                 <div class="tab-wizard">
-                    <h2>Pick marina from map where to choose the spot from</h2>
                     <div class="form-group">
                         @{
                             await Html.RenderPartialAsync("MarinaMapPromptPartial");
@@ -99,24 +94,12 @@
                             await Html.RenderPartialAsync("SpotMapPromptPartial");
                         }
                     </div>
-                    
                 </div>
 
                 <!-- Booking Line list; Now the user can finish the order, have more booking lines for the same boat or cancel
                      At this point the Booking is added to the cart; -->
                 <div class="tab-wizard">
                     <h2>Booking Line List</h2>
-
-                    <script>
-                        @*$someElement.on('event', function () {
-                            $('#myDiv').addClass('submission-ok').trigger('classChange');
-                        });
-
-                        // in another js file, far, far away
-                        $('#myDiv').on('classChange', function () {
-                            // do stuff
-                        });*@
-                    </script>
 
                     <button>Make some more reservations</button>
                     <button>Finish and place the booking</button>
@@ -142,7 +125,7 @@
                         $.ajax({
                             type: "POST",
                             url: '@Url.Action("CreateMarinaMap", "BookingFlow")',
-                            data: { boatName: $("#boat-name").val(), start: $("#start-date").val(), end: $("#end-date").val() },
+                            data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val() },
                             dataType: "json",
                             success: function (response) {
                                 mymap.invalidateSize();
@@ -155,7 +138,7 @@
                         $.ajax({
                             type: "POST",
                             url: '@Url.Action("CreateSpotMap", "BookingFlow")',
-                            data: { boatName: $("#boat-name").val(), start: $("#start-date").val(), end: $("#end-date").val(), marina: $("#selectedMarina").val() },
+                            data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val(), marina: $("#selectedMarina").val() },
                             dataType: "json",
                             success: function (response) {
                                 mymapspot.invalidateSize();
@@ -168,6 +151,12 @@
 
             });
         });
+
+        function selectMarina(marinaId) {
+            document.getElementById("selectedMarina").value = marinaId;
+            document.getElementById("nextBtn").click();
+        }
+
     </script>
 
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

@@ -42,8 +42,9 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMarinaMap(string boatName, string start, string end)
+        public async Task<IActionResult> CreateMarinaMap(string boat, string start, string end)
         {
+            var boatId = int.Parse(boat);
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
 
@@ -56,9 +57,9 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateSpotMap(string id, string start, string end, string marina)
+        public async Task<IActionResult> CreateSpotMap(string boat, string start, string end, string marina)
         {
-            var boatId = int.Parse(id);
+            var boatId = int.Parse(boat);
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
             var marinaId = int.Parse(marina);
