@@ -256,9 +256,9 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region IBookingFormService
-        public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, string boatName, DateTime startDate, DateTime endDate)
+        public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
         {
-            return await _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatName, startDate, endDate);
+            return await _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate);
         }
         #endregion
 
@@ -277,7 +277,7 @@ namespace WebApplication.BusinessLogic
             while (it.MoveNext())
             {
                 var bookingLine = it.Current;
-                List<Spot> availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.Boat.Name, bookingLine.StartDate, bookingLine.EndDate));
+                List<Spot> availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.Boat.BoatId, bookingLine.StartDate, bookingLine.EndDate));
                 if (!availableSpots.Contains(bookingLine.Spot))
                 {
                     booking.BookingLines.Remove(bookingLine);

@@ -56,8 +56,9 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateSpotMap(string boatName, string start, string end, string marina)
+        public async Task<IActionResult> CreateSpotMap(string id, string start, string end, string marina)
         {
+            var boatId = int.Parse(id);
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
             var marinaId = int.Parse(marina);
@@ -65,7 +66,7 @@ namespace WebApplication.Controllers
             //var availableSpotsPerMarina = await _bookingFormService.GetAvailableSpotsPerMarina(await _marinaService.GetAll(), boatName, startDate, endDate);
             //var jsonString = HelperMethods.Serialize(availableSpotsPerMarina);
 
-            var jsonString = HelperMethods.Serialize(await _bookingFormService.GetAvailableSpots(marinaId, boatName, startDate, endDate));
+            var jsonString = HelperMethods.Serialize(await _bookingFormService.GetAvailableSpots(marinaId, boatId, startDate, endDate));
 
             return new JsonResult(jsonString);
         }

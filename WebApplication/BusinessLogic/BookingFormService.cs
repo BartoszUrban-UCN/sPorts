@@ -14,13 +14,13 @@ namespace WebApplication.BusinessLogic
         {
         }
 
-        public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, string boatName, DateTime startDate, DateTime endDate)
+        public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
         {
             var availableSpotsPerMarinaId = new Dictionary<int, int>();
 
             foreach (var marinaId in marinaIds)
             {
-                var availableSpotsInMarina = await GetAvailableSpots(marinaId, boatName, startDate, endDate);
+                var availableSpotsInMarina = await GetAvailableSpots(marinaId, boatId, startDate, endDate);
 
                 if (availableSpotsInMarina.Any())
                 {
@@ -31,7 +31,7 @@ namespace WebApplication.BusinessLogic
             return availableSpotsPerMarinaId;
         }
 
-        public async Task<IList<Spot>> GetAvailableSpots(int marinaId, string boatName, DateTime startDate, DateTime endDate)
+        public async Task<IList<Spot>> GetAvailableSpots(int marinaId, int boatId, DateTime startDate, DateTime endDate)
         {
             IList<Spot> availableSpots = new List<Spot>();
 
@@ -41,7 +41,7 @@ namespace WebApplication.BusinessLogic
                 .ThenInclude(spot => spot.Location)
                 .FirstOrDefault(marina => marina.MarinaId == marinaId);
 
-            var boat = _context.Boats.FirstOrDefaultAsync(b => b.Name == boatName);
+            var boat = _context.Boats.FindAsync(boatId);
 
             // Dates are valid if endDate is later, or on the same day, as startDate and if they are
             // today or later
