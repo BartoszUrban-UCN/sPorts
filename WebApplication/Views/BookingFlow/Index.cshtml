@@ -85,17 +85,21 @@
                 <!-- Pick marina for the booking; Depends on the boat size and picked dates -->
                 <div class="tab-wizard">
                     <h2>Pick marina from map where to choose the spot from</h2>
-                    @{
-                        await Html.RenderPartialAsync("MarinaMapPromptPartial");
-                    }
                     <div class="form-group">
-                        <input class="form-control" id="selectedMarina" required readonly hidden />
+                        @{
+                            await Html.RenderPartialAsync("MarinaMapPromptPartial");
+                        }
+                        <input class="form-control" id="selectedMarina" required readonly />
+
                     </div>
                 </div>
                 <div class="tab-content tab-wizard" id="step4">
-                    @{
-                        await Html.RenderPartialAsync("SpotMapPromptPartial");
-                    }
+                    <div class="form-group">
+                        @{
+                            await Html.RenderPartialAsync("SpotMapPromptPartial");
+                        }
+                    </div>
+                    
                 </div>
 
                 <!-- Booking Line list; Now the user can finish the order, have more booking lines for the same boat or cancel

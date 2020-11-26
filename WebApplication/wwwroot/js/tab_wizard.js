@@ -12,7 +12,7 @@ function clearAllCurrentData() {
 }
 
 function outputAllData() {
-    alert(`Boat ID is: ${boatId}\nStart Date is: ${startDate}\nEnd Date is: ${endDate}`);
+    console.log(`Boat ID is: ${boatId}\nStart Date is: ${startDate}\nEnd Date is: ${endDate}`);
 }
 
 // This function will display the specified tab of the form...
