@@ -1,5 +1,5 @@
 {
   "typeAcquisition": {
-    "include": [ "leaflet", "jquery" ]
+    "include": [ "globalize", "leaflet", "jquery", "jquery-validation" ]
   }
 }

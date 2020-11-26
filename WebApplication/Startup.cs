@@ -26,17 +26,13 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //var supportedCultures = new string[] { "en-US" };
-            //app.UseRequestLocalization(options =>
-            //            options
-            //            .AddSupportedCultures(supportedCultures)
-            //            .AddSupportedUICultures(supportedCultures)
-            //            .SetDefaultCulture("en-US")
-            //            .RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
-            //            {
-            //                return Task.FromResult(new ProviderCultureResult("en-US"));
-            //            }))
-            //    );
+            var supportedCultures = new string[] { "en-US", "en-GB", "da-DK", "pl-PL", "ro-RO" };
+            app.UseRequestLocalization(options =>
+                        options
+                        .AddSupportedCultures(supportedCultures)
+                        .AddSupportedUICultures(supportedCultures)
+                        .SetDefaultCulture("en-US")
+                );
 
             if (env.IsDevelopment())
             {
