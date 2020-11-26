@@ -7,10 +7,10 @@
         </div>\
     `;
 
-    L.circle([marina.Location.Latitude, marina.Location.Longitude], {
+    L.circle([parseFloat(marina.Location.Latitude), parseFloat(marina.Location.Longitude)], {
         color: 'pink',
         fillColor: '#f03',
         fillOpacity: 0.5,
-        radius: (marina.Location.Radius * 1000),
-    }).bindPopup(marinaPopup).addTo(mymap);
+        radius: ((parseFloat(marina.Location.Radius) + 0.1) * 1000),
+    }).bindPopup(marinaPopup).addTo(markers);
 }
