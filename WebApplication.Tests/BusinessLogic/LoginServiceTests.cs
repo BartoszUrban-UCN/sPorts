@@ -24,8 +24,11 @@ namespace WebApplication.Tests.BusinessLogic
                     var service = new LoginService(context);
                     var person = new Person { FirstName = "Bartosz" };
 
-                    // Act Assert
-                    await Assert.ThrowsAnyAsync<Exception>(() => service.Create(person));
+                    // Act
+                    await service.Create(person);
+
+                    // Assert
+                    await Assert.ThrowsAnyAsync<Exception>(() => service.Save());
                 }
             }
         }
@@ -41,9 +44,18 @@ namespace WebApplication.Tests.BusinessLogic
                     var service = new LoginService(context);
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid@email.com", Password = "123456" };
 
-                    // Act Assert
-                    Assert.NotEqual(0, await service.Create(person));
-                    await Assert.ThrowsAsync<BusinessException>(() => service.Create(person));
+                    // Act
+                    await service.Create(person);
+                    await service.Save();
+
+                    // Assert
+                    Assert.NotEqual(0, person.PersonId);
+
+                    await Assert.ThrowsAsync<BusinessException>(async () =>
+                    {
+                        await service.Create(person);
+                        await service.Save();
+                    });
                 }
             }
         }
@@ -60,10 +72,11 @@ namespace WebApplication.Tests.BusinessLogic
                     var person = new Person { FirstName = "Bartosz", LastName = "Urban", Email = "valid100@email.com", Password = "123456" };
 
                     // Act
-                    var id = await service.Create(person);
+                    await service.Create(person);
+                    await service.Save();
 
                     // Assert
-                    Assert.NotEqual(0, id);
+                    Assert.NotEqual(0, person.PersonId);
                     Assert.True(context.Persons.AsQueryable().FirstOrDefault(p => p.Email.Equals(person.Email)) != null);
                 }
             }
@@ -82,15 +95,21 @@ namespace WebApplication.Tests.BusinessLogic
 
                     // Act
                     await service.Create(person);
+                    await service.Save();
                     person = context.Persons.AsQueryable().First(p => p.Email.Equals("valid100@email.com"));
 
                     var boatOwner = await service.MakePersonBoatOwner(person);
+                    await service.Save();
 
                     // Assert
                     Assert.NotNull(boatOwner);
                     Assert.True(context.BoatOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
 
-                    await Assert.ThrowsAsync<BusinessException>(() => service.MakePersonBoatOwner(person));
+                    await Assert.ThrowsAsync<BusinessException>(async () =>
+                    {
+                        await service.MakePersonBoatOwner(person);
+                        await service.Save();
+                    });
                 }
             }
         }
@@ -108,15 +127,21 @@ namespace WebApplication.Tests.BusinessLogic
 
                     // Act
                     await service.Create(person);
+                    await service.Save();
                     person = context.Persons.AsQueryable().First(p => p.Email.Equals("valid100@email.com"));
 
                     var marinaOwner = await service.MakePersonMarinaOwner(person);
+                    await service.Save();
 
                     // Assert
                     Assert.NotNull(marinaOwner);
                     Assert.True(context.MarinaOwners.AsQueryable().FirstOrDefault(bO => bO.PersonId.Equals(person.PersonId)) != null);
 
-                    await Assert.ThrowsAsync<BusinessException>(() => service.MakePersonMarinaOwner(person));
+                    await Assert.ThrowsAsync<BusinessException>(async () =>
+                    {
+                        await service.MakePersonMarinaOwner(person);
+                        await service.Save();
+                    });
                 }
             }
         }

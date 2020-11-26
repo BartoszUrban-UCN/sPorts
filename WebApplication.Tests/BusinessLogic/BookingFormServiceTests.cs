@@ -15,7 +15,7 @@ namespace WebApplication.Tests.BusinessLogic
         public SharedDatabaseFixture Fixture { get; }
 
         [Fact]
-        public void GetAvailableSpots_FoundOne()
+        public async void GetAvailableSpots_FoundOne()
         {
             using (var transaction = Fixture.Connection.BeginTransaction())
             {
@@ -58,7 +58,7 @@ namespace WebApplication.Tests.BusinessLogic
                     context.SaveChanges();
 
                     // Act
-                    var result = service.GetAvailableSpots(
+                    var result = await service.GetAvailableSpots(
                         marina.MarinaId,
                         boat.BoatId,
                         startDate,
