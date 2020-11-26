@@ -272,6 +272,7 @@ namespace WebApplication.BusinessLogic
         public Booking ValidateShoppingCart(Booking booking)
         {
             // can remove item while iterating?
+            // run time periodically on a new thread?? inform user once something has changed in the booking
             IEnumerator<BookingLine> it = booking?.BookingLines.GetEnumerator();
             while (it.MoveNext())
             {
