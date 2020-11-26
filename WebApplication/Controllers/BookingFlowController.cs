@@ -97,10 +97,21 @@ namespace WebApplication.Controllers
             return View("~/Views/Booking/ShoppingCart.cshtml", dict);
         }
 
-        public async Task<IActionResult> CartRemoveBookingLine(Booking booking, BookingLine bookingLine)
+        public async Task<IActionResult> CartRemoveBookingLine(BookingLine bookingLine)
         {
-            _bookingService.CartRemoveBookingLine(booking, bookingLine);
+            var booking = HttpContext.Session.Get<Booking>("Booking");
+            var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
+
+            //HttpContext.Session.Remove("Booking");
+            HttpContext.Session.Add<Booking>("Booking", newBooking);
+
             return RedirectToAction("ShoppingCart");
+        }
+
+        public async Task<IActionResult> ClearCart()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
     }
 }

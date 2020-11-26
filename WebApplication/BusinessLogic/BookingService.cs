@@ -291,9 +291,10 @@ namespace WebApplication.BusinessLogic
         /// </summary>
         /// <param name="booking"></param>
         /// <param name="bookingLine"></param>
-        public void CartRemoveBookingLine(Booking booking, BookingLine bookingLine)
+        public Booking CartRemoveBookingLine(Booking booking, BookingLine bookingLine)
         {
             booking?.BookingLines.Remove(bookingLine);
+            return booking;
         }
         #endregion
     }

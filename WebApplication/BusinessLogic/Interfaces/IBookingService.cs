@@ -23,6 +23,6 @@ namespace WebApplication.BusinessLogic
 
         Booking ValidateShoppingCart(Booking booking);
 
-        void CartRemoveBookingLine(Booking booking, BookingLine bookingLine);
+        Booking CartRemoveBookingLine(Booking booking, BookingLine bookingLine);
     }
 }
