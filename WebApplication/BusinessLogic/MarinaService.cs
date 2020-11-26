@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
@@ -71,7 +73,6 @@ namespace WebApplication.BusinessLogic
 
             // Save the changes made
             await Save();
-
         }
 
         public async Task DeleteMarinaLocation(Marina marina)
@@ -109,6 +110,15 @@ namespace WebApplication.BusinessLogic
                     .ThenInclude(spot => spot.Location)
                 .ToListAsync();
 
+            foreach (var marina in marinas)
+            {
+                if (marina.Location is null && marina.Spots.Count > 0 && marina.Spots.Any(spot => spot.LocationId != null))
+                {
+                    CalculateMarinaLocation(marina);
+                    Console.WriteLine(marina.Location.Latitude.ToString());
+                }
+            }
+
             return marinas;
         }
 
@@ -138,7 +148,7 @@ namespace WebApplication.BusinessLogic
         {
             marina.ThrowIfNull();
             location.ThrowIfNull();
-            
+
             _locationService.Update(location);
 
             return marina;
