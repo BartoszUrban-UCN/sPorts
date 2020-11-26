@@ -19,10 +19,10 @@ namespace WebApplication.BusinessLogic
 
         Task CancelBooking(int? id);
 
-        Dictionary<int, int> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
-
         Booking ValidateShoppingCart(Booking booking);
 
         Booking CartRemoveBookingLine(Booking booking, BookingLine bookingLine);
+
+        Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, string boatName, DateTime startDate, DateTime endDate);
     }
 }

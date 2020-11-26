@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebApplication</title>
+    <title>@ViewData["Title"] - sPorts</title>
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
     <link rel="stylesheet" href="~/lib/fontawesome-free-5.15.1-web/css/all.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-cosmo.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/lib/leaflet/leaflet.min.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/leaflet/leaflet.min.js"></script>
     @RenderSection("Styles", required: false)
 </head>
@@ -60,9 +61,9 @@
             &copy; 2020 - sPorts - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="~/js/site.js" defer></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

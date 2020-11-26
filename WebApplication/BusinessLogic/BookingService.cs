@@ -256,9 +256,9 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region IBookingFormService
-        public Dictionary<int, int> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
+        public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, string boatName, DateTime startDate, DateTime endDate)
         {
-            return _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate);
+            return await _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatName, startDate, endDate);
         }
         #endregion
 

@@ -1,10 +1,18 @@
 ﻿@model WebApplication.Models.Booking
-@* Leaflet Map Include *@
-@await Html.PartialAsync("~/Views/Shared/LeafletMapPartial.cshtml")
 
+<div id="mapid" style="height: 600px"></div>
 <script>
+    var mymap
+    var marinaMarkers;
+    $(function () {
+        mymap;
+        mymap = InitMap(mymap, 'mapid');
+        mymap.setView([56.2639, 9.5018], 7)
+        marinaMarkers = L.layerGroup().addTo(mymap);
+    });
+
     function RenderMarinas(marinas) {
-        markers.clearLayers();
+        marinaMarkers.clearLayers();
         marinas.forEach(marina => {
             if (marina.Location) {
                 MarinaBookingPrompt(marina, 5)
