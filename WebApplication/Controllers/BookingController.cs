@@ -42,6 +42,7 @@ namespace WebApplication.Controllers
         // GET: Booking/Create
         public async Task<IActionResult> Create()
         {
+            // boat by boatOwner
             var boats = await _boatService.GetAll();
             ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId");
             return View();

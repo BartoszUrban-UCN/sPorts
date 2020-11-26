@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
-using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -46,10 +44,6 @@ namespace WebApplication.Controllers
                 return NotFound();
             }
 
-            if (HttpContext.Session != null)
-            {
-                var session = HttpContext.Session.Get<Person>(person.PersonId.ToString());
-            }
             return View(person);
         }
 
@@ -70,12 +64,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    //await _loginService.Create(person);
-                    _context.Persons.Add(person);
-                    _context.SaveChanges();
-
-                    if (HttpContext.Session.Get<Person>(person.PersonId.ToString()) == default)
-                        HttpContext.Session.Add<Person>(person.PersonId.ToString(), person);
+                    await _loginService.Create(person);
 
                     return RedirectToAction(nameof(Index));
                 }

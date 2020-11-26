@@ -3,31 +3,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 using static WebApplication.BusinessLogic.EmailService;
-using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
     public class BookingService : ServiceBase, IBookingService
     {
         private readonly IBookingLineService _bookingLineService;
-        private readonly IBookingConfirmationService _bookingConfirmationService;
         private readonly IBookingFormService _bookingFormService;
         private readonly IPDFService<Booking> _pdfService;
 
-        public BookingService(SportsContext context, IBookingLineService bookingLineService, IBookingConfirmationService bookingConfirmationService, IBookingFormService bookingFormService, IPDFService<Booking> pdfService) : base(context)
+        public BookingService(SportsContext context, IBookingLineService bookingLineService, IBookingFormService bookingFormService, IPDFService<Booking> pdfService) : base(context)
         {
             _bookingLineService = bookingLineService;
-            _bookingConfirmationService = bookingConfirmationService;
             _bookingFormService = bookingFormService;
             _pdfService = pdfService;
         }
 
         private async Task<Booking> CreateBooking(Booking booking)
         {
-            int rowsAffected = 0;
             // get booking lines from the booking
             var bookingLines = booking?.BookingLines;
 
@@ -43,17 +40,12 @@ namespace WebApplication.BusinessLogic
                 booking.TotalPrice = totalPrice;
 
                 // store booking class & booking lines in the db
-                rowsAffected = await StoreBookingInDb(booking);
+                await StoreBookingInDb(booking);
 
                 // create pdf file with info about the booking
-                IPDFService<Booking> pdfService = new BookingPDFService();
-                pdfService.CreatePDFFile(booking);
-
                 // send an email to boatOwner's email
-                SendEmail(bookingReference: booking.BookingReferenceNo);
-
                 // delete files create in CreateBookingPdfFile
-                pdfService.DeleteBookingFiles(booking.BookingReferenceNo);
+                SendConfirmationMail(booking.BookingId);
             }
 
             return booking;
@@ -101,23 +93,19 @@ namespace WebApplication.BusinessLogic
 
         #region Store booking class & associated booking lines in db
 
-        private async Task<int> StoreBookingInDb(Booking booking)
+        private async Task StoreBookingInDb(Booking booking)
         {
-            int rowsAffected = 0;
             try
             {
                 _context.Bookings.Add(booking);
                 booking.BookingLines.ForEach(bl => _context.BookingLines.Add(bl));
 
-                rowsAffected = await Save();
-                //ExplicitLoad(booking);
+                await Save();
             }
             catch (Exception)
             {
                 throw new BusinessException("Booking", "Something went wrong when creating your booking. Please try again. If problem persists please contact our techincal service."); ;
             }
-
-            return rowsAffected;
         }
 
         #endregion Store booking class & associated booking lines in db
@@ -139,12 +127,18 @@ namespace WebApplication.BusinessLogic
 
             return ongoingBookingLines;
         }
+
         public async Task CancelBooking(int? id)
         {
             var booking = await GetSingle(id);
 
-            foreach (var bookingLine in booking.BookingLines)
+            booking.BookingLines.ForEach(bookingLine =>
+            {
                 bookingLine.Ongoing = false;
+                _bookingLineService.Update(bookingLine);
+            });
+
+            await Save();
         }
 
         public async Task<int> Create(Booking booking)
@@ -204,7 +198,7 @@ namespace WebApplication.BusinessLogic
         public async Task<bool> Exists(int? id)
         {
             id.ThrowIfInvalidId();
-            
+
             return await _context.Bookings.AnyAsync(b => b.BookingId == id);
         }
 
@@ -213,15 +207,38 @@ namespace WebApplication.BusinessLogic
             return await _bookingLineService.GetSingle(id);
         }
 
-        #region IBookingConfirmationService
+        #region Confirm spot booked by boatOnwer
+        /// <summary>
+        /// Marina Owner confirms spot booked by a boat owner
+        /// </summary>
+        /// <param name="bookingLineId"></param>
+        /// <returns>bool whether it has been successfully confirmed or not</returns>
         public async Task<bool> ConfirmSpotBooked(int bookingLineId)
         {
-            return await _bookingConfirmationService.ConfirmSpotBooked(bookingLineId);
+            using (SportsContext context = _context)
+            {
+                BookingLine bookingLine = new BookingLine();
+                bookingLine = await _bookingLineService.GetSingle(bookingLineId);
+                bookingLine.Confirmed = true;
+                _bookingLineService.Update(bookingLine);
+                var success = await Save() > 0;
+                SendConfirmationMail(bookingLine.BookingId);
+                return success;
+            }
         }
+        #endregion
 
-        public void SendConfirmationMail(int bookingId)
+        #region After time left has been spent or all booking lines have been confirmed, send mail with booking information to boat owner
+        /// <summary>
+        /// Email with booking info is sent to boat owner's email if something has changed in the booking e.g. spot has been confirmed.
+        /// </summary>
+        private async Task SendConfirmationMail(int bookingId)
         {
-            _bookingConfirmationService.SendConfirmationMail(bookingId);
+            Booking booking = await GetSingle(bookingId);
+
+            _pdfService.CreatePDFFile(booking);
+            SendEmail(bookingReference: booking.BookingReferenceNo);
+            _pdfService.DeleteBookingFiles(booking.BookingReferenceNo);
         }
         #endregion
 

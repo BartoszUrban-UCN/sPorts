@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -83,6 +83,7 @@ namespace WebApplication.BusinessLogic
             {
                 bookingLine.Ongoing = false;
                 _context.BookingLines.Update(bookingLine);
+                await Save();
             }
         }
 

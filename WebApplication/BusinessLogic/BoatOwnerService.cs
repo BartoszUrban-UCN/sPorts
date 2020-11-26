@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -58,7 +58,7 @@ namespace WebApplication.BusinessLogic
         public BoatOwner Update(BoatOwner boatOwner)
         {
             _context.Update(boatOwner);
-            
+
             return boatOwner;
         }
 
@@ -76,6 +76,7 @@ namespace WebApplication.BusinessLogic
             return await _context.BoatOwners.AnyAsync(b => b.BoatOwnerId == id);
         }
 
+        // get bookinsg
         public async Task<IEnumerable<Booking>> GetBookings(int? id)
         {
             var boatOwner = await GetSingle(id);

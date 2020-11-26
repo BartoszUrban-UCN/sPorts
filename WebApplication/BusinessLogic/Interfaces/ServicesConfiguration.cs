@@ -15,7 +15,6 @@ namespace WebApplication.BusinessLogic
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingLineService, BookingLineService>();
             services.AddScoped<IBookingFormService, BookingFormService>();
-            services.AddScoped<IBookingConfirmationService, BookingConfirmationService>();
 
             services.AddScoped<IBoatOwnerService, BoatOwnerService>();
             services.AddScoped<IMarinaOwnerService, MarinaOwnerService>();

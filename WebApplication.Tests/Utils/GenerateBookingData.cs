@@ -9,12 +9,13 @@ namespace WebApplication.Tests.Utils
 {
     public class GenerateBookingData
     {
-        private static IBookingService _bookingService;
-        public static SharedDatabaseFixture Fixture { get; set; }
+        private readonly IBookingService _bookingService;
+        public SharedDatabaseFixture Fixture { get; set; }
 
-        public GenerateBookingData(IBookingService bookingService)
+        public GenerateBookingData(SharedDatabaseFixture fixture, IBookingService bookingService)
         {
             _bookingService = bookingService;
+            Fixture = fixture;
         }
 
         //public IEnumerator<object[]> GetEnumerator()
@@ -27,7 +28,7 @@ namespace WebApplication.Tests.Utils
 
         //IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public static async Task<bool> CreateBookingNoParameters()
+        public async Task<bool> CreateBookingNoParameters()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -38,7 +39,7 @@ namespace WebApplication.Tests.Utils
             }
         }
 
-        public static async Task<Booking> CreateBookingWithOneSpot()
+        public async Task<Booking> CreateBookingWithOneSpot()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -58,7 +59,7 @@ namespace WebApplication.Tests.Utils
             }
         }
 
-        public async static Task<Booking> CreateBookingWithTwoSpotsInSameMarina()
+        public async Task<Booking> CreateBookingWithTwoSpotsInSameMarina()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -80,7 +81,7 @@ namespace WebApplication.Tests.Utils
             }
         }
 
-        public async static Task<Booking> CreateBookingWithThreeSpotsInDifferentMarinas()
+        public async Task<Booking> CreateBookingWithThreeSpotsInDifferentMarinas()
         {
             using (var context = Fixture.CreateContext())
             {
@@ -105,7 +106,7 @@ namespace WebApplication.Tests.Utils
             }
         }
 
-        public async static void DeleteBookings()
+        public async void DeleteBookings()
         {
             using (var context = Fixture.CreateContext())
             {
