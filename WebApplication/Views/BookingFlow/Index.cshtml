@@ -2,10 +2,10 @@
 @{
     ViewBag.Title = "Book your trip";
 }
+@using WebApplication.BusinessLogic.Shared;
 
 @section Styles{
     <style>
-
         /* Hide all steps by default: */
         .tab-wizard {
             display: none;
@@ -21,16 +21,17 @@
             border-radius: 50%;
             display: inline-block;
             opacity: 0.3;
+            transition: opacity 0.4s;
         }
 
-            .step.active {
-                opacity: 1;
-            }
+        .step.active {
+            opacity: 1;
+        }
 
-            /* Mark the steps that are finished and valid: */
-            .step.finish {
-                background-color: #2780e3;
-            }
+        /* Mark the steps that are finished and valid: */
+        .step.finish {
+            background-color: #2780e3;
+        }
     </style>
 }
 
@@ -42,14 +43,33 @@
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="row-cols-lg" style="width: 30rem">
-                <div class="tab-content tab-wizard" id="step1">
+
+                <!-- Circles which indicates the steps of the form; Buttons for next and previous page -->
+                <div style="margin:25px 0px; display: flex; align-items: baseline; justify-content: space-between;">
+                    <div>
+                        <span class="step"></span>
+                        <span class="step"></span>
+                        <span class="step"></span>
+                        <span class="step"></span>
+                    </div>
+
+                    <div style="overflow: auto;">
+                        <button type="button" class="btn btn-secondary btn-lg" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="nextBtn" onclick="nextPrev(1)">Next</button>
+                    </div>
+                </div>
+
+                <!-- Select a boat for the booking, First step -->
+                <div class="tab-wizard">
                     <div class="form-group">
                         <label asp-for="Boat.Name" class="control-label">Select your boat</label>
-                        <select id="boat-name" asp-for="Boat.Name" class="form-control" asp-items="ViewBag.Boat"></select>
+                        <select id="boat-select" asp-for="Boat.Name" class="form-control" asp-items="ViewBag.Boat"></select>
                         <span asp-validation-for="Boat" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="tab-content tab-wizard" id="step2">
+
+                <!-- Initialize a booking line; Pick dates -->
+                <div class="tab-wizard">
                     <div class="form-group">
                         <label asp-for="BookingLines[0].StartDate" class="control-label">Select your boat</label>
                         <input id="start-date" asp-for="BookingLines[0].StartDate" type="date" class="form-control" asp-items="ViewBag.Boat" value="@DateTime.Now.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -61,7 +81,10 @@
                         <span asp-validation-for="BookingLines[0].EndDate" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="tab-content tab-wizard" id="step3">
+
+                <!-- Pick marina for the booking; Depends on the boat size and picked dates -->
+                <div class="tab-wizard">
+                    <h2>Pick marina from map where to choose the spot from</h2>
                     @{
                         await Html.RenderPartialAsync("MarinaMapPromptPartial");
                     }
@@ -75,18 +98,25 @@
                     }
                 </div>
 
-                <div style="overflow: auto;">
-                    <div style="float: right;">
-                        <button type="button" class="btn btn-secondary btn-lg" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                        <button type="button" class="btn btn-primary btn-lg" id="nextBtn" onclick="nextPrev(1)">Next</button>
-                    </div>
-                </div>
-                <!-- Circles which indicates the steps of the form: -->
-                <div style="text-align:center;margin-top:40px;">
-                    <span class="step"></span>
-                    <span class="step"></span>
-                    <span class="step"></span>
-                    <span class="step"></span>
+                <!-- Booking Line list; Now the user can finish the order, have more booking lines for the same boat or cancel
+                     At this point the Booking is added to the cart; -->
+                <div class="tab-wizard">
+                    <h2>Booking Line List</h2>
+
+                    <script>
+                        @*$someElement.on('event', function () {
+                            $('#myDiv').addClass('submission-ok').trigger('classChange');
+                        });
+
+                        // in another js file, far, far away
+                        $('#myDiv').on('classChange', function () {
+                            // do stuff
+                        });*@
+                    </script>
+
+                    <button>Make some more reservations</button>
+                    <button>Finish and place the booking</button>
+                    <button>Cancel the bookin</button>
                 </div>
             </div>
         </div>
@@ -95,7 +125,7 @@
 
 
 @section Scripts{
-    @{ await Html.RenderPartialAsync("LeafletMapPartial");}
+    @{ await Html.RenderPartialAsync("LeafletMapPartial"); }
     
     <script src="~/js/tab_wizard.js"></script>
 
@@ -134,12 +164,7 @@
 
             });
         });
-
-        function selectMarina(marinaId) {
-            document.getElementById("selectedMarina").value = marinaId;
-            document.getElementById("nextBtn").click();
-        }
     </script>
 
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

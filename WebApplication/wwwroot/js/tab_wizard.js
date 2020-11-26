@@ -1,8 +1,22 @@
 ﻿var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the current tab
 
+var boatId = null;
+var startDate = null;
+var endDate = null;
+
+function clearAllCurrentData() {
+    boatId = null;
+    startDate = null;
+    endDate = null;
+}
+
+function outputAllData() {
+    alert(`Boat ID is: ${boatId}\nStart Date is: ${startDate}\nEnd Date is: ${endDate}`);
+}
+
+// This function will display the specified tab of the form...
 function showTab(n) {
-    // This function will display the specified tab of the form...
     var x = document.getElementsByClassName("tab-wizard");
     x[n].style.display = "block";
     //... and fix the Previous/Next buttons:
@@ -16,15 +30,46 @@ function showTab(n) {
     } else {
         document.getElementById("nextBtn").innerHTML = "Next";
     }
+
     //... and run a function that will display the correct step indicator:
     updateStepIndicator(n);
 }
 
+function fireFunction(n) {
+    if (currentTab == 0) {
+        if (n == 1) {
+            boatId = $("#boat-select").val();
+        }
+    }
+    else if (currentTab == 1) {
+        if (n == -1) {
+            startDate = null;
+            endDate = null;
+        }
+        else if (n == 1) {
+            startDate = $("#start-date").val();
+            endDate = $("#end-date").val();
+        }
+    }
+    else if (currentTab == 2) {
+        if (n == -1) {
+            
+        }
+        else if (n == 1) {
+            
+        }
+    }
+
+    outputAllData();
+}
+
+// This function will figure out which tab to display
 function nextPrev(n) {
-    // This function will figure out which tab to display
     var x = document.getElementsByClassName("tab-wizard");
-    // Exit the function if any field in the current tab is invalid:
-    //if (n == 1 && !validateForm()) return false;
+    // Don't let people go next if the form is invalid
+    if (n == 1 && !validateForm()) return false;
+    // Fire functions
+    fireFunction(n);
     // Hide the current tab:
     x[currentTab].style.display = "none";
     // Increase or decrease the current tab by 1:
@@ -47,9 +92,8 @@ function validateForm() {
     valid = $("#booking").valid();
 
     // If the valid status is true, mark the step as finished and valid:
-    if (valid) {
+    if (valid)
         document.getElementsByClassName("step")[currentTab].className += " finish";
-    }
 
     return valid; // return the valid status
 }

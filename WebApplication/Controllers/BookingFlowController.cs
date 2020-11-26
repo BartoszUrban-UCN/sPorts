@@ -26,7 +26,7 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.Boat = new SelectList(await _boatService.GetAll(), "Name", "Name");
+            ViewBag.Boat = new SelectList(await _boatService.GetAll(), "BoatId", "Name");
 
             var booking = await _bookingFormService.CreateBooking();
             return View(booking);
@@ -37,7 +37,7 @@ namespace WebApplication.Controllers
         [ActionName("Index")]
         public async Task<IActionResult> IndexPost(Booking booking)
         {
-            ViewBag.Boat = new SelectList(await _boatService.GetAll(), "Name", "Name");
+            ViewBag.Boat = new SelectList(await _boatService.GetAll(), "BoatId", "Name");
             return View(booking);
         }
 
