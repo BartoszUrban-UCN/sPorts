@@ -31,8 +31,8 @@ namespace WebApplication.BusinessLogic
 
             var marinaOwner = await _context.MarinaOwners
                                             .Include(b => b.Person)
-                                            .Include(m => m.Marina).ThenInclude(m => m.Spots).ThenInclude(s => s.BookingLines)
-                                            .Include(m => m.Marina).ThenInclude(m => m.Spots).ThenInclude(s => s.Location)
+                                            .Include(m => m.Marinas).ThenInclude(m => m.Spots).ThenInclude(s => s.BookingLines)
+                                            .Include(m => m.Marinas).ThenInclude(m => m.Spots).ThenInclude(s => s.Location)
                                             .FirstOrDefaultAsync(b => b.MarinaOwnerId == id);
 
             marinaOwner.ThrowIfNull();
@@ -44,8 +44,8 @@ namespace WebApplication.BusinessLogic
         {
             var marinaOwners = await _context.MarinaOwners
                                             .Include(b => b.Person)
-                                            .Include(m => m.Marina).ThenInclude(m => m.Spots).ThenInclude(s => s.BookingLines).ThenInclude(b => b.Booking)
-                                            .Include(m => m.Marina).ThenInclude(m => m.Spots).ThenInclude(s => s.Location)
+                                            .Include(m => m.Marinas).ThenInclude(m => m.Spots).ThenInclude(s => s.BookingLines).ThenInclude(b => b.Booking)
+                                            .Include(m => m.Marinas).ThenInclude(m => m.Spots).ThenInclude(s => s.Location)
                                             .ToListAsync();
             return marinaOwners;
         }

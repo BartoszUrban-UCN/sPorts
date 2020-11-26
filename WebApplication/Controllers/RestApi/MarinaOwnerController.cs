@@ -22,7 +22,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet]
         public async Task<IActionResult> GetMarinaOwners()
         {
-            var marinaOwnersWithSpots = _context.MarinaOwners.Include(m => m.Marina);
+            var marinaOwnersWithSpots = _context.MarinaOwners.Include(m => m.Marinas);
             var marinaOwnersList = marinaOwnersWithSpots.ToListAsync();
 
             return Ok(await marinaOwnersList);

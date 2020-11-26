@@ -7,16 +7,22 @@
     background-color: azure;
 }
 
-.btn {
-    background-color: #6a983c;
-    color: white;
-}
-
 #Total {
     position: fixed;
 }
 
-#checkbox {
+#CheckBox {
     width: 20px;
     height: 20px;
+    margin-right: 1rem;
+}
+
+#Top {
+    display: flex;
+    align-items: baseline;
+}
+
+.fa-trash {
+    text-decoration: none;
+    color: #373a3c;
 }
