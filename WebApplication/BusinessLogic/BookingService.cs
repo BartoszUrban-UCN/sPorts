@@ -261,5 +261,40 @@ namespace WebApplication.BusinessLogic
             return _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate);
         }
         #endregion
+
+        #region manage shoppping cart
+        /// <summary>
+        /// Check whether spots in the cart has not been booked by someone else
+        /// If booked by someone else remove them from booking
+        /// </summary>
+        /// <param name="booking"></param>
+        /// <returns>Booking with valid spots</returns>
+        public Booking ValidateShoppingCart(Booking booking)
+        {
+            // can remove item while iterating?
+            IEnumerator<BookingLine> it = booking?.BookingLines.GetEnumerator();
+            while (it.MoveNext())
+            {
+                var bookingLine = it.Current;
+                List<Spot> availableSpots = new List<Spot>(_bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.Boat.BoatId, bookingLine.StartDate, bookingLine.EndDate));
+                if (!availableSpots.Contains(bookingLine.Spot))
+                {
+                    booking.BookingLines.Remove(bookingLine);
+                }
+            }
+
+            return booking;
+        }
+
+        /// <summary>
+        /// Remove booking line from the cart
+        /// </summary>
+        /// <param name="booking"></param>
+        /// <param name="bookingLine"></param>
+        public void CartRemoveBookingLine(Booking booking, BookingLine bookingLine)
+        {
+            booking?.BookingLines.Remove(bookingLine);
+        }
+        #endregion
     }
 }

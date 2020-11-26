@@ -58,7 +58,16 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> ShoppingCart()
         {
             // explicit load needed??
-            //var booking = HttpContext.Session.Get<Booking>("Booking");
+            var booking = HttpContext.Session.Get<Booking>("Booking");
+            var validBooking = _bookingService.ValidateShoppingCart(booking);
+
+            bool hasChanged = false;
+            if (!validBooking.Equals(booking))
+            {
+                hasChanged = true;
+            }
+
+            ViewData["BookingChange"] = hasChanged;
 
             var now = DateTime.Now;
             var then = now.AddDays(1);
@@ -86,6 +95,12 @@ namespace WebApplication.Controllers
             dict.Add(key: marina2, new List<BookingLine> { bookingLine4 });
 
             return View("~/Views/Booking/ShoppingCart.cshtml", dict);
+        }
+
+        public async Task<IActionResult> CartRemoveBookingLine(Booking booking, BookingLine bookingLine)
+        {
+            _bookingService.CartRemoveBookingLine(booking, bookingLine);
+            return RedirectToAction("ShoppingCart");
         }
     }
 }
