@@ -269,7 +269,7 @@ namespace WebApplication.BusinessLogic
         /// </summary>
         /// <param name="booking"></param>
         /// <returns>Booking with valid spots</returns>
-        public Booking ValidateShoppingCart(Booking booking)
+        public async Task<Booking> ValidateShoppingCart(Booking booking)
         {
             // can remove item while iterating?
             // run time periodically on a new thread?? inform user once something has changed in the booking
@@ -277,7 +277,7 @@ namespace WebApplication.BusinessLogic
             while (it.MoveNext())
             {
                 var bookingLine = it.Current;
-                List<Spot> availableSpots = new List<Spot>(_bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.Boat.BoatId, bookingLine.StartDate, bookingLine.EndDate));
+                List<Spot> availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.Boat.Name, bookingLine.StartDate, bookingLine.EndDate));
                 if (!availableSpots.Contains(bookingLine.Spot))
                 {
                     booking.BookingLines.Remove(bookingLine);

@@ -19,7 +19,7 @@ namespace WebApplication.BusinessLogic
 
         Task CancelBooking(int? id);
 
-        Booking ValidateShoppingCart(Booking booking);
+        Task<Booking> ValidateShoppingCart(Booking booking);
 
         Booking CartRemoveBookingLine(Booking booking, BookingLine bookingLine);
 
