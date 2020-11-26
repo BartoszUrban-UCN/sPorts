@@ -79,7 +79,7 @@ namespace WebApplication.BusinessLogic
 
                 bookingLine.Confirmed = false;
                 bookingLine.Ongoing = false;
-                bookingLine.OriginalTotalPrice = bookingLine.Spot.Price;
+                bookingLine.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
                 bookingLine.AppliedDiscounts = 0;
                 bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 
