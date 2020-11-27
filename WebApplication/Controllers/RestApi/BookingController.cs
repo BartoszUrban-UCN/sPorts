@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -135,8 +136,9 @@ namespace WebApplication.Controllers.RestApi
         }
 
         [HttpPost("removebookingline")]
-        public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] BookingLine bookingLine)
+        public async Task<ActionResult<Booking>> CartRemoveBookingLine(string data)
         {
+            BookingLine bookingLine = JsonConvert.DeserializeObject<BookingLine>(data);
             var booking = HttpContext.Session.Get<Booking>("Booking");
             var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
 

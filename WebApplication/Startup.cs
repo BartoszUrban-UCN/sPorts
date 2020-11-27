@@ -75,13 +75,17 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             // Add sessions
-            services.AddDistributedMemoryCache();
+            //services.AddDistributedMemoryCache();
+
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    options.CheckConsentNeeded = context => true; // consent required
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //});
 
             services.AddSession(options =>
             {
-                options.Cookie.Name = ".Person.Session";
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
-                options.Cookie.IsEssential = true;
             });
 
             services.AddControllersWithViews().AddNewtonsoftJson(options =>

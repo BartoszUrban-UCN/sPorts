@@ -68,7 +68,6 @@
                             </div>
                             <div class="col-2 text-right text-secondary">
                                 <h6 class="card-text" style="flex-grow: 1;">Spot No #@bookingLine.Spot.SpotNumber</h6>
-                                @*<a asp-action="CartRemoveBookingLine" asp-route-id="@bookingLine.BookingLineId" class="fas fa-trash"></a>*@
                                 <input class="btn btn-outline-success removeBtn" data-bookingline="@bookingLine" type="button" value="Remove" />
                             </div>
                             <div class="w-100"></div>
@@ -114,30 +113,28 @@
 </div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("input.removeBtn").click(function () {
-            var bookingLine = $(this).attr("data-bookingLine")
-            $.ajax({
-                type: "POST",
-                url: "/api/booking/removebookingline",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify({ bookingLine: bookingLine }),
-                success: function (result) {
-                    $(".cartBookingLine").on('click', '.removeBtn', function () {
-                        $(this).closest('.cartBookingLine').fadeOut(1000);
-                    });
-                },
-                error: function (req, status, error) {
-                    alert("Something went wrong.")
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            $("input.removeBtn").click(function () {
+                var bookingLine = $(this).attr("data-bookingLine")
+                $.ajax({
+                    type: "POST",
+                    url: "/api/booking/removebookingline",
+                    dataType: "JSON",
+                    contentType: "application/json",
+                    data: JSON.stringify({ bookingLine: bookingLine }),
+                    success: function (result) {
+                        alert("Success")
+                    },
+                    error: function (req, status, error) {
+                        alert("Something went wrong.")
 
-                }
-            });
+                    }
+                });
+            })
         })
-    })
 
-</script>
+    </script>*@
 
 @section Scripts{
 }
