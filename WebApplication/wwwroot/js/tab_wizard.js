@@ -52,6 +52,9 @@ function updateTitle() {
     });
 }
 
+//
+//  Custom tab functionality based on our system
+//
 function fireFunction(n) {
     if (currentTab == 0) {
         if (n == 1) {

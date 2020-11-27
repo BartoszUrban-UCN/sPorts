@@ -113,42 +113,41 @@
 
 @section Scripts{
     @{ await Html.RenderPartialAsync("LeafletMapPartial"); }
-    
-    <script src="~/js/tab_wizard.js"></script>
 
     <script>
         $(document).ready(function () {
+            $.getScript('js/tab_wizard.js', function () {
+                $("#nextBtn").click(function () {
+                    switch (currentTab) {
+                        case 2:
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("CreateMarinaMap", "BookingFlow")',
+                                data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val() },
+                                dataType: "json",
+                                success: function (response) {
+                                    mymap.invalidateSize();
+                                    RenderMarinas(JSON.parse(response));
+                                },
+                                error: function () { }
+                            });
+                            break;
+                        case 3:
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("CreateSpotMap", "BookingFlow")',
+                                data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val(), marina: $("#selectedMarina").val() },
+                                dataType: "json",
+                                success: function (response) {
+                                    mymapspot.invalidateSize();
+                                    RenderSpots(JSON.parse(response));
+                                },
+                                error: function () { }
+                            })
+                            break;
+                    }
 
-            $("#nextBtn").click(function () {
-                switch (currentTab) {
-                    case 2:
-                        $.ajax({
-                            type: "POST",
-                            url: '@Url.Action("CreateMarinaMap", "BookingFlow")',
-                            data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val() },
-                            dataType: "json",
-                            success: function (response) {
-                                mymap.invalidateSize();
-                                RenderMarinas(JSON.parse(response));
-                            },
-                            error: function () { }
-                        });
-                        break;
-                    case 3:
-                        $.ajax({
-                            type: "POST",
-                            url: '@Url.Action("CreateSpotMap", "BookingFlow")',
-                            data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val(), marina: $("#selectedMarina").val() },
-                            dataType: "json",
-                            success: function (response) {
-                                mymapspot.invalidateSize();
-                                RenderSpots(JSON.parse(response));
-                            },
-                            error: function () { }
-                        })
-                        break;
-                }
-
+                });
             });
         });
 
