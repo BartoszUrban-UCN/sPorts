@@ -37,14 +37,14 @@ namespace WebApplication.BusinessLogic
         {
             BookingLine bookingLine = new BookingLine
             {
-                Spot = spot,
+                SpotId = spot.SpotId,
                 StartDate = startDate,
                 EndDate = endDate,
             };
 
             bookingLine.Confirmed = false;
             bookingLine.Ongoing = false;
-            bookingLine.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine.OriginalTotalPrice = spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
             bookingLine.AppliedDiscounts = 0;
             bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 

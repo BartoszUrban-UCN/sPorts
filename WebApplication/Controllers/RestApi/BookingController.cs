@@ -81,7 +81,7 @@ namespace WebApplication.Controllers.RestApi
         /// <param name="endDate"></param>
         /// <returns>Booking in json format</returns>
         [Produces("applicatoin/json")]
-        [HttpPost("/createbookinglocally")]
+        [HttpPost("createbookinglocally")]
         public async Task<ActionResult<Booking>> CreateBookingLocally(int boatId, int spotId, DateTime startDate, DateTime endDate)
         {
             // find boat & spot objects in db
@@ -93,7 +93,7 @@ namespace WebApplication.Controllers.RestApi
             var booking = HttpContext.Session.Get<Booking>("Booking");
             if (booking is null)
             {
-                booking = new Booking { Boat = boat };
+                booking = new Booking { BoatId = boatId };
                 await _bookingService.Create(booking);
             }
 
@@ -106,7 +106,7 @@ namespace WebApplication.Controllers.RestApi
             HttpContext.Session.Add<Booking>("Booking", booking);
 
             // hopefully serialization is not needed and returns booking in json format
-            return booking;
+            return Ok(booking);
 
         }
 
@@ -134,7 +134,7 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
-        [HttpPost("{bookingLine}/removebookingline")]
+        [HttpPost("removebookingline")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine(BookingLine bookingLine)
         {
             var booking = HttpContext.Session.Get<Booking>("Booking");
