@@ -120,11 +120,11 @@
             var bookingLine = $(this).attr("data-bookingLine")
             $.ajax({
                 type: "POST",
-                url: "/api/booking/" + bookingLine + "/removebookingline",
-                data: { bookingLine: bookingLine },
+                url: "/api/booking/removebookingline",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({ bookingLine: bookingLine }),
                 success: function (result) {
-                    console.log(bookingLine);
-                    console.log(result);
                     $(".cartBookingLine").on('click', '.removeBtn', function () {
                         $(this).closest('.cartBookingLine').fadeOut(1000);
                     });

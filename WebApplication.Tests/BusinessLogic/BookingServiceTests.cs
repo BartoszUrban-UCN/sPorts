@@ -65,7 +65,7 @@ namespace WebApplication.Tests.BusinessLogic
 
                 bool expected = true;
 
-                IBookingService bookingService = new BookingService(context, null, null, null);
+                IBookingService bookingService = new BookingService(context, null, null, null, null);
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithTwoSpotsInSameMarina() != null;
@@ -110,7 +110,7 @@ namespace WebApplication.Tests.BusinessLogic
                 bool expected = true;
                 IBookingLineService service = new BookingLineService(context);
                 IPDFService<Booking> pDFService = new BookingPDFService();
-                IBookingService bookingService = new BookingService(context, service, null, pDFService);
+                IBookingService bookingService = new BookingService(context, service, null, pDFService, null);
                 IMarinaOwnerService marinaOwnerService = new MarinaOwnerService(context, service);
 
                 var unconfirmedBookingLines = (List<BookingLine>)await marinaOwnerService.GetUnconfirmedBookingLines(1);

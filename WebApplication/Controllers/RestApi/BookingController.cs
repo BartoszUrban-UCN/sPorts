@@ -135,7 +135,7 @@ namespace WebApplication.Controllers.RestApi
         }
 
         [HttpPost("removebookingline")]
-        public async Task<ActionResult<Booking>> CartRemoveBookingLine(BookingLine bookingLine)
+        public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] BookingLine bookingLine)
         {
             var booking = HttpContext.Session.Get<Booking>("Booking");
             var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);

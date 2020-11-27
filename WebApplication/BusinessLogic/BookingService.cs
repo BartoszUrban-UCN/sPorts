@@ -13,13 +13,15 @@ namespace WebApplication.BusinessLogic
     {
         private readonly IBookingLineService _bookingLineService;
         private readonly IBookingFormService _bookingFormService;
+        private readonly ISpotService _spotService;
         private readonly IPDFService<Booking> _pdfService;
 
-        public BookingService(SportsContext context, IBookingLineService bookingLineService, IBookingFormService bookingFormService, IPDFService<Booking> pdfService) : base(context)
+        public BookingService(SportsContext context, IBookingLineService bookingLineService, IBookingFormService bookingFormService, IPDFService<Booking> pdfService, ISpotService spotService) : base(context)
         {
             _bookingLineService = bookingLineService;
             _bookingFormService = bookingFormService;
             _pdfService = pdfService;
+            _spotService = spotService;
         }
 
         private async Task<Booking> CreateBooking(Booking booking)
@@ -73,6 +75,17 @@ namespace WebApplication.BusinessLogic
             // send an email to boatOwner's email
             // delete files create in CreateBookingPdfFile
             await SendConfirmationMail(booking.BookingId);
+
+            return booking;
+        }
+
+        public async Task<Booking> LoadObjectsInBooking(Booking booking)
+        {
+            foreach (var bl in booking.BookingLines)
+            {
+                Spot spot = await _spotService.GetSingle(bl.SpotId);
+                bl.Spot = spot;
+            }
 
             return booking;
         }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
@@ -76,6 +75,7 @@ namespace WebApplication.Controllers
         {
             // explicit load needed??
             //var booking = HttpContext.Session.Get<Booking>("Booking");
+            //await _bookingService.LoadObjectsInBooking(booking);
             //var validBooking = _bookingService.ValidateShoppingCart(booking);
 
             //bool hasChanged = false;
@@ -120,7 +120,7 @@ namespace WebApplication.Controllers
             booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot3);
             booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot4);
 
-            HttpContext.Session.Add<Booking>("Booking", booking1);
+            await _bookingService.LoadObjectsInBooking(booking1);
 
             var marinaBLineDict = _bookingService.FilterLinesByMarina(booking1);
             ViewData["MarinaBLineDict"] = marinaBLineDict;
