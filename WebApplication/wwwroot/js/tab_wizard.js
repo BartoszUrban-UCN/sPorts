@@ -4,15 +4,19 @@ showTab(currentTab); // Display the current tab
 var boatId = null;
 var startDate = null;
 var endDate = null;
+var marinaId = null;
+var spotId = null;
 
 function clearAllCurrentData() {
     boatId = null;
     startDate = null;
     endDate = null;
+    marinaId = null;
+    spotId = null;
 }
 
 function outputAllData() {
-    console.log(`Boat ID is: ${boatId}\nStart Date is: ${startDate}\nEnd Date is: ${endDate}`);
+    console.log(`Boat ID is: ${boatId}\nStart Date is: ${startDate}\nEnd Date is: ${endDate}\nSelected Marina is: ${marinaId}\nSelected Spot is: ${spotId}`);
 }
 
 // This function will display the specified tab of the form...
@@ -50,53 +54,6 @@ function updateTitle() {
             $(this).html("Your cart");
         $(this).fadeIn("fast");
     });
-}
-
-//
-//  Custom tab functionality based on our system
-//
-function fireFunction(n) {
-    if (currentTab == 0) {
-        if (n == 1) {
-            boatId = $("#boat-select").val();
-        }
-    }
-    else if (currentTab == 1) {
-        if (n == -1) {
-            startDate = null;
-            endDate = null;
-        }
-        else if (n == 1) {
-            startDate = $("#start-date").val();
-            endDate = $("#end-date").val();
-        }
-    }
-    else if (currentTab == 2) {
-        if (n == -1) {
-            
-        }
-        else if (n == 1) {
-            
-        }
-    }
-    else if (currentTab == 3) {
-        if (n == -1) {
-
-        }
-        else if (n == 1) {
-
-        }
-    }
-    else if (currentTab == 4) {
-        if (n == -1) {
-
-        }
-        else if (n == 1) {
-
-        }
-    }
-
-    outputAllData();
 }
 
 // This function will figure out which tab to display

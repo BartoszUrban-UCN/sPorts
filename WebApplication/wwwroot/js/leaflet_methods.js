@@ -20,7 +20,7 @@ function SpotBookingPrompt(spot, available) {
         <div class="text-center" style="width: 130px">\
             <p style="font-weight: bold; color: #737373">Spot number ${spot.SpotNumber}</p>\
             <p style="font-weight: bold; color: #376186">Price per day: ${spot.Price}</p>\
-            <button type="button" id="bookButton" class="btn btn-primary btn-sm">Book</button>\
+            <button type="button" id="bookButton" class="btn btn-primary btn-sm" onclick="selectSpot(${spot.SpotId})">Book</button>\
         </div>\
     `;
 
