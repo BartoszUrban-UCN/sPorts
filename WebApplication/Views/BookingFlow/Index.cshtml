@@ -114,38 +114,4 @@
 
     <script src="~/js/leaflet/map_marina_booking.js"></script>
     <script src="~/js/leaflet/map_spot_booking.js"></script>
-
-    <script>
-        $("#nextBtn").click(function () {
-            switch (currentTab) {
-                case 2:
-                    $.ajax({
-                        type: "POST",
-                        url: '@Url.Action("CreateMarinaMap", "BookingFlow")',
-                        data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val() },
-                        dataType: "json",
-                        success: function (response) {
-                            mymap.invalidateSize();
-                            renderMarinas(JSON.parse(response));
-                        },
-                        error: function () { }
-                    });
-                    break;
-                case 3:
-                    $.ajax({
-                        type: "POST",
-                        url: '@Url.Action("CreateSpotMap", "BookingFlow")',
-                        data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val(), marina: $("#selectedMarina").val() },
-                        dataType: "json",
-                        success: function (response) {
-                            mymapspot.invalidateSize();
-                            renderSpots(JSON.parse(response));
-                        },
-                        error: function () { }
-                    })
-                    break;
-            }
-
-        });
-    </script>
 }

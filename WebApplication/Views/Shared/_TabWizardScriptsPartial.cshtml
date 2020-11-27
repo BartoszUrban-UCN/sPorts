@@ -32,7 +32,7 @@
                     dataType: "json",
                     success: function (response) {
                         mymap.invalidateSize();
-                        RenderMarinas(JSON.parse(response));
+                        renderMarinas(JSON.parse(response));
                     },
                     error: function () { }
                 });
@@ -53,7 +53,7 @@
                     dataType: "json",
                     success: function (response) {
                         mymapspot.invalidateSize();
-                        RenderSpots(JSON.parse(response));
+                        renderSpots(JSON.parse(response));
                     },
                     error: function () { }
                 });
