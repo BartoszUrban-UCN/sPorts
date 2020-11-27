@@ -20,14 +20,14 @@
             transition: opacity 0.4s;
         }
 
-        .step.active {
-            opacity: 1;
-        }
+            .step.active {
+                opacity: 1;
+            }
 
-        /* Mark the steps that are finished and valid: */
-        .step.finish {
-            background-color: #2780e3;
-        }
+            /* Mark the steps that are finished and valid: */
+            .step.finish {
+                background-color: #2780e3;
+            }
     </style>
 }
 
@@ -82,17 +82,13 @@
                 <!-- Pick marina for the booking; Depends on the boat size and picked dates -->
                 <div class="tab-wizard">
                     <div class="form-group">
-                        @{
-                            await Html.RenderPartialAsync("MarinaMapPromptPartial");
-                        }
-                        <input class="form-control" id="selectedMarina" required readonly hidden />
+                        <div id="map-marina" class="leaflet-map-div" />
+                        <input class="form-control" id="selectedMarina" required readonly hidden/>
                     </div>
                 </div>
                 <div class="tab-wizard">
                     <div class="form-group">
-                        @{
-                            await Html.RenderPartialAsync("SpotMapPromptPartial");
-                        }
+                        <div id="map-spot" class="leaflet-map-div" />
                         <input class="form-control" id="selectedSpot" required readonly hidden />
                     </div>
                 </div>
@@ -111,11 +107,45 @@
     </div>
 </form>
 
-
 @section Scripts{
-    @{
-        await Html.RenderPartialAsync("LeafletMapPartial");
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("_TabWizardScriptsPartial");
-    }
+    <partial name="_TabWizardScriptsPartial" />
+    <partial name="_LeafletScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/js/leaflet/map_marina_booking.js"></script>
+    <script src="~/js/leaflet/map_spot_booking.js"></script>
+
+    <script>
+        $("#nextBtn").click(function () {
+            switch (currentTab) {
+                case 2:
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("CreateMarinaMap", "BookingFlow")',
+                        data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val() },
+                        dataType: "json",
+                        success: function (response) {
+                            mymap.invalidateSize();
+                            renderMarinas(JSON.parse(response));
+                        },
+                        error: function () { }
+                    });
+                    break;
+                case 3:
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("CreateSpotMap", "BookingFlow")',
+                        data: { boat: $("#boat-select").val(), start: $("#start-date").val(), end: $("#end-date").val(), marina: $("#selectedMarina").val() },
+                        dataType: "json",
+                        success: function (response) {
+                            mymapspot.invalidateSize();
+                            renderSpots(JSON.parse(response));
+                        },
+                        error: function () { }
+                    })
+                    break;
+            }
+
+        });
+    </script>
 }
