@@ -98,11 +98,9 @@ namespace WebApplication.Controllers
             var marina1 = new Marina { MarinaId = 2, Name = "Aalborg Zoo", MarinaOwner = marinaOwner };
             var marina2 = new Marina { MarinaId = 3, Name = "Underwater", MarinaOwner = marinaOwner };
 
-
             var boatOwner = new BoatOwner { Person = person };
 
             var boat = new Boat { Name = "Mama Destroyer", BoatOwner = boatOwner };
-
 
             var spot = new Spot { SpotId = 1, Price = 12.3d, Marina = marina, SpotNumber = 5 };
             var spot1 = new Spot { SpotId = 2, Price = 5.5d, Marina = marina, SpotNumber = 2 };
@@ -110,39 +108,18 @@ namespace WebApplication.Controllers
             var spot3 = new Spot { SpotId = 4, Price = 3.3d, Marina = marina1, SpotNumber = 6 };
             var spot4 = new Spot { SpotId = 5, Price = 8.5d, Marina = marina2, SpotNumber = 1 };
 
-            var bookingLine = new BookingLine { StartDate = now, EndDate = then, Spot = spot };
-            var bookingLine1 = new BookingLine { StartDate = now, EndDate = then, Spot = spot1 };
-            var bookingLine2 = new BookingLine { StartDate = now, EndDate = then, Spot = spot2 };
-            var bookingLine3 = new BookingLine { StartDate = now, EndDate = then, Spot = spot3 };
-            var bookingLine4 = new BookingLine { StartDate = now, EndDate = then, Spot = spot4 };
-
-            bookingLine.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
-            bookingLine.AppliedDiscounts = 0;
-            bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
-
-            bookingLine1.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
-            bookingLine1.AppliedDiscounts = 0;
-            bookingLine1.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
-
-            bookingLine2.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
-            bookingLine2.AppliedDiscounts = 0;
-            bookingLine2.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
-
-            bookingLine3.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
-            bookingLine3.AppliedDiscounts = 0;
-            bookingLine3.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
-
-            bookingLine4.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
-            bookingLine4.AppliedDiscounts = 0;
-            bookingLine4.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
-
             var booking1 = new Booking
             {
                 Boat = boat,
-                BookingLines = new List<BookingLine> { bookingLine, bookingLine1, bookingLine2, bookingLine3, bookingLine4 }
             };
 
             await _bookingService.Create(booking1);
+            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot);
+            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot1);
+            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot2);
+            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot3);
+            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot4);
+
             HttpContext.Session.Add<Booking>("Booking", booking1);
 
             var marinaBLineDict = new Dictionary<Marina, IEnumerable<BookingLine>>(_bookingService.FilterLinesByMarina(booking1));

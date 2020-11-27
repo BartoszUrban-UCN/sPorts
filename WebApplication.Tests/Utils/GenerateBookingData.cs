@@ -54,13 +54,10 @@ namespace WebApplication.Tests.Utils
                     Boat boat = context.Boats.Where(b => b.BoatId == 1).FirstOrDefault();
                     Spot spot = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
 
-                    Dictionary<DateTime[], Spot> marinaSpotStayDates = new Dictionary<DateTime[], Spot>() {
-                    { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot }
-                };
                     Booking booking = new Booking { Boat = boat };
-                    booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
-
                     await bookingService.Create(booking);
+                    booking = bookingService.CreateBookingLine(booking, DateTime.Now, DateTime.Now.AddDays(1), spot);
+
                     await bookingService.SaveBooking(booking);
                     return booking;
                 }
@@ -80,14 +77,11 @@ namespace WebApplication.Tests.Utils
                     Spot spot1 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 1).FirstOrDefault();
                     Spot spot2 = context.Spots.Where(s => s.MarinaId == 1 && s.SpotNumber == 2).FirstOrDefault();
 
-                    Dictionary<DateTime[], Spot> marinaSpotStayDates = new Dictionary<DateTime[], Spot>() {
-                    { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot1 },
-                    { new DateTime[2] { DateTime.Now.AddDays(1), DateTime.Now.AddDays(2) }, spot2 }
-                };
                     Booking booking = new Booking { Boat = boat };
-                    booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
-
                     await bookingService.Create(booking);
+                    booking = bookingService.CreateBookingLine(booking, DateTime.Now, DateTime.Now.AddDays(1), spot1);
+                    booking = bookingService.CreateBookingLine(booking, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), spot2);
+
                     await bookingService.SaveBooking(booking);
                     return booking;
                 }
@@ -109,15 +103,12 @@ namespace WebApplication.Tests.Utils
                     Spot spot2 = context.Spots.Where(s => s.MarinaId == 2 && s.SpotNumber == 4).FirstOrDefault();
                     Spot spot3 = context.Spots.Where(s => s.MarinaId == 3 && s.SpotNumber == 5).FirstOrDefault();
 
-                    Dictionary<DateTime[], Spot> marinaSpotStayDates = new Dictionary<DateTime[], Spot>() {
-                    { new DateTime[2] { DateTime.Now, DateTime.Now.AddDays(1) }, spot1 },
-                    { new DateTime[2] { DateTime.Now.AddDays(1), DateTime.Now.AddDays(2) }, spot2 },
-                    { new DateTime[2] { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) }, spot3 }
-                };
                     Booking booking = new Booking { Boat = boat };
-                    booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
-
                     await bookingService.Create(booking);
+                    booking = bookingService.CreateBookingLine(booking, DateTime.Now, DateTime.Now.AddDays(1), spot1);
+                    booking = bookingService.CreateBookingLine(booking, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), spot2);
+                    booking = bookingService.CreateBookingLine(booking, DateTime.Now.AddDays(2), DateTime.Now.AddDays(3), spot3);
+
                     await bookingService.SaveBooking(booking);
                     return booking;
                 }

@@ -73,7 +73,7 @@ namespace WebApplication.Controllers.RestApi
         }
 
         /// <summary>
-        /// Creates booking & bookingLine based on data from the wizard
+        /// Creates booking and bookingLine based on data from the wizard
         /// </summary>
         /// <param name="boatId"></param>
         /// <param name="spotId"></param>
@@ -134,7 +134,7 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
-        [HttpGet("/removebookingline")]
+        [HttpPost("{bookingLine}/removebookingline")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine(BookingLine bookingLine)
         {
             var booking = HttpContext.Session.Get<Booking>("Booking");
