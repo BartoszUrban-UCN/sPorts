@@ -82,3 +82,7 @@ body {
 g path.leaflet-interactive {
     transition: d 1s;
 }
+
+.leaflet-map-div {
+    height: 600px;
+}
