@@ -45,7 +45,7 @@ namespace WebApplication.BusinessLogic
                 // create pdf file with info about the booking
                 // send an email to boatOwner's email
                 // delete files create in CreateBookingPdfFile
-                SendConfirmationMail(booking.BookingId);
+                await SendConfirmationMail(booking.BookingId);
             }
 
             return booking;
@@ -222,7 +222,7 @@ namespace WebApplication.BusinessLogic
                 bookingLine.Confirmed = true;
                 _bookingLineService.Update(bookingLine);
                 var success = await Save() > 0;
-                SendConfirmationMail(bookingLine.BookingId);
+                await SendConfirmationMail(bookingLine.BookingId);
                 return success;
             }
         }
@@ -234,7 +234,8 @@ namespace WebApplication.BusinessLogic
         /// </summary>
         private async Task SendConfirmationMail(int bookingId)
         {
-            Booking booking = await GetSingle(bookingId);
+            Booking booking = new Booking();
+            booking = await GetSingle(bookingId);
 
             _pdfService.CreatePDFFile(booking);
             SendEmail(bookingReference: booking.BookingReferenceNo);
