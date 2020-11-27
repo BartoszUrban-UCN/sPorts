@@ -30,12 +30,3 @@ function marinaBookingPrompt(marina, numberOfAvailableSpots) {
 
     renderCircle(marina.Location, marinaMarkers).bindPopup(marinaPopup);
 }
-
-/**
- * The function that the marinaBookingPrompt button calls onClick
- * @param {number} marinaId - the id of the marina
- */
-function selectMarina(marinaId) {
-    document.getElementById("selectedMarina").value = marinaId;
-    document.getElementById("nextBtn").click();
-}
