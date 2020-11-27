@@ -72,6 +72,14 @@ namespace WebApplication.Controllers.RestApi
             return NotFound();
         }
 
+        /// <summary>
+        /// Creates booking & bookingLine based on data from the wizard
+        /// </summary>
+        /// <param name="boatId"></param>
+        /// <param name="spotId"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns>Booking in json format</returns>
         [Produces("applicatoin/json")]
         [HttpPost("/createbookinglocally")]
         public async Task<ActionResult<Booking>> CreateBookingLocally(int boatId, int spotId, DateTime startDate, DateTime endDate)
@@ -80,9 +88,16 @@ namespace WebApplication.Controllers.RestApi
             var boat = await _boatService.GetSingle(boatId);
             var spot = await _spotService.GetSingle(spotId);
 
-            // init booking & add bookingLine to the booking.BookingLines list
-            var booking = new Booking { Boat = boat };
-            await _bookingService.Create(booking);
+            // get booking from session if created before
+            // else init booking
+            var booking = HttpContext.Session.Get<Booking>("Booking");
+            if (booking is null)
+            {
+                booking = new Booking { Boat = boat };
+                await _bookingService.Create(booking);
+            }
+
+            // add bookingLine to the booking.BookingLines list
             booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
 
             // store booking object in the session
