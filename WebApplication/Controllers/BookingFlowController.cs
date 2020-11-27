@@ -122,6 +122,8 @@ namespace WebApplication.Controllers
 
             await _bookingService.LoadObjectsInBooking(booking1);
 
+            booking1.TotalPrice = Math.Round(booking1.TotalPrice, 2);
+
             var marinaBLineDict = _bookingService.FilterLinesByMarina(booking1);
             ViewData["MarinaBLineDict"] = marinaBLineDict;
 

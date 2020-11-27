@@ -26,3 +26,9 @@
     text-decoration: none;
     color: #373a3c;
 }
+
+@media (min-width: 973px) {
+    .container {
+        max-width: 75%;
+    }
+}
