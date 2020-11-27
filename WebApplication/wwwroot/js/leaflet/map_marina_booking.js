@@ -28,5 +28,5 @@ function marinaBookingPrompt(marina, numberOfAvailableSpots) {
         </div>\
     `;
 
-    renderCircle(marina.Location, marinaMarkers).bindPopup(marinaPopup);
+    renderCircleLocation(marina.Location, marinaMarkers).bindPopup(marinaPopup);
 }
