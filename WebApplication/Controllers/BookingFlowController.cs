@@ -115,6 +115,9 @@ namespace WebApplication.Controllers
             };
 
             await _bookingService.Create(booking1);
+
+            
+
             booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot);
             booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot1);
             booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot2);

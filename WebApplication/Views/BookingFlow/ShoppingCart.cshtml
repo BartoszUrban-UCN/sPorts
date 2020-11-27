@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "sPorts";
-    var marinaSpotDict = (Dictionary<Marina, IEnumerable<BookingLine>>)ViewData["MarinaBLineDict"];
+    var marinaBLineDict = (Dictionary<Marina, IEnumerable<BookingLine>>)ViewData["MarinaBLineDict"];
     var hasChanged = ViewData["BookingChange"];
 }
 
@@ -17,27 +17,27 @@
             </div>
             <div class="card-body">
                 <div id="Top">
-                    <input type="checkbox" id="CheckBox" id="All">
+                    <input type="checkbox" id="CheckBox">
                     <h5 class="card-title">Select All</h5>
                     <h6 class="card-text text-right text-secondary" style="flex-grow: 1;">BookingNo #@Model.BookingReferenceNo</h6>
                 </div>
             </div>
         </div>
-        @if (marinaSpotDict.Count > 0)
+        @if (marinaBLineDict.Count > 0)
         {
-            @foreach (var pair in marinaSpotDict)
+            @foreach (var marinaBLinePair in marinaBLineDict)
             {
                 <div class="card border-light shadow">
                     <div class="card-header border-light bg-primary">The title of a spot</div>
                     <div class="card-body">
                         <div id="Top">
-                            <input type="checkbox" id="CheckBox" id="MAll">
-                            <h5>@pair.Key.Name</h5>
+                            <input type="checkbox" id="CheckBox">
+                            <h5>@marinaBLinePair.Key.Name</h5>
                             <div class="text-right text-secondary" style="flex-grow: 1;">
-                                <a href="#" class="btn btn-outline-success">Remove All</a>
+                                <a class="btn btn-outline-success removeAllBtn" pair="">Remove All</a>
                             </div>
                         </div>
-                        @foreach (var bookingLine in pair.Value)
+                        @foreach (var bookingLine in marinaBLinePair.Value)
                         {
                             <hr>
                             <br>
@@ -73,7 +73,7 @@
                                 </div>
                                 <div class="col text-right text-secondary">
                                     <h6 class="card-text" style="flex-grow: 1;">Spot No #@bookingLine.Spot.SpotNumber</h6>
-                                    <input class="btn btn-outline-success removeBtn" data-bookingline="@bookingLine" type="button" value="Remove" />
+                                    <a class="btn btn-outline-success removeBtn" name="@bookingLine.BookingLineId">Remove</a>
                                 </div>
                                 <div class="w-100"></div>
                                 <div class="col align-self-end text-right">
@@ -123,6 +123,7 @@
     </div>
 </div>
 
+<<<<<<< Updated upstream
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -147,6 +148,8 @@
 
 </script>
 
+=======
+>>>>>>> Stashed changes
 @section Scripts{
-    <script src="~/js/checkbox.js"></script>
+    <script src="~/js/shoppingcart/remove.js"></script>
 }

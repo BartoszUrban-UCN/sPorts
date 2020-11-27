@@ -39,6 +39,9 @@ namespace WebApplication.BusinessLogic
         {
             BookingLine bookingLine = new BookingLine
             {
+                //delete this
+                BookingLineId = spot.SpotId,
+                // delete this
                 SpotId = spot.SpotId,
                 StartDate = startDate,
                 EndDate = endDate,
