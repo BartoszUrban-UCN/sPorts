@@ -15,13 +15,8 @@
 
     @if (Model.LocationId != null)
     {
-        <div id="mapid" style="height: 400px; width: 300px"></div>
+        <partial name="MapDivPartial" />
         <br />
-        <script src="~/js/leaflet_map.js"></script>
-        <script>
-            mymap.setView([@Model.Location.Latitude, @Model.Location.Longitude], 16);
-            L.marker([@Model.Location.Latitude, @Model.Location.Longitude]).addTo(mymap);
-        </script>
     }
 
     @* End of displaying map *@
@@ -82,3 +77,13 @@
     <a asp-action="Edit" asp-route-id="@Model.SpotId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts{
+    <partial name="_LeafletScriptsPartial" />
+    <script src="~/js/leaflet/map_spot.js"></script>
+    <script>
+        var available = $("#Available");
+        mymap.setView([@Model.Location.Latitude, @Model.Location.Longitude], 16);
+        var currentMarker = renderSpotMarker(@Model.Location.Latitude, @Model.Location.Longitude, !available.val());
+    </script>
+}

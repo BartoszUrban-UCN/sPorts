@@ -11,26 +11,7 @@
 </p>
 
 @* Initialize map showing available and unavailable spots *@
-
-<div id="mapid" style="height: 600px; width: 700px"></div>
-<script src="~/js/leaflet_map.js"></script>
-<script>mymap.setView([56.2639, 9.5018], 7)</script>
-
-@foreach (var item in Model)
-{
-    if (item.Location != null)
-    {
-        if (item.Available)
-        {
-            <script> L.marker([parseFloat(@item.Location.Latitude), parseFloat(@item.Location.Longitude)]).addTo(mymap) </script>
-        }
-        else
-        {
-            <script> L.marker([parseFloat(@item.Location.Latitude), parseFloat(@item.Location.Longitude)], { icon: unavailableMarkerIcon }).addTo(mymap) </script>
-        }
-    }
-}
-
+<partial name="MapDivPartial" />
 @* End of initialization *@
 
 <table class="table">
@@ -72,11 +53,11 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr id="spot">
                 <td>
                     @Html.DisplayFor(modelItem => item.SpotNumber)
                 </td>
-                <td>
+                <td id="available">
                     @Html.DisplayFor(modelItem => item.Available)
                 </td>
                 <td>
@@ -97,10 +78,10 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Location.LocationId)
                 </td>
-                <td>
+                <td id="lat">
                     @Html.DisplayFor(modelItem => item.Location.Latitude)
                 </td>
-                <td>
+                <td id="long">
                     @Html.DisplayFor(modelItem => item.Location.Longitude)
                 </td>
                 <td>
@@ -112,3 +93,21 @@
         }
     </tbody>
 </table>
+
+@section Scripts{
+    <partial name="_LeafletScriptsPartial" />
+    <script src="~/js/leaflet/map_spot.js"></script>
+    <script>
+        $("tr#spot").each(function () {
+            var checked = $(this).find("#available").children().is(":checked")
+            var lat = $(this).find("td#lat").text().trim();
+            var long = $(this).find("td#long").text().trim();
+
+            if (lat) {
+                renderSpotMarker(lat, long, checked);
+            }
+            
+        })
+    </script>
+
+}

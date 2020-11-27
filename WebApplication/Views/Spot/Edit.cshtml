@@ -51,10 +51,7 @@
 
             @* Initialize Leaflet Map and set the view with Denmark's coordinates *@
 
-            <div id="mapid" style="height: 600px"></div>
-
-            <script src="~/js/leaflet_map.js"></script>
-            <script>mymap.setView([56.2639, 9.5018], 7)</script>
+            <partial name="MapDivPartial" />
 
             @* End of initialization *@
 
@@ -66,55 +63,15 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Location.Latitude" class="control-label"></label>
-                    <input asp-for="Location.Latitude" id="lat" class="form-control" name="Latitude" readonly />
+                    <input value="@Model.Location?.Latitude" id="lat" class="form-control" name="Latitude" readonly />
                     <span asp-validation-for="Location.Latitude" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Location.Longitude" class="control-label"></label>
-                    <input asp-for="Location.Longitude" id="long" class="form-control" name="Longitude" readonly />
+                    <input value="@Model.Location?.Longitude" id="long" class="form-control" name="Longitude" readonly />
                     <span asp-validation-for="Location.Longitude" class="text-danger"></span>
                 </div>
             </div>
-            @* JavaScript to be able to click on map, select a Location and read the coordinates *@
-
-            <script>
-                var currentMarker = L.marker();
-                var locationForm = document.getElementById("locationform");
-                var locationId = document.getElementById("locId");
-                var latitude = document.getElementById("lat");
-                var longitude = document.getElementById("long");
-
-                function onMapClick(e) {
-                    currentMarker
-                        .setLatLng(e.latlng)
-                        .addTo(mymap)
-                        .bindPopup(`<b>Selected Location</b><br /> ${e.latlng.toString()} <br /><b>Double Click on marker to remove it</b>`).openPopup();
-
-                    latitude.value = e.latlng.lat;
-                    longitude.value = e.latlng.lng;
-                }
-
-                function removeMarker(e) {
-                    currentMarker.removeFrom(mymap);
-
-                    latitude.value = null;
-                    longitude.value = null;
-                }
-
-                mymap.on('click', onMapClick);
-                currentMarker.on('dblclick', removeMarker);
-            </script>
-
-            @* If Spot has a location, add marker on the map to showcasing where it is currently and populate Latitude and Longitude fields *@
-            @if (Model.Location != null)
-            {
-                <script>
-                    currentMarker.setLatLng([parseFloat(latitude.value), parseFloat(longitude.value)]).addTo(mymap);
-                </script>
-            }
-
-            @* End of JavaScript *@
-
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -127,5 +84,18 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_LeafletScriptsPartial" />
+    <script src="~/js/leaflet/map_spot.js"></script>
+
+    @* JavaScript to be able to click on map, select a Location and read the coordinates *@
+    <script>
+        var latitude = $("#lat");
+        var longitude = $("#long");
+        var available = $("#Available");
+        var currentMarker = renderSpotMarker(latitude.val(), longitude.val(), available.val());
+
+        mymap.on('click', onMapClick);
+        currentMarker.on('dblclick', removeMarker);
+    </script>
 }
