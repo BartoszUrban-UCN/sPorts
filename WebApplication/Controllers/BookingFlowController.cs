@@ -122,10 +122,10 @@ namespace WebApplication.Controllers
 
             HttpContext.Session.Add<Booking>("Booking", booking1);
 
-            var marinaBLineDict = new Dictionary<Marina, IEnumerable<BookingLine>>(_bookingService.FilterLinesByMarina(booking1));
+            var marinaBLineDict = _bookingService.FilterLinesByMarina(booking1);
             ViewData["MarinaBLineDict"] = marinaBLineDict;
 
-            return View("~/Views/Booking/ShoppingCart.cshtml", booking1);
+            return View(booking1);
         }
     }
 }

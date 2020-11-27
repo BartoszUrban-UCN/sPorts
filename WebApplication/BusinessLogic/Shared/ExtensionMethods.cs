@@ -6,14 +6,14 @@ namespace WebApplication.BusinessLogic.Shared
     {
         public static bool IsValidId(this int? @this)
         {
-            if (@this == null || @this < 0)
+            if (@this == null || @this < 1)
                 return false;
             return true;
         }
 
         public static bool IsNotValidId(this int? @this)
         {
-            if (@this == null || @this < 0)
+            if (@this == null || @this < 1)
                 return true;
             return false;
         }
