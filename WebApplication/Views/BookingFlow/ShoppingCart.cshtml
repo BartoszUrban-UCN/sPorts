@@ -124,19 +124,18 @@
 </div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-@*<script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function () {
         $("input.removeBtn").click(function () {
             var bookingLine = $(this).attr("data-bookingLine")
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "/api/booking/removebookingline",
-                data: { bookingLine: bookingLine },
+                dataType: "JSON",
+                contentType: "application/json",
+                data: JSON.stringify({ bookingLine: bookingLine }),
                 success: function (result) {
-                    console.log(bookingLine);
-                    $(".cartBookingLine").on('click', '.removeBtn', function () {
-                        $(this).closest('.cartBookingLine').fadeOut(1000);
-                    });
+                    alert("Success")
                 },
                 error: function (req, status, error) {
                     alert("Something went wrong.")
@@ -146,7 +145,7 @@
         })
     })
 
-</script>*@
+</script>
 
 @section Scripts{
     <script src="~/js/checkbox.js"></script>

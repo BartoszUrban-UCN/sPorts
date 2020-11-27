@@ -113,28 +113,28 @@
 </div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-@*<script type="text/javascript">
-        $(document).ready(function () {
-            $("input.removeBtn").click(function () {
-                var bookingLine = $(this).attr("data-bookingLine")
-                $.ajax({
-                    type: "POST",
-                    url: "/api/booking/removebookingline",
-                    dataType: "JSON",
-                    contentType: "application/json",
-                    data: JSON.stringify({ bookingLine: bookingLine }),
-                    success: function (result) {
-                        alert("Success")
-                    },
-                    error: function (req, status, error) {
-                        alert("Something went wrong.")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input.removeBtn").click(function () {
+            var bookingLine = $(this).attr("data-bookingLine")
+            $.ajax({
+                type: "POST",
+                url: "/api/booking/removebookingline",
+                dataType: "JSON",
+                contentType: "application/json",
+                data: JSON.stringify({ bookingLine: bookingLine }),
+                success: function (result) {
+                    alert("Success")
+                },
+                error: function (req, status, error) {
+                    alert("Something went wrong.")
 
-                    }
-                });
-            })
+                }
+            });
         })
+    })
 
-    </script>*@
+</script>
 
 @section Scripts{
 }
