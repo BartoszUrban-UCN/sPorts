@@ -20,7 +20,7 @@ function renderCircle(location, addTo) {
  * @param {boolean} [unavailable=false] - true to use a different icon
  * @returns {L.Marker} - use this to bind further commands like binding a popup
  */
-function renderMarker(location, addTo, unavailable) {
+function renderMarkerLocation(location, addTo, unavailable) {
     if (unavailable) {
         return L.marker([parseFloat(location.Latitude), parseFloat(location.Longitude)], { icon: unavailableMarkerIcon }).addTo(addTo);
     } else {
