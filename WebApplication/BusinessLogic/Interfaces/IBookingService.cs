@@ -7,7 +7,7 @@ namespace WebApplication.BusinessLogic
 {
     public interface IBookingService : ICRUD<Booking>
     {
-        List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates);
+        Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot);
 
         Dictionary<Marina, IEnumerable<BookingLine>> FilterLinesByMarina(Booking booking);
 

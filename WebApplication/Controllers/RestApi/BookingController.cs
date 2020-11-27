@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
@@ -13,10 +14,14 @@ namespace WebApplication.Controllers.RestApi
     public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;
+        private readonly IBoatService _boatService;
+        private readonly ISpotService _spotService;
 
-        public BookingController(IBookingService bookingService)
+        public BookingController(IBookingService bookingService, IBoatService boatService, ISpotService spotService)
         {
             _bookingService = bookingService;
+            _boatService = boatService;
+            _spotService = spotService;
         }
 
         /// <summary>
@@ -67,28 +72,28 @@ namespace WebApplication.Controllers.RestApi
             return NotFound();
         }
 
-        // /// <summary>
-        // /// Get bookings by marina owner
-        // /// </summary>
-        // /// <returns>List of logged in marina owner bookings</returns>
-        // [Produces("application/json")]
-        // [HttpGet("marinaowner")]
-        // public async Task<ActionResult<IEnumerable<BookingLine>>> GetBookingsByMarinaOwner()
-        // {
-        //     // get logged marina owner
-        //     // var marinaOwner = await _marinaOwnerService.GetSingle(int loggedMarinaOwnerId);
-        //     // var bookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwner.MarinaOwnerId);
+        [Produces("applicatoin/json")]
+        [HttpPost("/createbookinglocally")]
+        public async Task<ActionResult<Booking>> CreateBookingLocally(int boatId, int spotId, DateTime startDate, DateTime endDate)
+        {
+            // find boat & spot objects in db
+            var boat = await _boatService.GetSingle(boatId);
+            var spot = await _spotService.GetSingle(spotId);
 
-        //     int marinaOwnerId = 1;
-        //     var marinaOwnerBookingLines = await _bookingService.GetBookingLinesByMarinaOwner(marinaOwnerId);
+            // init booking & add bookingLine to the booking.BookingLines list
+            var booking = new Booking { Boat = boat };
+            await _bookingService.Create(booking);
+            booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
 
-        //     if (marinaOwnerBookingLines != null)
-        //     {
-        //         return Ok(marinaOwnerBookingLines);
-        //     }
+            // store booking object in the session
+            // don't yet know whether you rewrite value if you add it with the same key or if it needs to be removed first
+            //HttpContext.Session.Remove("Booking");
+            HttpContext.Session.Add<Booking>("Booking", booking);
 
-        //     return NotFound();
-        // }
+            // hopefully serialization is not needed and returns booking in json format
+            return booking;
+
+        }
 
         /// <summary>
         /// Cancel booking based on booking id

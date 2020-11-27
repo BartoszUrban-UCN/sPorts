@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
@@ -25,23 +24,44 @@ namespace WebApplication.BusinessLogic
 
         private async Task<Booking> CreateBooking(Booking booking)
         {
-            // get booking lines from the booking
-            var bookingLines = booking?.BookingLines;
+            // init booking
+            booking.BookingReferenceNo = new Random().Next(1, 1000);
+            booking.PaymentStatus = "Not Paid";
+            booking.CreationDate = DateTime.Now;
 
-            if (bookingLines?.Count > 0)
+            return booking;
+        }
+
+        #region Create booking line based on data from the form
+        public Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot)
+        {
+            BookingLine bookingLine = new BookingLine
             {
-                // calculate total price
-                double totalPrice = BookingCalculatePrice(bookingLines);
+                Spot = spot,
+                StartDate = startDate,
+                EndDate = endDate,
+            };
 
-                // init booking
-                booking.BookingReferenceNo = new Random().Next(1, 1000);
-                booking.PaymentStatus = "Not Paid";
-                booking.CreationDate = DateTime.Now;
+            bookingLine.Confirmed = false;
+            bookingLine.Ongoing = false;
+            bookingLine.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine.AppliedDiscounts = 0;
+            bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
+
+            if (booking.BookingLines is null)
+            {
+                booking.BookingLines = new List<BookingLine>();
+            }
+            else
+            {
+                double totalPrice = BookingCalculatePrice(booking.BookingLines);
+                booking.BookingLines.Add(bookingLine);
                 booking.TotalPrice = totalPrice;
             }
 
             return booking;
         }
+        #endregion Create booking lines based on data from the form
 
         public async Task<Booking> SaveBooking(Booking booking)
         {
@@ -89,35 +109,6 @@ namespace WebApplication.BusinessLogic
 
             return totalPrice;
         }
-
-        #region Create booking lines based on data from the form
-        // take List<BookingLine> as parameter
-        public List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates)
-        {
-            List<BookingLine> bookingLines = new List<BookingLine>();
-
-            marinaSpotStayDates?.Keys.ToList().ForEach(date =>
-            {
-                BookingLine bookingLine = new BookingLine
-                {
-                    Spot = marinaSpotStayDates[date],
-                    StartDate = date[0],
-                    EndDate = date[1],
-                };
-
-                bookingLine.Confirmed = false;
-                bookingLine.Ongoing = false;
-                bookingLine.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
-                bookingLine.AppliedDiscounts = 0;
-                bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
-
-                bookingLines.Add(bookingLine);
-            });
-
-            return bookingLines;
-        }
-
-        #endregion Create booking lines based on data from the form
 
         #region Store booking class & associated booking lines in db
 

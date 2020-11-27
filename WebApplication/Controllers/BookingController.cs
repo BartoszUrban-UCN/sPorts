@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
@@ -36,34 +33,6 @@ namespace WebApplication.Controllers
             {
                 return NotFound();
             }
-            return View(booking);
-        }
-
-        // GET: Booking/Create
-        public async Task<IActionResult> Create()
-        {
-            // boat by boatOwner
-            var boats = await _boatService.GetAll();
-            ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId");
-            return View();
-        }
-
-        // POST: Booking/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookingId,BookingReferenceNo,TotalPrice,PaymentStatus,BoatId")] Booking booking, Dictionary<DateTime[], Spot> marinaSpotStayDates)
-        {
-            if (ModelState.IsValid)
-            {
-                booking.BookingLines = _bookingService.CreateBookingLines(marinaSpotStayDates);
-                await _bookingService.Create(booking);
-                return RedirectToAction(nameof(Index));
-            }
-
-            //var boats = await _bookingService.GetBoatsByBoatOwner(int boatOwnerId);
-            //ViewData["BoatId"] = new SelectList(boats, "BoatId", "BoatId", booking.BoatId);
             return View(booking);
         }
 

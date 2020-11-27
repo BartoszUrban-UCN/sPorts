@@ -2,9 +2,7 @@
 
 @{
     ViewData["Title"] = "sPorts";
-    var discount = ViewData["Discount"];
     var marinaSpotDict = (Dictionary<Marina, IEnumerable<BookingLine>>)ViewData["MarinaBLineDict"];
-    var total = ViewData["Total"];
     var hasChanged = ViewData["BookingChange"];
 }
 
@@ -131,9 +129,7 @@
                     });
                 },
                 error: function (req, status, error) {
-                    //$("h2").text("Failed to confirm the spot.");
-                    //$("h2").show();
-                    //$("h2").fadeOut(1000);
+                    alert("Something went wrong.")
 
                 }
             });

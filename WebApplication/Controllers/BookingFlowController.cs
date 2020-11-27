@@ -110,8 +110,6 @@ namespace WebApplication.Controllers
             var spot3 = new Spot { SpotId = 4, Price = 3.3d, Marina = marina1, SpotNumber = 6 };
             var spot4 = new Spot { SpotId = 5, Price = 8.5d, Marina = marina2, SpotNumber = 1 };
 
-            ViewData["Discount"] = 10;
-
             var bookingLine = new BookingLine { StartDate = now, EndDate = then, Spot = spot };
             var bookingLine1 = new BookingLine { StartDate = now, EndDate = then, Spot = spot1 };
             var bookingLine2 = new BookingLine { StartDate = now, EndDate = then, Spot = spot2 };
@@ -148,10 +146,6 @@ namespace WebApplication.Controllers
             HttpContext.Session.Add<Booking>("Booking", booking1);
 
             var marinaBLineDict = new Dictionary<Marina, IEnumerable<BookingLine>>(_bookingService.FilterLinesByMarina(booking1));
-
-            var total = 0.0d;
-
-            ViewData["Total"] = total;
             ViewData["MarinaBLineDict"] = marinaBLineDict;
 
             return View("~/Views/Booking/ShoppingCart.cshtml", booking1);
