@@ -9,6 +9,10 @@ namespace WebApplication.BusinessLogic
     {
         List<BookingLine> CreateBookingLines(Dictionary<DateTime[], Spot> marinaSpotStayDates);
 
+        Dictionary<Marina, IEnumerable<BookingLine>> FilterLinesByMarina(Booking booking);
+
+        Task<Booking> SaveBooking(Booking booking);
+
         Task<BookingLine> GetBookingLine(int? id);
 
         Task<IEnumerable<BookingLine>> GetBookingLines(int? id);

@@ -38,17 +38,45 @@ namespace WebApplication.BusinessLogic
                 booking.PaymentStatus = "Not Paid";
                 booking.CreationDate = DateTime.Now;
                 booking.TotalPrice = totalPrice;
-
-                // store booking class & booking lines in the db
-                await StoreBookingInDb(booking);
-
-                // create pdf file with info about the booking
-                // send an email to boatOwner's email
-                // delete files create in CreateBookingPdfFile
-                await SendConfirmationMail(booking.BookingId);
             }
 
             return booking;
+        }
+
+        public async Task<Booking> SaveBooking(Booking booking)
+        {
+            // store booking class & booking lines in the db
+            await StoreBookingInDb(booking);
+            await Save();
+
+            // create pdf file with info about the booking
+            // send an email to boatOwner's email
+            // delete files create in CreateBookingPdfFile
+            await SendConfirmationMail(booking.BookingId);
+
+            return booking;
+        }
+
+        public Dictionary<Marina, IEnumerable<BookingLine>> FilterLinesByMarina(Booking booking)
+        {
+            var marinaBLineDict = new Dictionary<Marina, IEnumerable<BookingLine>>();
+
+            foreach (var bLine in booking.BookingLines)
+            {
+                var key = bLine.Spot.Marina;
+                var value = bLine;
+
+                if (!marinaBLineDict.ContainsKey(key))
+                {
+                    marinaBLineDict.Add(key: key, value: new List<BookingLine> { value });
+                }
+                else
+                {
+                    ((List<BookingLine>)marinaBLineDict[key]).Add(value);
+                }
+            }
+
+            return marinaBLineDict;
         }
 
         public double BookingCalculatePrice(List<BookingLine> bookingLines)
@@ -100,7 +128,7 @@ namespace WebApplication.BusinessLogic
                 _context.Bookings.Add(booking);
                 booking.BookingLines.ForEach(bl => _context.BookingLines.Add(bl));
 
-                await Save();
+                //await Save();
             }
             catch (Exception)
             {

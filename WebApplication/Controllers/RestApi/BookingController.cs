@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers.RestApi
@@ -110,6 +112,24 @@ namespace WebApplication.Controllers.RestApi
         {
             var success = await _bookingService.ConfirmSpotBooked(id);
             return success;
+        }
+
+        [HttpGet("/removebookingline")]
+        public async Task<ActionResult<Booking>> CartRemoveBookingLine(BookingLine bookingLine)
+        {
+            var booking = HttpContext.Session.Get<Booking>("Booking");
+            var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
+
+            //HttpContext.Session.Remove("Booking");
+            HttpContext.Session.Add<Booking>("Booking", newBooking);
+
+            return newBooking;
+        }
+
+        public async Task<IActionResult> ClearCart()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
     }
 }

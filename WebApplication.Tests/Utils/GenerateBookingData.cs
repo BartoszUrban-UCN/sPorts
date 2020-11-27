@@ -61,6 +61,7 @@ namespace WebApplication.Tests.Utils
                     booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
                     await bookingService.Create(booking);
+                    await bookingService.SaveBooking(booking);
                     return booking;
                 }
             }
@@ -87,6 +88,7 @@ namespace WebApplication.Tests.Utils
                     booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
                     await bookingService.Create(booking);
+                    await bookingService.SaveBooking(booking);
                     return booking;
                 }
             }
@@ -116,6 +118,7 @@ namespace WebApplication.Tests.Utils
                     booking.BookingLines = bookingService.CreateBookingLines(marinaSpotStayDates);
 
                     await bookingService.Create(booking);
+                    await bookingService.SaveBooking(booking);
                     return booking;
                 }
             }

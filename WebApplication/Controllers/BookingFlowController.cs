@@ -75,40 +75,40 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> ShoppingCart()
         {
             // explicit load needed??
-            var booking = HttpContext.Session.Get<Booking>("Booking");
-            var validBooking = _bookingService.ValidateShoppingCart(booking);
+            //var booking = HttpContext.Session.Get<Booking>("Booking");
+            //var validBooking = _bookingService.ValidateShoppingCart(booking);
 
-            bool hasChanged = false;
-            if (!validBooking.Equals(booking))
-            {
-                hasChanged = true;
-            }
+            //bool hasChanged = false;
+            //if (!validBooking.Equals(booking))
+            //{
+            //    hasChanged = true;
+            //}
 
-            ViewData["BookingChange"] = hasChanged;
+            //ViewData["BookingChange"] = hasChanged;
 
             var now = DateTime.Now;
             var then = now.AddDays(1);
 
-            var person = new Person{FirstName="Jonny", Email="jimmyjackson@gmail.com"};
-            var person1 = new Person{FirstName="Elton", Email="eltonjohn@gmail.com"};
+            var person = new Person { FirstName = "Jonny", Email = "jimmyjackson@gmail.com" };
+            var person1 = new Person { FirstName = "Elton", Email = "eltonjohn@gmail.com" };
 
-            var marinaOwner = new MarinaOwner{Person=person};
+            var marinaOwner = new MarinaOwner { Person = person };
 
-            var marina = new Marina{MarinaId=1, Name="Me gusta mucho", MarinaOwner=marinaOwner};
-            var marina1 = new Marina{MarinaId=2, Name="Aalborg Zoo", MarinaOwner=marinaOwner};
-            var marina2 =new Marina{MarinaId=3, Name="Underwater", MarinaOwner=marinaOwner};
-
-
-            var boatOwner = new BoatOwner{Person=person};
-
-            var boat = new Boat{Name="Mama Destroyer", BoatOwner=boatOwner};
+            var marina = new Marina { MarinaId = 1, Name = "Me gusta mucho", MarinaOwner = marinaOwner };
+            var marina1 = new Marina { MarinaId = 2, Name = "Aalborg Zoo", MarinaOwner = marinaOwner };
+            var marina2 = new Marina { MarinaId = 3, Name = "Underwater", MarinaOwner = marinaOwner };
 
 
-            var spot = new Spot{SpotId=1, Price=12.3d, Marina=marina};
-            var spot1 = new Spot{SpotId=2, Price=5.5d, Marina=marina};
-            var spot2 = new Spot{SpotId=3, Price=8.9d, Marina=marina};
-            var spot3 = new Spot{SpotId=4, Price=3.3d, Marina=marina1};
-            var spot4 = new Spot{SpotId=5, Price=8.5d, Marina=marina2};
+            var boatOwner = new BoatOwner { Person = person };
+
+            var boat = new Boat { Name = "Mama Destroyer", BoatOwner = boatOwner };
+
+
+            var spot = new Spot { SpotId = 1, Price = 12.3d, Marina = marina, SpotNumber = 5 };
+            var spot1 = new Spot { SpotId = 2, Price = 5.5d, Marina = marina, SpotNumber = 2 };
+            var spot2 = new Spot { SpotId = 3, Price = 8.9d, Marina = marina, SpotNumber = 3 };
+            var spot3 = new Spot { SpotId = 4, Price = 3.3d, Marina = marina1, SpotNumber = 6 };
+            var spot4 = new Spot { SpotId = 5, Price = 8.5d, Marina = marina2, SpotNumber = 1 };
 
             ViewData["Discount"] = 10;
 
@@ -118,50 +118,43 @@ namespace WebApplication.Controllers
             var bookingLine3 = new BookingLine { StartDate = now, EndDate = then, Spot = spot3 };
             var bookingLine4 = new BookingLine { StartDate = now, EndDate = then, Spot = spot4 };
 
+            bookingLine.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine.AppliedDiscounts = 0;
+            bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 
-            var booking1 = new Booking{BookingReferenceNo=2543, TotalPrice=300, PaymentStatus="Not Paid", Boat=boat, BookingLines=new List<BookingLine>{bookingLine, bookingLine1, bookingLine2, bookingLine3, bookingLine4}};
+            bookingLine1.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine1.AppliedDiscounts = 0;
+            bookingLine1.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 
-            var marinaBLineDict = new Dictionary<Marina, IEnumerable<BookingLine>>(); 
+            bookingLine2.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine2.AppliedDiscounts = 0;
+            bookingLine2.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
+
+            bookingLine3.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine3.AppliedDiscounts = 0;
+            bookingLine3.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
+
+            bookingLine4.OriginalTotalPrice = bookingLine.Spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine4.AppliedDiscounts = 0;
+            bookingLine4.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
+
+            var booking1 = new Booking
+            {
+                Boat = boat,
+                BookingLines = new List<BookingLine> { bookingLine, bookingLine1, bookingLine2, bookingLine3, bookingLine4 }
+            };
+
+            await _bookingService.Create(booking1);
+            HttpContext.Session.Add<Booking>("Booking", booking1);
+
+            var marinaBLineDict = new Dictionary<Marina, IEnumerable<BookingLine>>(_bookingService.FilterLinesByMarina(booking1));
 
             var total = 0.0d;
-
-            foreach(var bLine in booking1.BookingLines)
-            {   
-                var key = bLine.Spot.Marina;
-                var value = bLine;
-
-                if (!marinaBLineDict.ContainsKey(key))
-                {
-                    marinaBLineDict.Add(key: key, value: new List<BookingLine>{value});
-                }
-                else
-                {
-                    ((List<BookingLine>) marinaBLineDict[key]).Add(value);
-                }
-                total += bLine.DiscountedTotalPrice;
-            }
 
             ViewData["Total"] = total;
             ViewData["MarinaBLineDict"] = marinaBLineDict;
 
             return View("~/Views/Booking/ShoppingCart.cshtml", booking1);
-        }
-
-        public async Task<IActionResult> CartRemoveBookingLine(BookingLine bookingLine)
-        {
-            var booking = HttpContext.Session.Get<Booking>("Booking");
-            var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
-
-            //HttpContext.Session.Remove("Booking");
-            HttpContext.Session.Add<Booking>("Booking", newBooking);
-
-            return RedirectToAction("ShoppingCart");
-        }
-
-        public async Task<IActionResult> ClearCart()
-        {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index");
         }
     }
 }
