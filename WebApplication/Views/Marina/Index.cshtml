@@ -12,9 +12,7 @@
 
 @* Initialize map showing available and unavailable spots *@
 
-<div id="mapid" style="height: 600px; width: 700px"></div>
-<script src="~/js/leaflet_map.js"></script>
-<script>mymap.setView([56.2639, 9.5018], 7)</script>
+<partial name="MapDivPartial" />
 
 @* End of initialization *@
 
@@ -63,8 +61,8 @@
                 WebApplication.BusinessLogic.MarinaService.CalculateMarinaLocation(item);
             }
 
-            <tr>
-                <td>
+            <tr id="marina">
+                <td id="name" data-id="@item.MarinaId">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
@@ -82,40 +80,46 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.LocationId)
                 </td>
-                <td>
+                <td id="lat">
                     @Html.DisplayFor(modelItem => item.Location.Latitude)
                 </td>
-                <td>
+                <td id="long">
                     @Html.DisplayFor(modelItem => item.Location.Longitude)
                 </td>
-                <td>
+                <td id="radius">
                     @Html.DisplayFor(modelItem => item.Location.Radius)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.MarinaId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.MarinaId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.MarinaId">Delete</a>
-
-                    @if (item.Location != null)
-                    {
-                        <script>
-                            var marinaPopup = '\
-                                <div class="text-center" style="width: 100px">\
-                                    <p style="font-weight: bold">@item.Name</p>\
-                                    <a href="Marina/Details/@item.MarinaId" class="btn btn-primary text-white">Details</a>\
-                                </div>\
-                            ';
-
-                            L.circle([@item.Location.Latitude, @item.Location.Longitude], {
-                                color: 'pink',
-                                fillColor: '#f03',
-                                fillOpacity: 0.5,
-                                radius: @(item.Location.Radius * 1000),
-                            }).bindPopup(marinaPopup).openTooltip().addTo(mymap);
-                        </script>
-                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <partial name="_LeafletScriptsPartial" />
+    <script src="~/js/leaflet/map_marina.js"></script>
+    <script>
+        $("tr#marina").each(function () {
+            var name = $(this).find("#name").text().trim();
+            var id = $(this).find("#name").data("id");
+            var lat = $(this).find("td#lat").text().trim();
+            var long = $(this).find("td#long").text().trim();
+            var radius = $(this).find("td#radius").text().trim();
+
+            var marinaPopup = `\
+                <div class="text-center" style="width: 100px">\
+                    <p style="font-weight: bold">${name}</p>\
+                    <a href="Marina/Details/${id}" class="btn btn-primary text-white">Details</a>\
+                </div>\
+                `;
+
+            if (lat) {
+                renderCircle(lat, long, radius, mymap).bindPopup(marinaPopup);
+            }
+        });
+    </script>
+}

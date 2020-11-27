@@ -13,7 +13,7 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label" ></label>
+                <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -38,10 +38,7 @@
 
             @* Initialize Leaflet Map and set the view with Denmark's coordinates *@
 
-            <div id="mapid" style="height: 600px"></div>
-
-            <script src="~/js/leaflet_map.js"></script>
-            <script>mymap.setView([56.2639, 9.5018], 7)</script>
+            <partial name="MapDivPartial" />
 
             @* End of initialization *@
 
@@ -55,73 +52,8 @@
             </div>
             <div class="form-group">
                 <label asp-for="Location.Radius" class="control-label"></label>
-                <input id="location-radius" class="form-control" name="Radius" type="number" readonly/>
+                <input id="location-radius" class="form-control" name="Radius" type="number" readonly />
             </div>
-
-            @* JavaScript to be able to click on map, select a Location and read the coordinates *@
-
-            <script>
-                var marinaPopup = '\
-                    <div class="text-center" style="width: 200px">\
-                        <b>Selected Location</b>\
-                        <div style="display: flex; align-items: baseline; justify-content: space-evenly;">\
-                            <label class="control-label" style="padding-right: 10px;">Size</label>\
-                            <input id="popup-location-radius" class="form-control form-control-sm popup-input" type="number" style="margin: 10px 0px 10px 0px" placeholder="Radius" min="7"/>\
-                        </div>\
-                        <button type="button" class="btn btn-primary btn-sm" onclick=removeCircleMarker()>Remove</button>\
-                    </div>\
-                ';
-
-                var currentMarker = L.marker();
-                var currentCircleMarker = L.circle();
-
-                var latitude = document.getElementById("location-latitude");
-                var longitude = document.getElementById("location-longitude");
-                var radius = document.getElementById("location-radius");
-                var popupRadius;
-
-                function onMapClick(e) {
-                    currentCircleMarker
-                        .setLatLng(e.latlng)
-                        .setStyle({
-                            color: 'cadetblue',
-                            fillColor: 'aquamarine',
-                            fillOpacity: 0.5,
-                        })
-                        .addTo(mymap)
-                        .bindPopup(marinaPopup)
-                        .openPopup();
-
-                    latitude.value = e.latlng.lat;
-                    longitude.value = e.latlng.lng;
-
-                    popupRadius = document.getElementById("popup-location-radius");
-                    popupRadius.addEventListener('change', updateLocationRadius);
-                    popupRadius.addEventListener('input', updateLocationRadius);
-
-                    popupRadius.value = 10;
-
-                    updateLocationRadius();
-                }
-
-                function removeCircleMarker(e) {
-                    currentCircleMarker.removeFrom(mymap);
-
-                    latitude.value = null;
-                    longitude.value = null;
-                    radius.value = null;
-                }
-
-                function updateLocationRadius(e) {
-                    currentCircleMarker
-                        .setRadius(popupRadius.value * 1000);
-                    radius.value = popupRadius.value;
-                }
-
-                mymap.on('click', onMapClick);
-            </script>
-
-            @* End of JavaScript *@
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -135,5 +67,22 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_LeafletScriptsPartial" />
+
+    <script src="~/js/leaflet/map_marina.js"></script>
+
+    @* JavaScript to be able to click on map, select a Location and read the coordinates *@
+
+    <script>
+        var currentMarker = L.marker();
+        var currentCircleMarker = L.circle();
+
+        var latitude = $("#location-latitude");
+        var longitude = $("#location-longitude");
+        var radius = $("#location-radius");
+        var popupRadius;
+
+        mymap.on('click', onMapClick);
+    </script>
 }
