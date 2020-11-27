@@ -80,7 +80,7 @@ namespace WebApplication.Controllers.RestApi
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <returns>Booking in json format</returns>
-        [Produces("applicatoin/json")]
+        [Produces("application/json")]
         [HttpPost("createbookinglocally")]
         public async Task<ActionResult<Booking>> CreateBookingLocally(int boatId, int spotId, DateTime startDate, DateTime endDate)
         {
