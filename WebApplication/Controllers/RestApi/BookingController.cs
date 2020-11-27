@@ -78,13 +78,16 @@ namespace WebApplication.Controllers.RestApi
         /// </summary>
         /// <param name="boatId"></param>
         /// <param name="spotId"></param>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
         /// <returns>Booking in json format</returns>
         [Produces("application/json")]
         [HttpPost("createbookinglocally")]
-        public async Task<ActionResult<Booking>> CreateBookingLocally(int boatId, int spotId, DateTime startDate, DateTime endDate)
+        public async Task<ActionResult<Booking>> CreateBookingLocally(int boatId, int spotId, string start, string end)
         {
+            var startDate = DateTime.Parse(start);
+            var endDate = DateTime.Parse(end);
+
             // find boat & spot objects in db
             var boat = await _boatService.GetSingle(boatId);
             var spot = await _spotService.GetSingle(spotId);

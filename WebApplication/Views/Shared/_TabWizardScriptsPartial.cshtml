@@ -66,9 +66,19 @@
             }
             else if (n == 1) {
                 spotId = $("#selectedSpot").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("createbookinglocally", "api/booking").Replace("%2F", "/")' +
+                        `?boatId=${boatId}&spotId=${spotId}&start=${startDate}&end=${endDate}`,
+                    success: function (response) {
+
+                    },
+                    error: function () { }
+                });
             }
         }
-        // Booking Lines lineup tab
+        // Final tab
         else if (currentTab == 4) {
             if (n == -1) {
 

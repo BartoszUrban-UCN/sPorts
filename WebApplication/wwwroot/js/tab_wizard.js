@@ -6,6 +6,7 @@ var startDate = null;
 var endDate = null;
 var marinaId = null;
 var spotId = null;
+var booking = null;
 
 function clearAllCurrentData() {
     boatId = null;
@@ -13,6 +14,7 @@ function clearAllCurrentData() {
     endDate = null;
     marinaId = null;
     spotId = null;
+    booking = null;
 }
 
 function outputAllData() {
@@ -29,10 +31,17 @@ function showTab(n) {
     } else {
         document.getElementById("prevBtn").style.display = "inline";
     }
-    if (n == (x.length - 1)) {
-        document.getElementById("nextBtn").innerHTML = "Submit";
+
+    if (n == 2 || n == 3) {
+        document.getElementById("nextBtn").style.display = "none";
+    }
+    else if (n == (x.length - 1)) {
+        document.getElementById("nextBtn").innerHTML = "Go to cart";
+        document.getElementById("nextBtn").style.display = "inline";
+        document.getElementById("bookAgainBtn").style.display = "inline";
     } else {
         document.getElementById("nextBtn").innerHTML = "Next";
+        document.getElementById("nextBtn").style.display = "inline";
     }
 
     //... and run a function that will display the correct step indicator:
@@ -51,7 +60,7 @@ function updateTitle() {
         else if (currentTab == 3)
             $(this).html("Now... Which spot?");
         else if (currentTab == 4)
-            $(this).html("Your cart");
+            $(this).html("Spot successfuly added to cart!");
         $(this).fadeIn("fast");
     });
 }

@@ -52,6 +52,7 @@
 
                     <div style="overflow: auto;">
                         <button type="button" class="btn btn-secondary btn-lg" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+                        <button type="button" class="btn btn-outline-primary btn-lg" id="bookAgainBtn" onclick="bookAgain()" style="display: none">Book Another Spot</button>
                         <button type="button" class="btn btn-primary btn-lg" id="nextBtn" onclick="nextPrev(1)">Next</button>
                     </div>
                 </div>
@@ -93,14 +94,10 @@
                     </div>
                 </div>
 
-                <!-- Booking Line list; Now the user can finish the order, have more booking lines for the same boat or cancel
+                <!-- Final page; Now the user can see the cart, have more booking lines for the same boat or cancel
                      At this point the Booking is added to the cart; -->
                 <div class="tab-wizard">
-                    <h2>Booking Line List</h2>
-
-                    <button>Make some more reservations</button>
-                    <button>Finish and place the booking</button>
-                    <button>Cancel the bookin</button>
+                    
                 </div>
             </div>
         </div>
