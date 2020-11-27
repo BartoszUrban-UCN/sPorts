@@ -15,9 +15,9 @@ function initMap(mapid) {
 		accessToken: 'pk.eyJ1IjoiemFja2Zyb3N0IiwiYSI6ImNraGRncmF2dTA1cDcyc2w2dGhua3RwOHoifQ.NKvsgUWbNOT14E-72mHn0w'
 	}).addTo(mymap);
 
-	var unavailableMarkerIcon = new L.Icon.Default();
-	unavailableMarkerIcon.options.iconUrl = "marker-icon-unavailable.png";
-	unavailableMarkerIcon.options.iconRetinaUrl = "marker-icon-unavailable-2x.png";
+	this.unavailableSpotIcon = new L.Icon.Default();
+	unavailableSpotIcon.options.iconUrl = "marker-icon-unavailable.png";
+	unavailableSpotIcon.options.iconRetinaUrl = "marker-icon-unavailable-2x.png";
 
 	return mymap;
 }

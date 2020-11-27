@@ -6,7 +6,7 @@ function renderSpotMarker(lat, long, available) {
     if (!lat || !long) {
         return L.marker();
     }
-    return renderMarker(lat, long, mymap, !available)
+    return renderMarker(lat, long, mymap, available)
 }
 
 function onMapClick(e) {

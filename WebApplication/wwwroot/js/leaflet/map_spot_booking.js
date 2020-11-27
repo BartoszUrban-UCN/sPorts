@@ -28,5 +28,5 @@ function spotBookingPrompt(spot, available) {
         </div>\
     `;
 
-    renderMarkerLocation(spot.Location, spotMarkers, !available).bindPopup(spotPopup);
+    renderMarkerLocation(spot.Location, spotMarkers, available).bindPopup(spotPopup);
 }
