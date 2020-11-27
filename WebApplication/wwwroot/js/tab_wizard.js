@@ -33,19 +33,21 @@ function showTab(n) {
 
     //... and run a function that will display the correct step indicator:
     updateStepIndicator(n);
-    updateTitle(n);
+    updateTitle();
 }
 
-function updateTitle(n) {
+function updateTitle() {
     $("#dynamic-title").fadeOut("fast", function () {
-        if (n == 0)
+        if (currentTab == 0)
             $(this).html("Choose your boat");
-        else if (n == 1)
+        else if (currentTab == 1)
             $(this).html("Choose your booking's dates");
-        else if (n == 2)
+        else if (currentTab == 2)
             $(this).html("Which marina?");
-        else if (n == 3)
+        else if (currentTab == 3)
             $(this).html("Now... Which spot?");
+        else if (currentTab == 4)
+            $(this).html("Your cart");
         $(this).fadeIn("fast");
     });
 }
@@ -72,6 +74,22 @@ function fireFunction(n) {
         }
         else if (n == 1) {
             
+        }
+    }
+    else if (currentTab == 3) {
+        if (n == -1) {
+
+        }
+        else if (n == 1) {
+
+        }
+    }
+    else if (currentTab == 4) {
+        if (n == -1) {
+
+        }
+        else if (n == 1) {
+
         }
     }
 

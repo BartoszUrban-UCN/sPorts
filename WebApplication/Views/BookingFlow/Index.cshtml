@@ -38,7 +38,7 @@
 <form asp-action="Index" id="booking">
     <div class="container">
         <div class="row justify-content-md-center">
-            <div class="row-cols-lg" style="width: 30rem">
+            <div class="row-cols-lg" style="width: 65%">
 
                 <!-- Circles which indicates the steps of the form; Buttons for next and previous page -->
                 <div style="margin:25px 0px; display: flex; align-items: baseline; justify-content: space-between;">
@@ -84,11 +84,11 @@
                         @{
                             await Html.RenderPartialAsync("MarinaMapPromptPartial");
                         }
-                        <input class="form-control" id="selectedMarina" required readonly />
+                        <input class="form-control" id="selectedMarina" required readonly hidden />
 
                     </div>
                 </div>
-                <div class="tab-content tab-wizard" id="step4">
+                <div class="tab-wizard">
                     <div class="form-group">
                         @{
                             await Html.RenderPartialAsync("SpotMapPromptPartial");
