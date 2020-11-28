@@ -46,12 +46,12 @@ namespace WebApplication.Controllers
         }
 
         // GET: Payment/Create
-        public async Task<IActionResult> Create(Booking booking)
+        public async Task<IActionResult> CreateFromBooking(Booking booking)
         {
 
-            var payment = await _paymentService.Create(booking);
-            
-            return View(payment);
+            var payment= await _paymentService.CreateFromBooking(booking);
+
+            return View("", payment);
         }
 
 
@@ -102,7 +102,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,IncomingPaymentReference,IncomingPaymentStatus,InvoiceStatus")] Payment payment)
         {
-            if (id != payment.Id)
+            if (id != payment.PaymentId)
             {
                 return NotFound();
             }

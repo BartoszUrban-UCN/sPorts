@@ -8,13 +8,12 @@
 
 <p>
     <a asp-action="Create">Create New</a>
-    <a asp-action="Create" asp-route="@url"></a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
+                @Html.DisplayNameFor(model => model.PaymentId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Amount)
@@ -53,9 +52,9 @@
                 @Html.DisplayFor(modelItem => item.InvoiceStatus)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.PaymentId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PaymentId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PaymentId">Delete</a>
             </td>
         </tr>
 }

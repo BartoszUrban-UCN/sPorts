@@ -8,7 +8,7 @@ namespace WebApplication.BusinessLogic.Interfaces
 {
     public interface IPaymentService: ICRUD<Payment>
     {
-        Task<Payment> Create(Booking booking);
+        Task<Payment> CreateFromBooking(Booking booking);
         Task<Payment> StartPayment(Payment payment);
     }
 }

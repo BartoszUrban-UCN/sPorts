@@ -14,15 +14,12 @@ namespace WebApplication.BusinessLogic
     {
         public PaymentService(SportsContext context) : base(context)
         { }
-        public async Task<Payment> Create(Booking booking)
+        public async Task<Payment> CreateFromBooking(Booking booking)
         {
             booking.ThrowIfNull();
             Payment payment = new Payment();
             payment.BookingId = booking.BookingId;
             payment.Amount = booking.TotalPrice;
-
-
-            await _context.AddAsync(payment);
 
             return payment;
         }
