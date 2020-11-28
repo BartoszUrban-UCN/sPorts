@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WebApplication.BusinessLogic.Interfaces;
 using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
@@ -27,6 +28,8 @@ namespace WebApplication.BusinessLogic
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IPDFService<Booking>, BookingPDFService>();
+
+            services.AddScoped<IPaymentService, PaymentService>();
         }
     }
 }

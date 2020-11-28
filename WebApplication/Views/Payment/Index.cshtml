@@ -1,0 +1,63 @@
+﻿@model IEnumerable<WebApplication.Models.Payment>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" asp-route="@url"></a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Booking)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IncomingPaymentReference)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IncomingPaymentStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvoiceStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Booking.BookingId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IncomingPaymentReference)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IncomingPaymentStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvoiceStatus)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
