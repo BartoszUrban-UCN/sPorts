@@ -72,19 +72,11 @@ namespace WebApplication.Controllers
             return new JsonResult(jsonString);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SubmitBooking(string serializedBooking)
-        {
-            //var booking = (Booking)JsonConvert.DeserializeObject(serializedBooking);
-
-            return RedirectToAction("ShoppingCart", "BookingFlow");
-        }
-
         public async Task<IActionResult> ShoppingCart()
         {
             // explicit load needed??
             //var booking = HttpContext.Session.Get<Booking>("Booking");
-            //await _bookingService.LoadObjectsInBooking(booking);
+            
             //var validBooking = _bookingService.ValidateShoppingCart(booking);
 
             //bool hasChanged = false;
@@ -130,14 +122,19 @@ namespace WebApplication.Controllers
             booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot3);
             booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot4);
 
-            await _bookingService.LoadObjectsInBooking(booking1);
+            //await _bookingService.LoadObjectsInBooking(booking1);
+
+            // booking initialization done
+
+            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            await _bookingService.LoadObjectsInBooking(sessionBooking);
 
             booking1.TotalPrice = Math.Round(booking1.TotalPrice, 2);
 
-            var marinaBLineDict = _bookingService.FilterLinesByMarina(booking1);
+            var marinaBLineDict = _bookingService.FilterLinesByMarina(sessionBooking);
             ViewData["MarinaBLineDict"] = marinaBLineDict;
 
-            return View(booking1);
+            return View(sessionBooking);
         }
     }
 }
