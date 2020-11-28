@@ -71,8 +71,7 @@ namespace WebApplication.BusinessLogic
         public async Task<Booking> SaveBooking(Booking booking)
         {
             // store booking class & booking lines in the db
-            // await StoreBookingInDb(booking);
-            await Create(booking);
+            await TrackBooking(booking);
             await Save();
 
             // create pdf file with info about the booking
@@ -83,12 +82,14 @@ namespace WebApplication.BusinessLogic
             return booking;
         }
 
-        public async Task<Booking> LoadObjectsInBooking(Booking booking)
+        public async Task<Booking> LoadSpots(Booking booking)
         {
-            foreach (var bl in booking.BookingLines)
+            booking.ThrowIfNull();
+
+            foreach (var bookingLine in booking.BookingLines)
             {
-                Spot spot = await _spotService.GetSingle(bl.SpotId);
-                bl.Spot = spot;
+                var spot = await _spotService.GetSingle(bookingLine.SpotId);
+                bookingLine.Spot = spot;
             }
 
             return booking;
@@ -185,10 +186,18 @@ namespace WebApplication.BusinessLogic
             booking.PaymentStatus = "Not Paid";
             booking.CreationDate = DateTime.Now;
 
-            await _context.AddAsync(booking);
-            booking.BookingLines.ForEach(bl => _context.BookingLines.AddAsync(bl));
-
             return booking.BookingId;
+        }
+
+        //
+        //  Was StoreBookingInDb
+        //
+        private async Task TrackBooking(Booking booking)
+        {
+            booking.ThrowIfNull();
+
+            await _context.AddAsync(booking);
+            booking.BookingLines.ForEach(async bl => await _context.BookingLines.AddAsync(bl));
         }
 
         public async Task<Booking> GetSingle(int? id)

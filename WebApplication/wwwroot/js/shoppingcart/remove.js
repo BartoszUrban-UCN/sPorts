@@ -1,28 +1,3 @@
-// $(document).ready(function() {
-//     $("input.removeBtn").click(function() {
-//         var bookingLine = $(this).attr("data-bookingLine")
-//         $.ajax({
-//             type: "GET",
-//             url: "/api/booking/removebookingline",
-//             data: { bookingLine: bookingLine },
-//             success: function(result) {
-//                 console.log(bookingLine);
-//                 $(".cartBookingLine").on('click', '.removeBtn', function() {
-//                     $(this).closest('.cartBookingLine').fadeOut(1000);
-//                 });
-//             },
-//             error: function(req, status, error) {
-//                 alert("Something went wrong.")
-
-//             }
-//         });
-//     })
-// })
-
-function success(bookingLineId) {
-    alert("It Worked for id bookingLineId!")
-}
-
 function error() {
     alert("Wtf maan")
 }
@@ -35,7 +10,7 @@ function removeButtonClicked() {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(bookingLineId),
-        success: success(bookingLineId),
+        success: () => location.reload(),
         error: error
     })
 }

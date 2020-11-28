@@ -106,11 +106,10 @@ namespace WebApplication.Controllers.RestApi
             // store booking object in the session
             // don't yet know whether you rewrite value if you add it with the same key or if it needs to be removed first
             //HttpContext.Session.Remove("Booking");
-            HttpContext.Session.Add<Booking>("Booking", booking);
+            HttpContext.Session.Add("Booking", booking);
 
             // hopefully serialization is not needed and returns booking in json format
             return Ok(booking);
-
         }
 
         /// <summary>
@@ -144,10 +143,10 @@ namespace WebApplication.Controllers.RestApi
             var bookingLine = await _bookingService.GetBookingLine(bookingLineId);
             
             var booking = HttpContext.Session.Get<Booking>("Booking");
-            var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
+            booking.BookingLines.RemoveAll(bookingLine => bookingLine.BookingLineId == bookingLineId);
 
-            HttpContext.Session.Add<Booking>("Booking", newBooking);
-            return newBooking;
+            HttpContext.Session.Add("Booking", booking);
+            return booking;
         }
 
         public async Task<IActionResult> ClearCart()

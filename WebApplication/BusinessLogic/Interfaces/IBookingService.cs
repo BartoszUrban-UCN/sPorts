@@ -9,7 +9,8 @@ namespace WebApplication.BusinessLogic
     {
         Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot);
 
-        Task<Booking> LoadObjectsInBooking(Booking booking);
+        Task<Booking> LoadSpots(Booking booking);
+
         Dictionary<Marina, IEnumerable<BookingLine>> FilterLinesByMarina(Booking booking);
 
         Task<Booking> SaveBooking(Booking booking);

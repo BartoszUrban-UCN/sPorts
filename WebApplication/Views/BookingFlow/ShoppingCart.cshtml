@@ -23,7 +23,7 @@
                 </div>
             </div>
         </div>
-        @if (marinaBLineDict.Count > 0)
+        @if (Model is not null && marinaBLineDict.Count > 0)
         {
             @foreach (var marinaBLinePair in marinaBLineDict)
             {

@@ -74,62 +74,17 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> ShoppingCart()
         {
-            // explicit load needed??
-            //var booking = HttpContext.Session.Get<Booking>("Booking");
-            
-            //var validBooking = _bookingService.ValidateShoppingCart(booking);
-
-            //bool hasChanged = false;
-            //if (!validBooking.Equals(booking))
-            //{
-            //    hasChanged = true;
-            //}
-
-            //ViewData["BookingChange"] = hasChanged;
-
-            var now = DateTime.Now;
-            var then = now.AddDays(1);
-
-            var person = new Person { FirstName = "Jonny", Email = "jimmyjackson@gmail.com" };
-            var person1 = new Person { FirstName = "Elton", Email = "eltonjohn@gmail.com" };
-
-            var marinaOwner = new MarinaOwner { Person = person };
-
-            var marina = new Marina { MarinaId = 1, Name = "Me gusta mucho", MarinaOwner = marinaOwner };
-            var marina1 = new Marina { MarinaId = 2, Name = "Aalborg Zoo", MarinaOwner = marinaOwner };
-            var marina2 = new Marina { MarinaId = 3, Name = "Underwater", MarinaOwner = marinaOwner };
-
-            var boatOwner = new BoatOwner { Person = person };
-
-            var boat = new Boat { Name = "Mama Destroyer", BoatOwner = boatOwner };
-
-            var spot = new Spot { SpotId = 1, Price = 12.3d, Marina = marina, SpotNumber = 5 };
-            var spot1 = new Spot { SpotId = 2, Price = 5.5d, Marina = marina, SpotNumber = 2 };
-            var spot2 = new Spot { SpotId = 3, Price = 8.9d, Marina = marina, SpotNumber = 3 };
-            var spot3 = new Spot { SpotId = 4, Price = 3.3d, Marina = marina1, SpotNumber = 6 };
-            var spot4 = new Spot { SpotId = 5, Price = 8.5d, Marina = marina2, SpotNumber = 1 };
-
-            var booking1 = new Booking
-            {
-                Boat = boat,
-            };
-
-            await _bookingService.Create(booking1);
-
-            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot);
-            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot1);
-            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot2);
-            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot3);
-            booking1 = _bookingService.CreateBookingLine(booking1, now, then, spot4);
-
-            //await _bookingService.LoadObjectsInBooking(booking1);
-
-            // booking initialization done
-
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
-            await _bookingService.LoadObjectsInBooking(sessionBooking);
+            if (sessionBooking == null)
+            {
+                HttpContext.Session.Add("Booking", new Booking());
+                sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            }
 
-            booking1.TotalPrice = Math.Round(booking1.TotalPrice, 2);
+            await _bookingService.LoadSpots(sessionBooking);
+            var validBooking = _bookingService.ValidateShoppingCart(sessionBooking);
+
+            sessionBooking.TotalPrice = Math.Round(sessionBooking.TotalPrice, 2);
 
             var marinaBLineDict = _bookingService.FilterLinesByMarina(sessionBooking);
             ViewData["MarinaBLineDict"] = marinaBLineDict;
