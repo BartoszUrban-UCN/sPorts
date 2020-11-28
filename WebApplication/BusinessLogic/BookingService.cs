@@ -24,15 +24,15 @@ namespace WebApplication.BusinessLogic
             _spotService = spotService;
         }
 
-        private async Task<Booking> CreateBooking(Booking booking)
-        {
-            // init booking
-            booking.BookingReferenceNo = new Random().Next(1, 1000);
-            booking.PaymentStatus = "Not Paid";
-            booking.CreationDate = DateTime.Now;
+        // private async Task<Booking> CreateBooking(Booking booking)
+        // {
+        //     // init booking
+        //     booking.BookingReferenceNo = new Random().Next(1, 1000);
+        //     booking.PaymentStatus = "Not Paid";
+        //     booking.CreationDate = DateTime.Now;
 
-            return booking;
-        }
+        //     return booking;
+        // }
 
         #region Create booking line based on data from the form
         public Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot)
@@ -71,7 +71,8 @@ namespace WebApplication.BusinessLogic
         public async Task<Booking> SaveBooking(Booking booking)
         {
             // store booking class & booking lines in the db
-            await StoreBookingInDb(booking);
+            // await StoreBookingInDb(booking);
+            await Create(booking);
             await Save();
 
             // create pdf file with info about the booking
@@ -128,20 +129,20 @@ namespace WebApplication.BusinessLogic
 
         #region Store booking class & associated booking lines in db
 
-        private async Task StoreBookingInDb(Booking booking)
-        {
-            try
-            {
-                _context.Bookings.Add(booking);
-                booking.BookingLines.ForEach(bl => _context.BookingLines.Add(bl));
+        // private async Task StoreBookingInDb(Booking booking)
+        // {
+        //     try
+        //     {
+        //         _context.Bookings.Add(booking);
+        //         booking.BookingLines.ForEach(bl => _context.BookingLines.Add(bl));
 
-                //await Save();
-            }
-            catch (Exception)
-            {
-                throw new BusinessException("Booking", "Something went wrong when creating your booking. Please try again. If problem persists please contact our techincal service."); ;
-            }
-        }
+        //         //await Save();
+        //     }
+        //     catch (Exception)
+        //     {
+        //         throw new BusinessException("Booking", "Something went wrong when creating your booking. Please try again. If problem persists please contact our techincal service."); ;
+        //     }
+        // }
 
         #endregion Store booking class & associated booking lines in db
 
@@ -178,7 +179,14 @@ namespace WebApplication.BusinessLogic
 
         public async Task<int> Create(Booking booking)
         {
-            await CreateBooking(booking);
+            booking.ThrowIfNull();
+
+            booking.BookingReferenceNo = new Random().Next(1, 1000);
+            booking.PaymentStatus = "Not Paid";
+            booking.CreationDate = DateTime.Now;
+
+            await _context.AddAsync(booking);
+            booking.BookingLines.ForEach(bl => _context.BookingLines.AddAsync(bl));
 
             return booking.BookingId;
         }

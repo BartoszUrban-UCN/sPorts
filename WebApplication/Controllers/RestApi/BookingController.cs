@@ -137,34 +137,6 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
-        //[HttpPost("removebookingline")]
-        //public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] BookingLine bookingLine)
-        //{
-        // [HttpPost("removebookingline")]
-        // public async Task<ActionResult<Booking>> CartRemoveBookingLine(string data)
-        // {
-        //     BookingLine bookingLine = JsonConvert.DeserializeObject<BookingLine>(data);
-        //     var booking = HttpContext.Session.Get<Booking>("Booking");
-        //     var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
-
-        //     //HttpContext.Session.Remove("Booking");
-        //     HttpContext.Session.Add<Booking>("Booking", newBooking);
-
-        //     return newBooking;
-        // }
-        //    // [HttpPost("removebookingline")]
-        //    // public async Task<ActionResult<Booking>> CartRemoveBookingLine(string data)
-        //    // {
-        //    //     BookingLine bookingLine = JsonConvert.DeserializeObject<BookingLine>(data);
-        //    //     var booking = HttpContext.Session.Get<Booking>("Booking");
-        //    //     var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
-
-        //    //     //HttpContext.Session.Remove("Booking");
-        //    //     HttpContext.Session.Add<Booking>("Booking", newBooking);
-
-        //    //     return newBooking;
-        //    // 
-        //}
 
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] int bookingLineId)
@@ -177,12 +149,6 @@ namespace WebApplication.Controllers.RestApi
             HttpContext.Session.Add<Booking>("Booking", newBooking);
             return newBooking;
         }
-
-        //[HttpDelete]
-        //public async Task<Booking> CartRemoveAllBookingLines()
-        //{
-
-        //}
 
         public async Task<IActionResult> ClearCart()
         {
