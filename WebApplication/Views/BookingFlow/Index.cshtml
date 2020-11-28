@@ -20,14 +20,14 @@
             transition: opacity 0.4s;
         }
 
-            .step.active {
-                opacity: 1;
-            }
+        .step.active {
+            opacity: 1;
+        }
 
-            /* Mark the steps that are finished and valid: */
-            .step.finish {
-                background-color: #2780e3;
-            }
+        /* Mark the steps that are finished and valid: */
+        .step.finish {
+            background-color: #2780e3;
+        }
     </style>
 }
 
@@ -52,7 +52,6 @@
 
                     <div style="overflow: auto;">
                         <button type="button" class="btn btn-secondary btn-lg" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                        <button type="button" class="btn btn-outline-primary btn-lg" id="bookAgainBtn" onclick="bookAgain()" style="display: none">Book Another Spot</button>
                         <button type="button" class="btn btn-primary btn-lg" id="nextBtn" onclick="nextPrev(1)">Next</button>
                     </div>
                 </div>
@@ -97,7 +96,18 @@
                 <!-- Final page; Now the user can see the cart, have more booking lines for the same boat or cancel
                      At this point the Booking is added to the cart; -->
                 <div class="tab-wizard">
-                    
+                    <div style="display: flex; flex-direction: column;">
+
+                        <div style="margin-bottom: 25px;">
+                            <button class="btn btn-outline-primary btn-lg" asp-action="ShoppingCart" style="float: right;">Go to Cart</button>
+                        </div>
+
+                        <div>
+                            <!-- Cancel booking has to erase the session information -->
+                            <button class="btn btn-outline-danger btn-lg" asp-controller="Home" asp-action="Index" style="float: right;">Cancel Booking</button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>

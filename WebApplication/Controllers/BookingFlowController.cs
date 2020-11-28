@@ -72,6 +72,14 @@ namespace WebApplication.Controllers
             return new JsonResult(jsonString);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SubmitBooking(string serializedBooking)
+        {
+            //var booking = (Booking)JsonConvert.DeserializeObject(serializedBooking);
+
+            return RedirectToAction("ShoppingCart", "BookingFlow");
+        }
+
         public async Task<IActionResult> ShoppingCart()
         {
             // explicit load needed??

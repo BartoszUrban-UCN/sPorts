@@ -8,13 +8,11 @@ var marinaId = null;
 var spotId = null;
 var booking = null;
 
-function clearAllCurrentData() {
-    boatId = null;
+function clearForAddAnotherSpot() {
     startDate = null;
     endDate = null;
     marinaId = null;
     spotId = null;
-    booking = null;
 }
 
 function outputAllData() {
@@ -35,7 +33,7 @@ function showTab(n) {
     if (n == 2 || n == 3) {
         document.getElementById("nextBtn").style.display = "none";
     } else if (n == (x.length - 1)) {
-        document.getElementById("nextBtn").innerHTML = "Go to cart";
+        document.getElementById("nextBtn").innerHTML = "Choose more dates";
         document.getElementById("nextBtn").style.display = "inline";
     } else {
         document.getElementById("nextBtn").innerHTML = "Next";
@@ -72,11 +70,14 @@ function nextPrev(n) {
     fireFunction(n);
     // Hide the current tab:
     x[currentTab].style.display = "none";
-    // Increase or decrease the current tab by 1:
+
     currentTab = currentTab + n;
-    // if you have reached the end of the form...
+    // If you have reached the end of the form and want to add more dates
     if (currentTab >= x.length) {
-        // ... the form gets submitted in the custom partial functions
+        clearForAddAnotherSpot();
+        currentTab = 1;
+        fireFunction(currentTab);
+        showTab(currentTab);
         return false;
     }
     // Otherwise, display the correct tab:

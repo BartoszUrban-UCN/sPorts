@@ -76,6 +76,7 @@
                     url: '@Url.Action("createbookinglocally", "api/booking").Replace("%2F", "/")' +
                         `?boatId=${boatId}&spotId=${spotId}&start=${startDate}&end=${endDate}`,
                     success: function (response) {
+                        booking = response;
                         console.log(response);
                     },
                     error: function () { }
@@ -85,10 +86,10 @@
         // Final tab
         else if (currentTab == 4) {
             if (n == -1) {
-
+                // Remove the latest created booking line
             }
             else if (n == 1) {
-
+                // The logic is in the tab_wizard.js
             }
         }
 
