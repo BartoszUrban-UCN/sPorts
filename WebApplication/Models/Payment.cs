@@ -8,7 +8,7 @@ namespace WebApplication.Models
 {
     public class Payment
     {
-        public int Id { get; set; }
+        public int PaymentId { get; set; }
         [Required]
         public double Amount { get; set; }
         [Required]

@@ -33,7 +33,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.AddAsync(payment);
 
-            return payment.Id;
+            return payment.PaymentId;
         }
 
         public async Task Delete(int? id)
@@ -45,7 +45,7 @@ namespace WebApplication.BusinessLogic
         public Task<bool> Exists(int? id)
         {
             id.ThrowIfInvalidId();
-            return _context.Payments.AnyAsync(p => p.Id == id);
+            return _context.Payments.AnyAsync(p => p.PaymentId == id);
         }
 
         public async Task<IEnumerable<Payment>> GetAll()
@@ -62,7 +62,7 @@ namespace WebApplication.BusinessLogic
 
             var payment = await _context.Payments
                 .Include(p => p.BookingId)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.PaymentId == id);
 
             payment.ThrowIfNull();
 
