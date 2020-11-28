@@ -1,7 +1,9 @@
 ﻿@model WebApplication.Models.Payment
 
+
 @{
     ViewData["Title"] = "Create";
+    var bookingId = ViewData["BookingId"];
 }
 
 <h1>Create</h1>
@@ -19,8 +21,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="BookingId" class="control-label"></label>
-                <select asp-for="BookingId" class ="form-control" asp-items="ViewBag.BookingId"></select>
+                <Lable asp-for="BookingId" class="control-label">@bookingId</Lable>
             </div>
+            <div></div>
             <div class="form-group">
                 <label asp-for="IncomingPaymentReference" class="control-label"></label>
                 <input asp-for="IncomingPaymentReference" class="form-control" />

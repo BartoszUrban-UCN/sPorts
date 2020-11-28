@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Interfaces;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -46,12 +48,17 @@ namespace WebApplication.Controllers
         }
 
         // GET: Payment/Create
-        public async Task<IActionResult> CreateFromBooking(Booking booking)
+        public async Task<IActionResult> CreateFromBooking()
         {
-
+            //Session 
+            //var booking = HttpContext.Session.Get<Booking>("Booking");
+            
+            //Mocking abooking untill Session work 
+            var booking = _context.Bookings.Find(1);        
+            
             var payment= await _paymentService.CreateFromBooking(booking);
-
-            return View("", payment);
+            ViewData["BookingId"] = booking.BookingId;
+            return View("~/Views/Payment/Create.cshtml", payment);
         }
 
 
