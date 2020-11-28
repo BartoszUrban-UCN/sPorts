@@ -11,7 +11,11 @@
     function fireFunction(n) {
         // Select boat tab
         if (currentTab == 0) {
-            if (n == 1) {
+            if (n == -1) {
+                alert("No tricky stuff, thank you");
+                currentTab++;
+            }
+            else if (n == 1) {
                 boatId = $("#boat-select").val();
             }
         }
@@ -72,7 +76,7 @@
                     url: '@Url.Action("createbookinglocally", "api/booking").Replace("%2F", "/")' +
                         `?boatId=${boatId}&spotId=${spotId}&start=${startDate}&end=${endDate}`,
                     success: function (response) {
-
+                        console.log(response);
                     },
                     error: function () { }
                 });

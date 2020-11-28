@@ -34,11 +34,9 @@ function showTab(n) {
 
     if (n == 2 || n == 3) {
         document.getElementById("nextBtn").style.display = "none";
-    }
-    else if (n == (x.length - 1)) {
+    } else if (n == (x.length - 1)) {
         document.getElementById("nextBtn").innerHTML = "Go to cart";
         document.getElementById("nextBtn").style.display = "inline";
-        document.getElementById("bookAgainBtn").style.display = "inline";
     } else {
         document.getElementById("nextBtn").innerHTML = "Next";
         document.getElementById("nextBtn").style.display = "inline";
@@ -78,8 +76,7 @@ function nextPrev(n) {
     currentTab = currentTab + n;
     // if you have reached the end of the form...
     if (currentTab >= x.length) {
-        // ... the form gets submitted:
-        document.getElementById("regForm").submit();
+        // ... the form gets submitted in the custom partial functions
         return false;
     }
     // Otherwise, display the correct tab:

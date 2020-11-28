@@ -140,7 +140,6 @@ namespace WebApplication.Controllers.RestApi
         //[HttpPost("removebookingline")]
         //public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] BookingLine bookingLine)
         //{
-<<<<<<< Updated upstream
         // [HttpPost("removebookingline")]
         // public async Task<ActionResult<Booking>> CartRemoveBookingLine(string data)
         // {
@@ -153,7 +152,6 @@ namespace WebApplication.Controllers.RestApi
 
         //     return newBooking;
         // }
-=======
         //    // [HttpPost("removebookingline")]
         //    // public async Task<ActionResult<Booking>> CartRemoveBookingLine(string data)
         //    // {
@@ -167,7 +165,6 @@ namespace WebApplication.Controllers.RestApi
         //    //     return newBooking;
         //    // 
         //}
->>>>>>> Stashed changes
 
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] int bookingLineId)
