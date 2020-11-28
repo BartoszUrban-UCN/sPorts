@@ -140,7 +140,8 @@ namespace WebApplication.Controllers.RestApi
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] int bookingLineId)
         {
-            var bookingLine = await _bookingService.GetBookingLine(bookingLineId);
+            // this won't get the right bookingLine cause you have bookingLine.BookingLineId = spotId
+            //var bookingLine = await _bookingService.GetBookingLine(bookingLineId);
 
             var booking = HttpContext.Session.Get<Booking>("Booking");
             booking.BookingLines.RemoveAll(bookingLine => bookingLine.BookingLineId == bookingLineId);
