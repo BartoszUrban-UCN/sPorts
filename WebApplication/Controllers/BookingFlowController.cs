@@ -77,7 +77,7 @@ namespace WebApplication.Controllers
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             if (sessionBooking == null)
             {
-                HttpContext.Session.Add("Booking", new Booking());
+                HttpContext.Session.Set("Booking", new Booking());
                 sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             }
 

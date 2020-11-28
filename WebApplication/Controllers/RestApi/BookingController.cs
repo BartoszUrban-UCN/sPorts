@@ -45,13 +45,15 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet("{id}")]
         public async Task<ActionResult<Booking>> Booking(int id)
         {
-            var booking = await _bookingService.GetSingle(id);
-
-            if (booking != null)
+            try
             {
+                var booking = await _bookingService.GetSingle(id);
                 return Ok(booking);
             }
-            return NotFound();
+            catch (BusinessException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>
@@ -63,13 +65,15 @@ namespace WebApplication.Controllers.RestApi
         [HttpGet("{id}/lines")]
         public async Task<ActionResult<IEnumerable<Booking>>> BookingLines(int id)
         {
-            var booking = await _bookingService.GetSingle(id);
-
-            if (booking != null)
+            try
             {
+                var booking = await _bookingService.GetSingle(id);
                 return Ok(booking.BookingLines);
             }
-            return NotFound();
+            catch (BusinessException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>
@@ -106,7 +110,7 @@ namespace WebApplication.Controllers.RestApi
             // store booking object in the session
             // don't yet know whether you rewrite value if you add it with the same key or if it needs to be removed first
             //HttpContext.Session.Remove("Booking");
-            HttpContext.Session.Add("Booking", booking);
+            HttpContext.Session.Set("Booking", booking);
 
             // hopefully serialization is not needed and returns booking in json format
             return Ok(booking);
@@ -140,15 +144,12 @@ namespace WebApplication.Controllers.RestApi
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] int bookingLineId)
         {
-            // this won't get the right bookingLine cause you have bookingLine.BookingLineId = spotId
-            //var bookingLine = await _bookingService.GetBookingLine(bookingLineId);
-
             var booking = HttpContext.Session.Get<Booking>("Booking");
-            booking.BookingLines.RemoveAll(bookingLine => bookingLine.BookingLineId == bookingLineId);
-            booking.TotalPrice = _bookingService.BookingCalculatePrice(booking.BookingLines);
-            //booking = _bookingService.CartRemoveBookingLine(booking, bookingLineId);
 
-            HttpContext.Session.Add("Booking", booking);
+            booking = _bookingService.CartRemoveBookingLine(booking, bookingLineId);
+
+            HttpContext.Session.Set("Booking", booking);
+
             return booking;
         }
 

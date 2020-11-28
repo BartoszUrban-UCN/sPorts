@@ -29,9 +29,6 @@ namespace WebApplication.BusinessLogic
         {
             BookingLine bookingLine = new BookingLine
             {
-                //delete this
-                BookingLineId = spot.SpotId,
-                // delete this
                 SpotId = spot.SpotId,
                 StartDate = startDate,
                 EndDate = endDate,
@@ -89,19 +86,15 @@ namespace WebApplication.BusinessLogic
         {
             var marinaBLineDict = new Dictionary<Marina, IEnumerable<BookingLine>>();
 
-            foreach (var bLine in booking.BookingLines)
+            foreach (var bookingLine in booking.BookingLines)
             {
-                var key = bLine.Spot.Marina;
-                var value = bLine;
+                var key = bookingLine.Spot.Marina;
+                var value = bookingLine;
 
                 if (!marinaBLineDict.ContainsKey(key))
-                {
                     marinaBLineDict.Add(key: key, value: new List<BookingLine> { value });
-                }
                 else
-                {
                     ((List<BookingLine>)marinaBLineDict[key]).Add(value);
-                }
             }
 
             return marinaBLineDict;
@@ -140,13 +133,8 @@ namespace WebApplication.BusinessLogic
         {
             var booking = await GetSingle(id);
 
-            booking.BookingLines.ForEach(bookingLine =>
-            {
-                bookingLine.Ongoing = false;
-                _bookingLineService.Update(bookingLine);
-            });
-
-            await Save();
+            booking.BookingLines.ForEach(bookingLine => bookingLine.Ongoing = false);
+            _context.Update(booking);
         }
 
         public async Task<int> Create(Booking booking)
@@ -236,16 +224,17 @@ namespace WebApplication.BusinessLogic
         /// <returns>bool whether it has been successfully confirmed or not</returns>
         public async Task<bool> ConfirmSpotBooked(int bookingLineId)
         {
-            using (SportsContext context = _context)
-            {
-                BookingLine bookingLine = new BookingLine();
-                bookingLine = await _bookingLineService.GetSingle(bookingLineId);
-                bookingLine.Confirmed = true;
-                _bookingLineService.Update(bookingLine);
-                var success = await Save() > 0;
-                await SendConfirmationMail(bookingLine.BookingId);
-                return success;
-            }
+            var bookingLine = await _bookingLineService.GetSingle(bookingLineId);
+
+            bookingLine.Confirmed = true;
+            bookingLine.Ongoing = true;
+
+            _bookingLineService.Update(bookingLine);
+
+            var success = await Save() > 0;
+            await SendConfirmationMail(bookingLine.BookingId);
+
+            return success;
         }
         #endregion
 
@@ -255,8 +244,7 @@ namespace WebApplication.BusinessLogic
         /// </summary>
         private async Task SendConfirmationMail(int bookingId)
         {
-            Booking booking = new Booking();
-            booking = await GetSingle(bookingId);
+            var booking = await GetSingle(bookingId);
 
             _pdfService.CreatePDFFile(booking);
             SendEmail(bookingReference: booking.BookingReferenceNo);
@@ -293,17 +281,17 @@ namespace WebApplication.BusinessLogic
         /// <returns>Booking with valid spots</returns>
         public async Task<Booking> ValidateShoppingCart(Booking booking)
         {
+            booking.ThrowIfNull();
             // can remove item while iterating?
             // run time periodically on a new thread?? inform user once something has changed in the booking
-            IEnumerator<BookingLine> it = booking?.BookingLines.GetEnumerator();
-            while (it.MoveNext())
+            var iterator = booking.BookingLines.GetEnumerator();
+            while (iterator.MoveNext())
             {
-                var bookingLine = it.Current;
-                List<Spot> availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate));
+                var bookingLine = iterator.Current;
+                var availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate));
+
                 if (!availableSpots.Contains(bookingLine.Spot))
-                {
                     booking.BookingLines.Remove(bookingLine);
-                }
             }
 
             return booking;
@@ -319,6 +307,7 @@ namespace WebApplication.BusinessLogic
             booking?.BookingLines.RemoveAll(bl => bl.BookingId == bookingLineId);
             double totalPrice = BookingCalculatePrice(booking.BookingLines);
             booking.TotalPrice = totalPrice;
+
             return booking;
         }
         #endregion

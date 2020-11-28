@@ -5,7 +5,7 @@ namespace WebApplication.BusinessLogic.Shared
 {
     public static class SessionExtensions
     {
-        public static void Add<T>(this ISession iSession, string key, T data)
+        public static void Set<T>(this ISession iSession, string key, T data)
         {
             string serializedData = JsonConvert.SerializeObject(data);
             iSession.SetString(key, serializedData);

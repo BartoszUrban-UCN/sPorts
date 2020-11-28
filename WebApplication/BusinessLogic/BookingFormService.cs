@@ -11,8 +11,7 @@ namespace WebApplication.BusinessLogic
     public class BookingFormService : ServiceBase, IBookingFormService
     {
         public BookingFormService(SportsContext context) : base(context)
-        {
-        }
+        { }
 
         public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
         {
