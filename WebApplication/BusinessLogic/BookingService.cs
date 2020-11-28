@@ -24,16 +24,6 @@ namespace WebApplication.BusinessLogic
             _spotService = spotService;
         }
 
-        // private async Task<Booking> CreateBooking(Booking booking)
-        // {
-        //     // init booking
-        //     booking.BookingReferenceNo = new Random().Next(1, 1000);
-        //     booking.PaymentStatus = "Not Paid";
-        //     booking.CreationDate = DateTime.Now;
-
-        //     return booking;
-        // }
-
         #region Create booking line based on data from the form
         public Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot)
         {
@@ -59,8 +49,8 @@ namespace WebApplication.BusinessLogic
             }
             else
             {
-                double totalPrice = BookingCalculatePrice(booking.BookingLines);
                 booking.BookingLines.Add(bookingLine);
+                double totalPrice = BookingCalculatePrice(booking.BookingLines);
                 booking.TotalPrice = totalPrice;
             }
 
@@ -128,25 +118,6 @@ namespace WebApplication.BusinessLogic
             return totalPrice;
         }
 
-        #region Store booking class & associated booking lines in db
-
-        // private async Task StoreBookingInDb(Booking booking)
-        // {
-        //     try
-        //     {
-        //         _context.Bookings.Add(booking);
-        //         booking.BookingLines.ForEach(bl => _context.BookingLines.Add(bl));
-
-        //         //await Save();
-        //     }
-        //     catch (Exception)
-        //     {
-        //         throw new BusinessException("Booking", "Something went wrong when creating your booking. Please try again. If problem persists please contact our techincal service."); ;
-        //     }
-        // }
-
-        #endregion Store booking class & associated booking lines in db
-
         public async Task<IEnumerable<BookingLine>> GetBookingLines(int? id)
         {
             var booking = await GetSingle(id);
@@ -182,6 +153,7 @@ namespace WebApplication.BusinessLogic
         {
             booking.ThrowIfNull();
 
+            // init booking
             booking.BookingReferenceNo = new Random().Next(1, 1000);
             booking.PaymentStatus = "Not Paid";
             booking.CreationDate = DateTime.Now;
@@ -189,9 +161,6 @@ namespace WebApplication.BusinessLogic
             return booking.BookingId;
         }
 
-        //
-        //  Was StoreBookingInDb
-        //
         private async Task TrackBooking(Booking booking)
         {
             booking.ThrowIfNull();
@@ -330,7 +299,7 @@ namespace WebApplication.BusinessLogic
             while (it.MoveNext())
             {
                 var bookingLine = it.Current;
-                List<Spot> availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.Boat.BoatId, bookingLine.StartDate, bookingLine.EndDate));
+                List<Spot> availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate));
                 if (!availableSpots.Contains(bookingLine.Spot))
                 {
                     booking.BookingLines.Remove(bookingLine);
@@ -344,10 +313,12 @@ namespace WebApplication.BusinessLogic
         /// Remove booking line from the cart
         /// </summary>
         /// <param name="booking"></param>
-        /// <param name="bookingLine"></param>
-        public Booking CartRemoveBookingLine(Booking booking, BookingLine bookingLine)
+        /// <param name="bookingLineId"></param>
+        public Booking CartRemoveBookingLine(Booking booking, int bookingLineId)
         {
-            booking?.BookingLines.Remove(bookingLine);
+            booking?.BookingLines.RemoveAll(bl => bl.BookingId == bookingLineId);
+            double totalPrice = BookingCalculatePrice(booking.BookingLines);
+            booking.TotalPrice = totalPrice;
             return booking;
         }
         #endregion

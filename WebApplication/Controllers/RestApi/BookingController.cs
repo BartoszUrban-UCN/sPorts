@@ -141,9 +141,11 @@ namespace WebApplication.Controllers.RestApi
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] int bookingLineId)
         {
             var bookingLine = await _bookingService.GetBookingLine(bookingLineId);
-            
+
             var booking = HttpContext.Session.Get<Booking>("Booking");
             booking.BookingLines.RemoveAll(bookingLine => bookingLine.BookingLineId == bookingLineId);
+            booking.TotalPrice = _bookingService.BookingCalculatePrice(booking.BookingLines);
+            //booking = _bookingService.CartRemoveBookingLine(booking, bookingLineId);
 
             HttpContext.Session.Add("Booking", booking);
             return booking;

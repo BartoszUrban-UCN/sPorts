@@ -27,8 +27,10 @@ namespace WebApplication.BusinessLogic
 
         Task<Booking> ValidateShoppingCart(Booking booking);
 
-        Booking CartRemoveBookingLine(Booking booking, BookingLine bookingLine);
+        Booking CartRemoveBookingLine(Booking booking, int bookingLineId);
 
         Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
+
+        double BookingCalculatePrice(List<BookingLine> bookingLines);
     }
 }

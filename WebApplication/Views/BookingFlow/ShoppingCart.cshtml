@@ -61,7 +61,7 @@
                                             <h5>Total: </h5>
                                         </div>
                                         <div class="col">
-                                            <h5 class="text-right bg-light">DKK @bookingLine.OriginalTotalPrice</h5>
+                                            <h5 class="text-right bg-light">DKK @bookingLine.Spot.Price</h5>
                                             <br>
                                             <h5 class="text-center bg-light">@bookingLine.StartDate</h5>
                                             <h5 class="text-center bg-light">@bookingLine.EndDate</h5>
@@ -102,8 +102,8 @@
                         <h5 class="card-title">Discounts</h5>
                     </div>
                     <div class="col text-right" style="padding-left: 6rem;">
-                        <h5 class="card-text" id="Subtotal">0.00$</h5>
-                        <h5 class="card-text" id="Discounts">0.00$</h5>
+                        <h5 class="card-text" id="Subtotal">DKK @Model.TotalPrice</h5>
+                        <h5 class="card-text" id="Discounts">DKK 0.00</h5>
                     </div>
                 </div>
             </div>
@@ -117,7 +117,7 @@
                     </div>
                 </div>
                 <br>
-                <a asp-action ="CreateFromBooking" asp-controller="Payment" class="btn btn-block btn-lg text-center btn-success">Checkout (@Model.BookingLines.Count)</a>
+                <a asp-action="CreateFromBooking" asp-controller="Payment" class="btn btn-block btn-lg text-center btn-success">Checkout (@Model.BookingLines.Count)</a>
             </div>
         </div>
     </div>
