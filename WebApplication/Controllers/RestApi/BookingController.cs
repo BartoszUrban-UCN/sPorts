@@ -137,11 +137,9 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
-<<<<<<< Updated upstream
-        [HttpPost("removebookingline")]
-        public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] BookingLine bookingLine)
-        {
-=======
+        //[HttpPost("removebookingline")]
+        //public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] BookingLine bookingLine)
+        //{
         // [HttpPost("removebookingline")]
         // public async Task<ActionResult<Booking>> CartRemoveBookingLine(string data)
         // {
@@ -160,7 +158,6 @@ namespace WebApplication.Controllers.RestApi
         {
             var bookingLine = await _bookingService.GetBookingLine(bookingLineId);
             
->>>>>>> Stashed changes
             var booking = HttpContext.Session.Get<Booking>("Booking");
             var newBooking = _bookingService.CartRemoveBookingLine(booking, bookingLine);
 
@@ -168,11 +165,11 @@ namespace WebApplication.Controllers.RestApi
             return newBooking;
         }
 
-        [HttpDelete]
-        public async Task<Booking> CartRemoveAllBookingLines()
-        {
+        //[HttpDelete]
+        //public async Task<Booking> CartRemoveAllBookingLines()
+        //{
 
-        }
+        //}
 
         public async Task<IActionResult> ClearCart()
         {
