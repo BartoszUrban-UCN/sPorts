@@ -18,7 +18,7 @@ function showTab(n) {
     var x = document.getElementsByClassName("tab-wizard");
     x[n].style.display = "block";
     //... and fix the Previous/Next buttons:
-    if (n == 0) {
+    if (n == 0 || n == 4) {
         document.getElementById("prevBtn").style.display = "none";
     } else {
         document.getElementById("prevBtn").style.display = "inline";

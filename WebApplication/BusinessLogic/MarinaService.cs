@@ -144,6 +144,7 @@ namespace WebApplication.BusinessLogic
         public Marina Update(Marina marina)
         {
             marina.ThrowIfNull();
+
             _context.Update(marina);
 
             return marina;

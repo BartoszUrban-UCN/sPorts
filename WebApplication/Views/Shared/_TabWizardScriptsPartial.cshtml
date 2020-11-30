@@ -101,26 +101,52 @@
         if (currentTab == 0) {
             if (n == 1) {
                 // If we have already have a session
+                if (booking == null) booking = @Json.Serialize(ViewBag.SessionBooking);
                 // And the user selected another boat for the booking flow
-                if (booking != null && booking.boatId != $("#boat-select").val()) {
+                if (booking != null && booking.boatId != 0 && booking.boatId != $("#boat-select").val()) {
                     // Make sure the user wants to actually change the boat which will delete the whole session information
                     $("#prompt-modal-submit").attr("onclick", `rectifyData(${n}); nextPrev(${n});`);
+                    $("#exampleModal .modal-title").text("Warning");
+                    $("#exampleModal .modal-body").text("You already have a booking with another boat in the cart. Changing the boat now will remove all cart items. Are you sure you want to continue?");
+
                     $("#exampleModal").modal({ show: true });
                 } else {
                     nextPrev(n);
                 }
+            }
+        } else if (currentTab == 4) {
+            if (n === "cancel") {
+                $("#prompt-modal-submit").attr("onclick", "clearCart(); window.location.href = '/';");
+                $("#exampleModal .modal-title").text("Info");
+                $("#exampleModal .modal-body").text("Are you sure that you want to cancel your booking and remove all items from the cart?");
+
+                $("#exampleModal").modal({ show: true });
+            } else {
+                nextPrev(n);
             }
         } else {
             nextPrev(n);
         }
     }
 
+    // This function rectifies aka removes the information that is not valid anymore in the form
     function rectifyData(n) {
         if (currentTab == 0) {
             if (n == 1) {
-                booking = null;
+                clearCart();
             }
         }
+    }
+
+    function clearCart() {
+        $.ajax({
+            type: "DELETE",
+            url: '@Url.Action("ClearCart", "api/booking").Replace("%2F", "/")',
+            success: function (response) {
+                booking = response;
+            },
+            error: function () { }
+        });
     }
 
     function selectMarina(marinaId) {
@@ -139,18 +165,16 @@
 
 </script>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="modalLabel"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                ...
-            </div>
+            <div class="modal-body"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" id="prompt-modal-submit" class="btn btn-primary" data-dismiss="modal">Continue</button>

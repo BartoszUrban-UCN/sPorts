@@ -27,6 +27,8 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.Boat = new SelectList(await _boatService.GetAll(), "BoatId", "Name");
+            // Needed for user prompt when deciding to change important values in the booking
+            ViewBag.SessionBooking = HttpContext.Session.Get<Booking>("Booking");
 
             var booking = await _bookingFormService.CreateBooking();
 
