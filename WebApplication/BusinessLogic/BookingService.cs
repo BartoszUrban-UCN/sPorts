@@ -42,7 +42,7 @@ namespace WebApplication.BusinessLogic
             };
 
             // Just for testing
-            bookingLine.AppliedDiscounts = 10.0d;
+            bookingLine.AppliedDiscounts = 10.5d;
             // Just for testing
             bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 

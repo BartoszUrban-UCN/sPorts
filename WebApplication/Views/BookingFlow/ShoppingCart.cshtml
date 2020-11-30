@@ -5,7 +5,8 @@
     
     var marinaBLineDict = (Dictionary<Marina, IEnumerable<BookingLine>>)ViewData["MarinaBLineDict"];
     var hasChanged = ViewData["BookingChange"];
-    var appliedDiscounts = ViewData["AppliedDiscounts"];
+    var appliedDiscounts = (double)ViewData["AppliedDiscounts"];
+    var subtotal = Model.TotalPrice + appliedDiscounts;
     var nullOrEmpty = (Model is null || marinaBLineDict.Count < 1);
 }
 
@@ -38,7 +39,7 @@
                             <input type="checkbox" id="CheckBox">
                             <h5>@marinaBLinePair.Key.Name</h5>
                             <div class="text-right text-secondary" style="flex-grow: 1;">
-                                <a class="btn btn-outline-success removeAllBtn" pair="">Remove All</a>
+                                <a class="btn btn-outline-success removeAllBtn">Remove All</a>
                             </div>
                         </div>
                         @foreach (var bookingLine in marinaBLinePair.Value)
@@ -57,6 +58,7 @@
                                     <div class="row">
                                         <div class="col-6">
                                             <h5>Price per Day: </h5>
+                                            <h5>Discounts: </h5>
                                             <br>
                                             <h5>Starting Date: </h5>
                                             <h5>Ending Date: </h5>
@@ -66,6 +68,7 @@
                                         </div>
                                         <div class="col">
                                             <h5 class="text-right bg-light">DKK @bookingLine.Spot.Price</h5>
+                                            <h5 class="text-right bg-light">DKK @bookingLine.AppliedDiscounts</h5>
                                             <br>
                                             <h5 class="text-center bg-light">@bookingLine.StartDate</h5>
                                             <h5 class="text-center bg-light">@bookingLine.EndDate</h5>
@@ -104,11 +107,11 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        <h5 class="card-title">Subtotal</h5>
-                        <h5 class="card-title">Discounts</h5>
+                        <h5 class="card-title">Subtotal:</h5>
+                        <h5 class="card-title">Discounts:</h5>
                     </div>
                     <div class="col text-right" style="padding-left: 6rem;">
-                        <h5 class="card-text" id="Subtotal">DKK @Model.TotalPrice</h5>
+                        <h5 class="card-text" id="Subtotal">DKK @subtotal</h5>
                         <h5 class="card-text" id="Discounts">DKK @appliedDiscounts</h5>
                     </div>
                 </div>
@@ -116,7 +119,7 @@
             <div class="card-footer border-light bg-white">
                 <div class="row">
                     <div class="col">
-                        <h5 class="card-text font-weight-bold">Total</h5>
+                        <h5 class="card-text font-weight-bold">Total:</h5>
                     </div>
                     <div class="col text-right" style="padding-left: 4rem;">
                         <h4 class="card-text font-weight-bold" id="Total">DKK @Model.TotalPrice</h4>
