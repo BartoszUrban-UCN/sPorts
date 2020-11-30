@@ -77,7 +77,8 @@ namespace WebApplication.Controllers.RestApi
         }
 
         /// <summary>
-        /// Creates booking and bookingLine based on data from the wizard
+        /// Validates the information input once again
+        /// Creates or updates booking and bookingLine based on data from the wizard
         /// </summary>
         /// <param name="boatId"></param>
         /// <param name="spotId"></param>
@@ -96,16 +97,40 @@ namespace WebApplication.Controllers.RestApi
             var spot = await _spotService.GetSingle(spotId);
 
             // get booking from session if created before
-            // else init booking
             var booking = HttpContext.Session.Get<Booking>("Booking");
-            if (booking is null || booking.BookingReferenceNo == 0)
+
+            // Check whether booking is consistent, and if not, reinitialize
+            if (booking is null || booking.BookingReferenceNo == 0 || booking.BoatId != boatId)
             {
                 booking = new Booking { BoatId = boatId };
                 await _bookingService.Create(booking);
             }
 
-            // add bookingLine to the booking.BookingLines list
-            booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
+            // If the spot fits the boat
+            if (HelperMethods.DoesSpotFitBoat(boat, spot))
+            {
+                // And the selected dates are valid
+                if (HelperMethods.AreDatesValid(startDate, endDate))
+                {
+                    // Next 5 lines make sure that no dates overlap in the booking's booking lines
+                    // You cannot physically be in two places at the same time
+                    bool areBookingLinesDatesValid = true;
+
+                    foreach (BookingLine bookingLine in booking.BookingLines)
+                        if (HelperMethods.AreDatesIntersecting(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
+                        {
+                            areBookingLinesDatesValid = false;
+                        }
+                            
+                    // Finally, if all conditions are met
+                    if (areBookingLinesDatesValid)
+                    {
+                        // Add bookingLine to the booking lines inside the booking
+                        booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
+                    }
+                        
+                }
+            }
 
             // store booking object in the session
             // don't yet know whether you rewrite value if you add it with the same key or if it needs to be removed first

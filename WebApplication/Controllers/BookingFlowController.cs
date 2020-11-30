@@ -16,7 +16,7 @@ namespace WebApplication.Controllers
         private readonly IBoatService _boatService;
         private readonly IMarinaService _marinaService;
 
-        public BookingFlowController(IBookingFormService bookingFormService, IBookingService bookingService, IBoatService boatService, IMarinaService marinaService)
+        public BookingFlowController(IBookingFormService bookingFormService, IBookingService bookingService, IBoatService boatService, IMarinaService marinaService, ISpotService spotService)
         {
             _bookingFormService = bookingFormService;
             _bookingService = bookingService;
@@ -29,6 +29,7 @@ namespace WebApplication.Controllers
             ViewBag.Boat = new SelectList(await _boatService.GetAll(), "BoatId", "Name");
 
             var booking = await _bookingFormService.CreateBooking();
+
             return View(booking);
         }
 

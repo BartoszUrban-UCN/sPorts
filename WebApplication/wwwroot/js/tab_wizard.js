@@ -8,15 +8,9 @@ var marinaId = null;
 var spotId = null;
 var booking = null;
 
-function clearForAddAnotherSpot() {
-    startDate = null;
-    endDate = null;
-    marinaId = null;
-    spotId = null;
-}
-
 function outputAllData() {
     console.log(`Boat ID is: ${boatId}\nStart Date is: ${startDate}\nEnd Date is: ${endDate}\nSelected Marina is: ${marinaId}\nSelected Spot is: ${spotId}`);
+    console.log(booking);
 }
 
 // This function will display the specified tab of the form...
@@ -74,7 +68,6 @@ function nextPrev(n) {
     currentTab = currentTab + n;
     // If you have reached the end of the form and want to add more dates
     if (currentTab >= x.length) {
-        clearForAddAnotherSpot();
         currentTab = 1;
         fireFunction(currentTab);
         showTab(currentTab);
