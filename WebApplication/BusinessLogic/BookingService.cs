@@ -29,6 +29,8 @@ namespace WebApplication.BusinessLogic
         {
             BookingLine bookingLine = new BookingLine
             {
+                // solution for now
+                BookingLineId = spot.SpotId,
                 SpotId = spot.SpotId,
                 StartDate = startDate,
                 EndDate = endDate,
@@ -272,7 +274,7 @@ namespace WebApplication.BusinessLogic
         }
         #endregion
 
-        #region manage shoppping cart
+        #region Manage shoppping cart
         /// <summary>
         /// Check whether spots in the cart has not been booked by someone else
         /// If booked by someone else remove them from booking
@@ -304,9 +306,10 @@ namespace WebApplication.BusinessLogic
         /// <param name="bookingLineId"></param>
         public Booking CartRemoveBookingLine(Booking booking, int bookingLineId)
         {
-            booking?.BookingLines.RemoveAll(bl => bl.BookingId == bookingLineId);
+            booking?.BookingLines.RemoveAll(bl => bl.BookingLineId == bookingLineId);
             double totalPrice = BookingCalculatePrice(booking.BookingLines);
             booking.TotalPrice = totalPrice;
+            booking.BookingLines = new List<BookingLine>(booking.BookingLines);
 
             return booking;
         }

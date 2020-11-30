@@ -15,6 +15,17 @@ function removeButtonClicked() {
     })
 }
 
+function clearCartButtonClicked() {
+    $.ajax({
+        type: "Delete",
+        url: "/api/booking/ClearCart",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: () => location.reload(),
+        error: error
+    })
+}
+
 function removeAllButtonClicked() {
     var bookingLineIds = $(this).attr("name")
 }
@@ -23,4 +34,6 @@ $(function() {
     $("a.removeBtn").on("click", removeButtonClicked)
 
     $("a.removeAllBtn").on("click", removeAllButtonClicked)
+
+    $("a.clearCartBtn").on("click", clearCartButtonClicked)
 })

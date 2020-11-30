@@ -98,7 +98,7 @@ namespace WebApplication.Controllers.RestApi
             // get booking from session if created before
             // else init booking
             var booking = HttpContext.Session.Get<Booking>("Booking");
-            if (booking is null)
+            if (booking is null || booking.BookingReferenceNo == 0)
             {
                 booking = new Booking { BoatId = boatId };
                 await _bookingService.Create(booking);
@@ -153,10 +153,12 @@ namespace WebApplication.Controllers.RestApi
             return booking;
         }
 
-        public async Task<IActionResult> ClearCart()
+        [HttpDelete("ClearCart")]
+        public async Task<ActionResult<Booking>> ClearCart()
         {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index");
+            HttpContext.Session.Set("Booking", new Booking());
+            var booking = HttpContext.Session.Get<Booking>("Booking");
+            return booking;
         }
     }
 }
