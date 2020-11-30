@@ -26,7 +26,7 @@ namespace WebApplication.Tests.BusinessLogic
 
                 
                 // Act
-                var payment = paymentService.Create(booking);
+                var payment = paymentService.CreateFromBooking(booking);
 
 
                 // Assert
@@ -44,7 +44,7 @@ namespace WebApplication.Tests.BusinessLogic
                 var booking = new Booking();
                 booking.TotalPrice = 100;
                 var paymentService = new PaymentService(context);
-                var payment = paymentService.Create(booking);
+                var payment = paymentService.CreateFromBooking(booking);
 
                 //Act
 

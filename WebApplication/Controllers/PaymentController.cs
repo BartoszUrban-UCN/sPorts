@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApplication.BusinessLogic;
-using WebApplication.BusinessLogic.Interfaces;
-using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -18,88 +14,76 @@ namespace WebApplication.Controllers
     {
         private readonly SportsContext _context;
 
-        private readonly IPaymentService _paymentService;
-
-        public PaymentController(SportsContext context,IPaymentService paymentService)
+        public PaymentController(SportsContext context)
         {
             _context = context;
-            _paymentService = paymentService;
         }
 
         // GET: Payment
         public async Task<IActionResult> Index()
         {
-            var result = await _paymentService.GetAll();
-            return View(result);
+            var sportsContext = _context.Payments.Include(p => p.Booking);
+            return View(await sportsContext.ToListAsync());
         }
 
         // GET: Payment/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            try
+            if (id == null)
             {
-                var payment = await _paymentService.GetSingle(id);
-                return View(payment);
+                return NotFound();
             }
-            catch (BusinessException)
+
+            var payment = await _context.Payments
+                .Include(p => p.Booking)
+                .FirstOrDefaultAsync(m => m.PaymentId == id);
+            if (payment == null)
             {
-                return View("Error");
+                return NotFound();
             }
+
+            return View(payment);
         }
 
         // GET: Payment/Create
-        public async Task<IActionResult> CreateFromBooking()
+        public IActionResult Create()
         {
-            //Session 
-            //var booking = HttpContext.Session.Get<Booking>("Booking");
-            
-            //Mocking abooking untill Session work 
-            var booking = _context.Bookings.Find(1);        
-            
-            var payment= await _paymentService.CreateFromBooking(booking);
-            ViewData["BookingId"] = booking.BookingId;
-            return View("~/Views/Payment/Create.cshtml", payment);
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId");
+            return View();
         }
-
 
         // POST: Payment/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Amount,IncomingPaymentReference,IncomingPaymentStatus,InvoiceStatus")] Payment payment)
+        public async Task<IActionResult> Create([Bind("PaymentId,Amount,BookingId,IncomingPaymentReference,IncomingPaymentStatus,InvoiceStatus")] Payment payment)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    await _paymentService.Create(payment);
-                    return RedirectToAction(nameof(Index));
-                }
-
-                var paymentId = ViewData["PaymentId"];
-                return View(payment);
+                _context.Add(payment);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            catch (BusinessException)
-            { }
-            return View("Error");
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId", payment.BookingId);
+            return View(payment);
         }
-         
-      
 
         // GET: Payment/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            try
+            if (id == null)
             {
-                var payment = await _paymentService.GetSingle(id);
-                var paymentId = ViewData["PaymentId"];
-                return View(payment);
+                return NotFound();
             }
-            catch (BusinessException)
+
+            var payment = await _context.Payments.FindAsync(id);
+            if (payment == null)
             {
-                return View("Error");
+                return NotFound();
             }
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId", payment.BookingId);
+            return View(payment);
         }
 
         // POST: Payment/Edit/5
@@ -107,41 +91,54 @@ namespace WebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,IncomingPaymentReference,IncomingPaymentStatus,InvoiceStatus")] Payment payment)
+        public async Task<IActionResult> Edit(int id, [Bind("PaymentId,Amount,BookingId,IncomingPaymentReference,IncomingPaymentStatus,InvoiceStatus")] Payment payment)
         {
             if (id != payment.PaymentId)
             {
                 return NotFound();
             }
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    _paymentService.Update(payment);
-                    var paymentId = ViewData["PaymentId"];
-                    return View(payment);
-                }
-            }
-            catch (BusinessException)
-            {
-                
-            }
-            return View("Error");
 
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(payment);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PaymentExists(payment.PaymentId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["BookingId"] = new SelectList(_context.Bookings, "BookingId", "BookingId", payment.BookingId);
+            return View(payment);
         }
 
         // GET: Payment/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            try
+            if (id == null)
             {
-                var payment = await _paymentService.GetSingle(id);
-                return View(payment);
+                return NotFound();
             }
-            catch (BusinessException)
-            { }
 
-            return View("Error");
+            var payment = await _context.Payments
+                .Include(p => p.Booking)
+                .FirstOrDefaultAsync(m => m.PaymentId == id);
+            if (payment == null)
+            {
+                return NotFound();
+            }
+
+            return View(payment);
         }
 
         // POST: Payment/Delete/5
@@ -149,33 +146,15 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                await _paymentService.Delete(id);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (BusinessException)
-            { }
-
-            return View("Error");
+            var payment = await _context.Payments.FindAsync(id);
+            _context.Payments.Remove(payment);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        private async Task<bool> PaymentExists(int id)
+        private bool PaymentExists(int id)
         {
-            return await _paymentService.Exists(id);
-        }
-
-        private async Task<IActionResult> StartPayment(Payment payment)
-        {
-            try
-            {
-                await _paymentService.StartPayment(payment);
-                return View(payment);
-            }
-            catch (BusinessException)
-            { }
-
-            return View("Error");
+            return _context.Payments.Any(e => e.PaymentId == id);
         }
     }
 }
