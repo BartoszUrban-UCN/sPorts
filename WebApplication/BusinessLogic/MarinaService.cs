@@ -66,7 +66,7 @@ namespace WebApplication.BusinessLogic
             // Remove the marina's location from the database and remove associations, if it has one
             if (marina.LocationId is not null)
             {
-                _locationService.Delete(marina.LocationId);
+                await _locationService.Delete(marina.LocationId);
             }
 
             // Remove the marina from the database

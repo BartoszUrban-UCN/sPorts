@@ -40,7 +40,7 @@ namespace WebApplication.BusinessLogic
 
             var marina = await _marinaService.GetSingle(marinaId);
 
-            var boat = _context.Boats.FindAsync(boatId);
+            var boat = await _context.Boats.FindAsync(boatId);
 
             // Dates are valid if endDate is later, or on the same day, as startDate and if they are
             // today or later
@@ -50,7 +50,7 @@ namespace WebApplication.BusinessLogic
                 {
                     if (spot.Available)
                     {
-                        if (HelperMethods.DoesSpotFitBoat(await boat, spot))
+                        if (HelperMethods.DoesSpotFitBoat(boat, spot))
                         {
                             // Only go through Booking Lines that end later than "Now" - does not go
                             // through past bookings
@@ -58,14 +58,14 @@ namespace WebApplication.BusinessLogic
                             var booked = false;
                             foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
                             if (HelperMethods.AreDatesIntersecting(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
-                                {
-                                    // Basically returns all spots that
-                                    // 1. Fit the boat
-                                    // 2. Have NO date intersects with any existing bookings with no
-                                    // optimizations in mind whatsoever 🙂
-                                    booked = true;
-                                    break;
-                                }
+                            {
+                                // Basically returns all spots that
+                                // 1. Fit the boat
+                                // 2. Have NO date intersects with any existing bookings with no
+                                // optimizations in mind whatsoever 🙂
+                                booked = true;
+                                break;
+                            }
 
                             if (!booked)
                             {

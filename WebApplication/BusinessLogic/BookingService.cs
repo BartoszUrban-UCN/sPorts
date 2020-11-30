@@ -306,7 +306,7 @@ namespace WebApplication.BusinessLogic
                 var availableSpots = (List<Spot>)await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate);
 
                 if (availableSpots.Contains(bookingLine.Spot))
-                    booking.BookingLines.Add(bookingLine);
+                    validBookingLines.Add(bookingLine);
             }
 
             booking.BookingLines = new List<BookingLine>(validBookingLines);
