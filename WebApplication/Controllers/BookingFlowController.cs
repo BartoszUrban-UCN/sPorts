@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
@@ -48,10 +48,7 @@ namespace WebApplication.Controllers
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
 
-            //var availableSpotsPerMarina = await _bookingFormService.GetAvailableSpotsPerMarina(await _marinaService.GetAll(), boatName, startDate, endDate);
-            //var jsonString = HelperMethods.Serialize(availableSpotsPerMarina);
-
-            var jsonString = HelperMethods.Serialize(await _marinaService.GetAll());
+            var jsonString = HelperMethods.Serialize(await _bookingFormService.GetAllAvailableSpotsCount((await _marinaService.GetAll()).Select(m => m.MarinaId).ToList(), boatId, startDate, endDate));
 
             return new JsonResult(jsonString);
         }
@@ -63,9 +60,6 @@ namespace WebApplication.Controllers
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
             var marinaId = int.Parse(marina);
-
-            //var availableSpotsPerMarina = await _bookingFormService.GetAvailableSpotsPerMarina(await _marinaService.GetAll(), boatName, startDate, endDate);
-            //var jsonString = HelperMethods.Serialize(availableSpotsPerMarina);
 
             var jsonString = HelperMethods.Serialize(await _bookingFormService.GetAvailableSpots(marinaId, boatId, startDate, endDate));
 
