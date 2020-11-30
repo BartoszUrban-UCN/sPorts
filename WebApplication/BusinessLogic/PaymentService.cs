@@ -17,11 +17,16 @@ namespace WebApplication.BusinessLogic
         public async Task<Payment> CreateFromBooking(Booking booking)
         {
             booking.ThrowIfNull();
+
             Payment payment = new Payment();
+
+
             payment.BookingId = booking.BookingId;
             payment.Amount = booking.TotalPrice;
 
+
             return payment;
+            
         }
 
         public async Task<int> Create(Payment payment)

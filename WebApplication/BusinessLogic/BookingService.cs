@@ -162,8 +162,12 @@ namespace WebApplication.BusinessLogic
         {
             booking.ThrowIfNull();
 
+            // For later use/test -Peter
+            //booking.PaymentStatus = "Paid";
+            
             await _context.AddAsync(booking);
             booking.BookingLines.ForEach(async bl => await _context.BookingLines.AddAsync(bl));
+
         }
 
         public async Task<Booking> GetSingle(int? id)

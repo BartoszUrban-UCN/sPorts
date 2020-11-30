@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Interfaces;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -14,12 +16,14 @@ namespace WebApplication.Controllers
     public class PaymentController : Controller
     {
         private readonly SportsContext _context;
-        private readonly IPaymentService _paymentService; 
+        private readonly IPaymentService _paymentService;
+        private readonly IBookingService _bookingService;
 
-        public PaymentController(SportsContext context, IPaymentService paymentService)
+        public PaymentController(SportsContext context, IPaymentService paymentService, IBookingService bookingService)
         {
             _context = context;
             _paymentService = paymentService;
+            _bookingService = bookingService;
         }
 
         // GET: Payment
@@ -50,15 +54,21 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> CreateFromBooking()
         {
             //Session 
-            //var booking = HttpContext.Session.Get<Booking>("Booking");
+            var booking = HttpContext.Session.Get<Booking>("Booking");
+            if (booking.BookingReferenceNo != 0)
+            {
+                await _bookingService.SaveBooking(booking);
 
-            //Mocking abooking untill Session work 
-            var booking = _context.Bookings.Find(1);
-
-            var payment = await _paymentService.CreateFromBooking(booking);
-            ViewData["BookingId"] = booking.BookingId;
-            ViewData["bookingTotalPrice"] = booking.TotalPrice;
-            return View("~/Views/Payment/CreateFromBooking.cshtml", payment);
+                var payment = await _paymentService.CreateFromBooking(booking);
+                ViewData["BookingId"] = booking.BookingId;
+                ViewData["bookingTotalPrice"] = booking.TotalPrice;
+                //return View("~/Views/Payment/CreateFromBooking.cshtml", payment);
+                return await Create(payment);
+            }
+            else
+            {
+                return View();
+            }
         }
 
 
