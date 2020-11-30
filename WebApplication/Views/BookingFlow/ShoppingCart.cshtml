@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "sPorts";
-    
+
     var marinaBLineDict = (Dictionary<Marina, IEnumerable<BookingLine>>)ViewData["MarinaBLineDict"];
     var hasChanged = ViewData["BookingChange"];
     var appliedDiscounts = (double)ViewData["AppliedDiscounts"];
@@ -21,8 +21,8 @@
             </div>
             <div class="card-body">
                 <div id="Top">
-                    <input type="checkbox" id="CheckBox">
-                    <h5 class="card-title">Select All </h5>
+                    @*<input type="checkbox" id="CheckBox">*@
+                    @*<h5 class="card-title">Select All </h5>*@
                     <a class="btn btn-outline-success clearCartBtn">Clear Cart</a>
                     <h6 class="card-text text-right text-secondary" style="flex-grow: 1;">BookingNo #@Model.BookingReferenceNo</h6>
                 </div>
