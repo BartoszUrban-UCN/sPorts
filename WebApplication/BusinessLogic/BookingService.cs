@@ -165,7 +165,7 @@ namespace WebApplication.BusinessLogic
 
             // For later use/test -Peter
             //booking.PaymentStatus = "Paid";
-            
+
             await _context.AddAsync(booking);
             booking.BookingLines.ForEach(async bl => await _context.BookingLines.AddAsync(bl));
 
@@ -296,17 +296,20 @@ namespace WebApplication.BusinessLogic
         public async Task<Booking> ValidateShoppingCart(Booking booking)
         {
             booking.ThrowIfNull();
+
+            List<BookingLine> validBookingLines = new List<BookingLine>();
+
             // can remove item while iterating?
             // run time periodically on a new thread?? inform user once something has changed in the booking
-            var iterator = booking.BookingLines.GetEnumerator();
-            while (iterator.MoveNext())
+            foreach (var bookingLine in booking.BookingLines.ToList())
             {
-                var bookingLine = iterator.Current;
                 var availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate));
 
-                if (!availableSpots.Contains(bookingLine.Spot))
-                    booking.BookingLines.Remove(bookingLine);
+                if (availableSpots.Contains(bookingLine.Spot))
+                    booking.BookingLines.Add(bookingLine);
             }
+
+            booking.BookingLines = new List<BookingLine>(validBookingLines);
 
             return booking;
         }

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Interfaces;
 using WebApplication.BusinessLogic.Shared;
@@ -58,7 +56,8 @@ namespace WebApplication.Controllers
             if (booking.BookingReferenceNo != 0)
             {
                 await _bookingService.SaveBooking(booking);
-
+                //HttpContext.Session.Set("Booking", new Booking());
+                HttpContext.Session.Clear();
                 var payment = await _paymentService.CreateFromBooking(booking);
                 ViewData["BookingId"] = booking.BookingId;
                 ViewData["bookingTotalPrice"] = booking.TotalPrice;
