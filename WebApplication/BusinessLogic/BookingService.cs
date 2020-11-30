@@ -29,8 +29,6 @@ namespace WebApplication.BusinessLogic
         {
             BookingLine bookingLine = new BookingLine
             {
-                // solution for now
-                BookingLineId = spot.SpotId,
                 SpotId = spot.SpotId,
                 StartDate = startDate,
                 EndDate = endDate,
@@ -38,7 +36,7 @@ namespace WebApplication.BusinessLogic
 
             bookingLine.Confirmed = false;
             bookingLine.Ongoing = false;
-            bookingLine.OriginalTotalPrice = spot.Price * bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays;
+            bookingLine.OriginalTotalPrice = spot.Price * (bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays + 1);
             bookingLine.AppliedDiscounts = 0;
             bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 
@@ -304,9 +302,9 @@ namespace WebApplication.BusinessLogic
         /// </summary>
         /// <param name="booking"></param>
         /// <param name="bookingLineId"></param>
-        public Booking CartRemoveBookingLine(Booking booking, int bookingLineId)
+        public Booking CartRemoveBookingLine(Booking booking, DateTime startDate)
         {
-            booking?.BookingLines.RemoveAll(bl => bl.BookingLineId == bookingLineId);
+            booking?.BookingLines.RemoveAll(bl => bl.StartDate == startDate);
             double totalPrice = BookingCalculatePrice(booking.BookingLines);
             booking.TotalPrice = totalPrice;
             booking.BookingLines = new List<BookingLine>(booking.BookingLines);

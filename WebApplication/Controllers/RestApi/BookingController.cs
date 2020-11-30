@@ -142,11 +142,13 @@ namespace WebApplication.Controllers.RestApi
 
 
         [HttpDelete("RemoveBookingLine")]
-        public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] int bookingLineId)
+        public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] string start)
         {
+            var startDate = DateTime.Parse(start);
+
             var booking = HttpContext.Session.Get<Booking>("Booking");
 
-            booking = _bookingService.CartRemoveBookingLine(booking, bookingLineId);
+            booking = _bookingService.CartRemoveBookingLine(booking, startDate);
 
             HttpContext.Session.Set("Booking", booking);
 

@@ -3,13 +3,13 @@ function error() {
 }
 
 function removeButtonClicked() {
-    var bookingLineId = $(this).attr("name")
+    var startDate = $(this).attr("name")
     $.ajax({
         type: "Delete",
         url: "/api/booking/RemoveBookingLine",
         dataType: "json",
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(bookingLineId),
+        data: JSON.stringify(startDate),
         success: () => location.reload(),
         error: error
     })
