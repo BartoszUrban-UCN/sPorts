@@ -30,7 +30,7 @@ namespace WebApplication.BusinessLogic
             var bookingLine = new BookingLine
             {
                 SpotId = spot.SpotId,
-                
+
                 StartDate = startDate,
                 EndDate = endDate,
 
@@ -38,7 +38,7 @@ namespace WebApplication.BusinessLogic
                 Confirmed = default,
                 AppliedDiscounts = default,
 
-                OriginalTotalPrice = spot.Price * endDate.Subtract(startDate).TotalDays
+                OriginalTotalPrice = spot.Price * (endDate.Subtract(startDate).TotalDays + 1)
             };
 
             // Just for testing
@@ -48,7 +48,7 @@ namespace WebApplication.BusinessLogic
 
             booking.BookingLines.Add(bookingLine);
             booking.TotalPrice = CalculateTotalPrice(booking);
-            
+
             return booking;
         }
         #endregion Create booking lines based on data from the form
@@ -105,7 +105,7 @@ namespace WebApplication.BusinessLogic
             double totalAppliedDiscounts = 0;
             foreach (var bookingLine in booking.BookingLines)
                 totalAppliedDiscounts += bookingLine.AppliedDiscounts;
-            
+
             return totalAppliedDiscounts;
         }
 
