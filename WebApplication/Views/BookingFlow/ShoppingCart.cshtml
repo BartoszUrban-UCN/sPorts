@@ -4,7 +4,6 @@
     ViewData["Title"] = "sPorts";
 
     var marinaBLineDict = (Dictionary<Marina, IEnumerable<BookingLine>>)ViewData["MarinaBLineDict"];
-    var hasChanged = ViewData["BookingChange"];
     var appliedDiscounts = (double)ViewData["AppliedDiscounts"];
     var subtotal = Model.TotalPrice + appliedDiscounts;
     var nullOrEmpty = (Model is null || marinaBLineDict.Count < 1);

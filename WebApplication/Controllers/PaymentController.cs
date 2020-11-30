@@ -52,7 +52,11 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> CreateFromBooking()
         {
             //Session 
-            var booking = HttpContext.Session.Get<Booking>("Booking");
+            //var booking = HttpContext.Session.Get<Booking>("Booking");
+            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            sessionBooking = await _bookingService.LoadSpots(sessionBooking);
+            var booking = await _bookingService.ValidateShoppingCart(sessionBooking);
+
             if (booking.BookingReferenceNo != 0)
             {
                 await _bookingService.SaveBooking(booking);
