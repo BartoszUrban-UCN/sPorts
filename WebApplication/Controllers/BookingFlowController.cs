@@ -82,12 +82,17 @@ namespace WebApplication.Controllers
             }
 
             await _bookingService.LoadSpots(sessionBooking);
-            var validBooking = _bookingService.ValidateShoppingCart(sessionBooking);
 
+            var validBooking = _bookingService.ValidateShoppingCart(sessionBooking);
             sessionBooking.TotalPrice = Math.Round(sessionBooking.TotalPrice, 2);
 
+            var appliedDiscounts = _bookingService.CalculateTotalDiscount(sessionBooking);
+            appliedDiscounts = Math.Round(appliedDiscounts, 2);
+
             var marinaBLineDict = _bookingService.FilterLinesByMarina(sessionBooking);
+
             ViewData["MarinaBLineDict"] = marinaBLineDict;
+            ViewData["AppliedDiscounts"] = appliedDiscounts;
 
             return View(sessionBooking);
         }

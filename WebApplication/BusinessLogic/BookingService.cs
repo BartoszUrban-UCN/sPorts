@@ -27,30 +27,28 @@ namespace WebApplication.BusinessLogic
         #region Create booking line based on data from the form
         public Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot)
         {
-            BookingLine bookingLine = new BookingLine
+            var bookingLine = new BookingLine
             {
                 SpotId = spot.SpotId,
+                
                 StartDate = startDate,
                 EndDate = endDate,
+
+                Ongoing = default,
+                Confirmed = default,
+                AppliedDiscounts = default,
+
+                OriginalTotalPrice = spot.Price * endDate.Subtract(startDate).TotalDays
             };
 
-            bookingLine.Confirmed = false;
-            bookingLine.Ongoing = false;
-            bookingLine.OriginalTotalPrice = spot.Price * (bookingLine.EndDate.Subtract(bookingLine.StartDate).TotalDays + 1);
-            bookingLine.AppliedDiscounts = 0;
+            // Just for testing
+            bookingLine.AppliedDiscounts = 10.0d;
+            // Just for testing
             bookingLine.DiscountedTotalPrice = bookingLine.OriginalTotalPrice - bookingLine.AppliedDiscounts;
 
-            if (booking.BookingLines is null)
-            {
-                booking.BookingLines = new List<BookingLine>();
-            }
-            else
-            {
-                booking.BookingLines.Add(bookingLine);
-                double totalPrice = BookingCalculatePrice(booking.BookingLines);
-                booking.TotalPrice = totalPrice;
-            }
-
+            booking.BookingLines.Add(bookingLine);
+            booking.TotalPrice = CalculateTotalPrice(booking);
+            
             return booking;
         }
         #endregion Create booking lines based on data from the form
@@ -100,12 +98,23 @@ namespace WebApplication.BusinessLogic
             return marinaBLineDict;
         }
 
-        public double BookingCalculatePrice(List<BookingLine> bookingLines)
+        public double CalculateTotalDiscount(Booking booking)
         {
-            bookingLines.ThrowIfNull();
+            booking.ThrowIfNull();
+
+            double totalAppliedDiscounts = 0;
+            foreach (var bookingLine in booking.BookingLines)
+                totalAppliedDiscounts += bookingLine.AppliedDiscounts;
+            
+            return totalAppliedDiscounts;
+        }
+
+        public double CalculateTotalPrice(Booking booking)
+        {
+            booking.ThrowIfNull();
 
             double totalPrice = 0;
-            foreach (var bookingLine in bookingLines)
+            foreach (var bookingLine in booking.BookingLines)
                 totalPrice += bookingLine.DiscountedTotalPrice;
 
             return totalPrice;
@@ -301,11 +310,14 @@ namespace WebApplication.BusinessLogic
         /// Remove booking line from the cart
         /// </summary>
         /// <param name="booking"></param>
-        /// <param name="bookingLineId"></param>
+        /// <param name="startDate"></param>
         public Booking CartRemoveBookingLine(Booking booking, DateTime startDate)
         {
-            booking?.BookingLines.RemoveAll(bl => bl.StartDate == startDate);
-            double totalPrice = BookingCalculatePrice(booking.BookingLines);
+            booking.ThrowIfNull();
+
+            booking.BookingLines.RemoveAll(bl => bl.StartDate == startDate);
+
+            double totalPrice = CalculateTotalPrice(booking);
             booking.TotalPrice = totalPrice;
             booking.BookingLines = new List<BookingLine>(booking.BookingLines);
 
