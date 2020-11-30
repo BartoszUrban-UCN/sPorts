@@ -7,8 +7,8 @@ mymap.setView([56.2639, 9.5018], 7);
 function renderMarinas(marinas) {
     marinaMarkers.clearLayers();
     marinas.forEach(marina => {
-        if (marina.Location) {
-            marinaBookingPrompt(marina, 5)
+        if (marina.Key.Location) {
+            marinaBookingPrompt(marina.Key, marina.Value)
         }
     })
 }

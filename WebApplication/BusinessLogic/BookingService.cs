@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
@@ -275,9 +276,9 @@ namespace WebApplication.BusinessLogic
         #endregion
 
         #region IBookingFormService
-        public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
+        public async Task<List<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
         {
-            return await _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate);
+            return (await _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate)).ToList();
         }
         #endregion
 

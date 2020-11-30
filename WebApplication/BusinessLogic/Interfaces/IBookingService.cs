@@ -29,7 +29,7 @@ namespace WebApplication.BusinessLogic
 
         Booking CartRemoveBookingLine(Booking booking, DateTime startDate);
 
-        Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
+        Task<List<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
 
         double CalculateTotalPrice(Booking booking);
         double CalculateTotalDiscount(Booking booking);

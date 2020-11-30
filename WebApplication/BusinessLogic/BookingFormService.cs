@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,12 +9,16 @@ namespace WebApplication.BusinessLogic
 {
     public class BookingFormService : ServiceBase, IBookingFormService
     {
-        public BookingFormService(SportsContext context) : base(context)
-        { }
+        private readonly IMarinaService _marinaService;
 
-        public async Task<Dictionary<int, int>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
+        public BookingFormService(SportsContext context, IMarinaService marinaService) : base(context)
         {
-            var availableSpotsPerMarinaId = new Dictionary<int, int>();
+            _marinaService = marinaService;
+        }
+
+        public async Task<IEnumerable<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
+        {
+            var availableSpotsPerMarinaId = new List<KeyValuePair<Marina, int>>();
 
             foreach (var marinaId in marinaIds)
             {
@@ -23,7 +26,7 @@ namespace WebApplication.BusinessLogic
 
                 if (availableSpotsInMarina.Any())
                 {
-                    availableSpotsPerMarinaId.Add(marinaId, availableSpotsInMarina.Count);
+                    availableSpotsPerMarinaId.Add(new KeyValuePair<Marina, int>(availableSpotsInMarina.First().Marina, availableSpotsInMarina.Count));
                 }
             }
 
@@ -34,11 +37,7 @@ namespace WebApplication.BusinessLogic
         {
             IList<Spot> availableSpots = new List<Spot>();
 
-            var marina = _context.Marinas
-                .Include(marina => marina.Location)
-                .Include(marina => marina.Spots)
-                .ThenInclude(spot => spot.Location)
-                .FirstOrDefault(marina => marina.MarinaId == marinaId);
+            var marina = await _marinaService.GetSingle(marinaId);
 
             var boat = _context.Boats.FindAsync(boatId);
 
@@ -48,28 +47,31 @@ namespace WebApplication.BusinessLogic
             {
                 foreach (Spot spot in marina.Spots)
                 {
-                    if (DoesSpotFitBoat(await boat, spot))
+                    if (spot.Available)
                     {
-                        // Only go through Booking Lines that end later than "Now" - does not go
-                        // through past bookings
-
-                        var booked = false;
-                        foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
+                        if (DoesSpotFitBoat(await boat, spot))
                         {
-                            if (DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
+                            // Only go through Booking Lines that end later than "Now" - does not go
+                            // through past bookings
+
+                            var booked = false;
+                            foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
                             {
-                                // Basically returns all spots that
-                                // 1. Fit the boat
-                                // 2. Have NO date intersects with any existing bookings with no
-                                // optimizations in mind whatsoever 🙂
-                                booked = true;
-                                break;
+                                if (DoesDateRangeInsersect(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
+                                {
+                                    // Basically returns all spots that
+                                    // 1. Fit the boat
+                                    // 2. Have NO date intersects with any existing bookings with no
+                                    // optimizations in mind whatsoever 🙂
+                                    booked = true;
+                                    break;
+                                }
                             }
-                        }
 
-                        if (!booked)
-                        {
-                            availableSpots.Add(spot);
+                            if (!booked)
+                            {
+                                availableSpots.Add(spot);
+                            }
                         }
                     }
                 }
@@ -115,26 +117,18 @@ namespace WebApplication.BusinessLogic
             return areDatesValid;
         }
 
-        // ??
+        /// <summary>
+        /// Create an empty booking for the BookingFlow start
+        /// </summary>
+        /// <returns>An emtpy booking with CreationDate and with a starting booking line</returns>
         public async Task<Booking> CreateBooking()
         {
-            var booking = new Booking { CreationDate = DateTime.Now, BookingReferenceNo = 123 };
+            var booking = new Booking { CreationDate = DateTime.Now };
             var bookingLine = new BookingLine { Booking = booking };
             booking.BookingLines.Add(bookingLine);
 
             _context.Add(booking);
             return booking;
-        }
-
-        public async Task<BookingLine> GetBookingLine(Booking booking)
-        {
-            return (await _context.Bookings.FindAsync(booking.BookingId)).BookingLines.Last();
-        }
-
-        public BookingLine UpdateBookingLine(BookingLine bookingLine)
-        {
-            _context.BookingLines.Update(bookingLine);
-            return bookingLine;
         }
     }
 }

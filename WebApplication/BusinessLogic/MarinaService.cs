@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,7 +105,9 @@ namespace WebApplication.BusinessLogic
                 .Include(marina => marina.Address)
                 .Include(marina => marina.MarinaOwner)
                 .Include(marina => marina.Location)
-                .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
+                .Include(marina => marina.Spots)
+                    .ThenInclude(spot => spot.BookingLines)
+                .Include(marina => marina.Spots)
                     .ThenInclude(spot => spot.Location)
                 .ToListAsync();
 
@@ -115,7 +116,6 @@ namespace WebApplication.BusinessLogic
                 if (marina.Location is null && marina.Spots.Count > 0 && marina.Spots.Any(spot => spot.LocationId != null))
                 {
                     CalculateMarinaLocation(marina);
-                    Console.WriteLine(marina.Location.Latitude.ToString());
                 }
             }
 
@@ -126,13 +126,22 @@ namespace WebApplication.BusinessLogic
         {
             id.ThrowIfInvalidId();
             var marina = await _context.Marinas
-                .Include(marina => marina.Address)
+                 .Include(marina => marina.Address)
                 .Include(marina => marina.MarinaOwner)
                 .Include(marina => marina.Location)
-                .Include(marina => marina.Spots)//.Where(spot => spot.LocationId != null))
+                .Include(marina => marina.Spots)
+                    .ThenInclude(spot => spot.BookingLines)
+                .Include(marina => marina.Spots)
                     .ThenInclude(spot => spot.Location)
                 .FirstOrDefaultAsync(marina => marina.MarinaId == id);
+
             marina.ThrowIfNull();
+
+            if (marina.Location is null && marina.Spots.Count > 0 && marina.Spots.Any(spot => spot.LocationId != null))
+            {
+                CalculateMarinaLocation(marina);
+            }
+
             return marina;
         }
 
