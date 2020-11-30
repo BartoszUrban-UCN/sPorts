@@ -107,6 +107,7 @@ namespace WebApplication.BusinessLogic
             foreach (var bookingLine in booking.BookingLines)
                 totalAppliedDiscounts += bookingLine.AppliedDiscounts;
 
+            totalAppliedDiscounts = Math.Round(totalAppliedDiscounts, 2);
             return totalAppliedDiscounts;
         }
 
@@ -118,6 +119,7 @@ namespace WebApplication.BusinessLogic
             foreach (var bookingLine in booking.BookingLines)
                 totalPrice += bookingLine.DiscountedTotalPrice;
 
+            totalPrice = Math.Round(totalPrice, 2);
             return totalPrice;
         }
 
@@ -299,11 +301,9 @@ namespace WebApplication.BusinessLogic
 
             List<BookingLine> validBookingLines = new List<BookingLine>();
 
-            // can remove item while iterating?
-            // run time periodically on a new thread?? inform user once something has changed in the booking
             foreach (var bookingLine in booking.BookingLines.ToList())
             {
-                var availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate));
+                var availableSpots = (List<Spot>)await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate);
 
                 if (availableSpots.Contains(bookingLine.Spot))
                     booking.BookingLines.Add(bookingLine);
@@ -312,6 +312,23 @@ namespace WebApplication.BusinessLogic
             booking.BookingLines = new List<BookingLine>(validBookingLines);
 
             return booking;
+        }
+
+        public async Task<IEnumerable<BookingLine>> InvalidBookingLines(Booking booking)
+        {
+            booking.ThrowIfNull();
+
+            var invalidBookingLines = new List<BookingLine>();
+
+            foreach (var bookingLine in booking.BookingLines.ToList())
+            {
+                var availableSpots = (List<Spot>)await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate);
+
+                if (!availableSpots.Contains(bookingLine.Spot))
+                    booking.BookingLines.Add(bookingLine);
+            }
+
+            return invalidBookingLines;
         }
 
         /// <summary>

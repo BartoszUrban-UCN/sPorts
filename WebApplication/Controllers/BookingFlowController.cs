@@ -69,26 +69,27 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> ShoppingCart()
         {
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+
             if (sessionBooking == null)
             {
                 HttpContext.Session.Set("Booking", new Booking());
                 sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             }
 
-            await _bookingService.LoadSpots(sessionBooking);
+            sessionBooking = await _bookingService.LoadSpots(sessionBooking);
 
-            var validBooking = _bookingService.ValidateShoppingCart(sessionBooking);
-            sessionBooking.TotalPrice = Math.Round(sessionBooking.TotalPrice, 2);
+            var validBooking = await _bookingService.ValidateShoppingCart(sessionBooking);
 
-            var appliedDiscounts = _bookingService.CalculateTotalDiscount(sessionBooking);
-            appliedDiscounts = Math.Round(appliedDiscounts, 2);
+            var totalPrice = _bookingService.CalculateTotalPrice(validBooking);
 
-            var marinaBLineDict = _bookingService.FilterLinesByMarina(sessionBooking);
+            var appliedDiscounts = _bookingService.CalculateTotalDiscount(validBooking);
+
+            var marinaBLineDict = _bookingService.FilterLinesByMarina(validBooking);
 
             ViewData["MarinaBLineDict"] = marinaBLineDict;
             ViewData["AppliedDiscounts"] = appliedDiscounts;
 
-            return View(sessionBooking);
+            return View(validBooking);
         }
     }
 }

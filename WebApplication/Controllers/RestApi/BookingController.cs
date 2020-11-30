@@ -152,7 +152,15 @@ namespace WebApplication.Controllers.RestApi
 
             HttpContext.Session.Set("Booking", booking);
 
-            return booking;
+            return Ok(booking);
+        }
+
+        public async Task<ActionResult<IEnumerable<BookingLine>>> InvalidBookingLines()
+        {
+            var booking = HttpContext.Session.Get<Booking>("Booking");
+            var invalidBookingLines = await _bookingService.InvalidBookingLines(booking); 
+
+            return Ok(invalidBookingLines);
         }
 
         [HttpDelete("ClearCart")]

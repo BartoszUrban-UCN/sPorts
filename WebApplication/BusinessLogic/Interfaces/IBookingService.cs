@@ -27,6 +27,8 @@ namespace WebApplication.BusinessLogic
 
         Task<Booking> ValidateShoppingCart(Booking booking);
 
+        Task<IEnumerable<BookingLine>> InvalidBookingLines(Booking booking);
+
         Booking CartRemoveBookingLine(Booking booking, DateTime startDate);
 
         Task<List<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
