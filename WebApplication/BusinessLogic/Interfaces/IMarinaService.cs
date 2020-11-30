@@ -8,7 +8,7 @@ namespace WebApplication.BusinessLogic
         Task<int> CreateWithLocation(Marina marina, Location location);
         Task<int> CreateLocationForMarina(Marina marina, Location marinaLocation);
         Marina UpdateMarinaLocation(Marina marina, Location location);
-        Task DeleteMarinaLocation(Marina marina);
+        Task<Marina> DeleteMarinaLocation(Marina marina);
         Task<bool> NotExists(int? id);
     }
 }

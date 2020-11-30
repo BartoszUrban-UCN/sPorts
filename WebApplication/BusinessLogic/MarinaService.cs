@@ -31,14 +31,14 @@ namespace WebApplication.BusinessLogic
             marina.ThrowIfNull();
             location.ThrowIfNull();
 
-            // Create location for marina and take the Id
-            var locationIdForMarina = await _locationService.Create(location);
+            // Create location for marina
+            await _locationService.Create(location);
 
             // Create marina
             await Create(marina);
 
             // Assign location to marina
-            marina.LocationId = locationIdForMarina;
+            marina.Location = location;
 
             return marina.MarinaId;
         }
@@ -48,11 +48,10 @@ namespace WebApplication.BusinessLogic
             marina.ThrowIfNull();
             location.ThrowIfNull();
             // Create location for marina and take the Id
-            var locationIdForMarina = await _locationService.Create(location);
+            await _locationService.Create(location);
 
             // Assign location to marina
-            marina.LocationId = locationIdForMarina;
-            marina.Location = await _locationService.GetSingle(locationIdForMarina);
+            marina.Location = location;
 
             return marina.MarinaId;
         }
@@ -65,24 +64,21 @@ namespace WebApplication.BusinessLogic
             var marina = await GetSingle(id);
 
             // Remove the marina's location from the database and remove associations, if it has one
-            await DeleteMarinaLocation(marina);
+            if (marina.LocationId is not null)
+            {
+                _locationService.Delete(marina.LocationId);
+            }
 
             // Remove the marina from the database
             _context.Marinas.Remove(marina);
-
-            // Save the changes made
-            await Save();
         }
 
-        public async Task DeleteMarinaLocation(Marina marina)
+        public async Task<Marina> DeleteMarinaLocation(Marina marina)
         {
+            marina = await GetSingle(marina.MarinaId);
             marina.ThrowIfNull();
-            var locationId = marina.LocationId;
-
-            marina.Location = null;
-            marina.LocationId = null;
-
-            await _locationService.Delete(locationId);
+            await _locationService.Delete(marina.LocationId);
+            return marina;
         }
 
         public async Task<bool> Exists(int? id)

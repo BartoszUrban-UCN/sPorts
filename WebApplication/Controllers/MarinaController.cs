@@ -71,6 +71,7 @@ namespace WebApplication.Controllers
                 else
                     await _marinaService.Create(marina);
 
+                await _marinaService.Save();
                 return RedirectToAction(nameof(Index));
             }
 
@@ -125,11 +126,12 @@ namespace WebApplication.Controllers
                     {
                         if (marina.LocationId.IsValidId())
                         {
-                            await _marinaService.DeleteMarinaLocation(marina);
+                            marina = await _marinaService.DeleteMarinaLocation(marina);
                         }
                     }
 
                     _marinaService.Update(marina);
+                    await _marinaService.Save();
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -168,6 +170,7 @@ namespace WebApplication.Controllers
 
                 // The delete method in the service checks whether the id is: null, negative, not assigned to any marina
                 await _marinaService.Delete(id);
+                await _marinaService.Save();
             }
 
             return RedirectToAction(nameof(Index));
