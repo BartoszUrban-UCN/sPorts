@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using WebApplication.BusinessLogic.Interfaces;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -13,10 +14,12 @@ namespace WebApplication.Controllers
     public class PaymentController : Controller
     {
         private readonly SportsContext _context;
+        private readonly IPaymentService _paymentService; 
 
-        public PaymentController(SportsContext context)
+        public PaymentController(SportsContext context, IPaymentService paymentService)
         {
             _context = context;
+            _paymentService = paymentService;
         }
 
         // GET: Payment
@@ -44,6 +47,20 @@ namespace WebApplication.Controllers
 
             return View(payment);
         }
+        public async Task<IActionResult> CreateFromBooking()
+        {
+            //Session 
+            //var booking = HttpContext.Session.Get<Booking>("Booking");
+
+            //Mocking abooking untill Session work 
+            var booking = _context.Bookings.Find(1);
+
+            var payment = await _paymentService.CreateFromBooking(booking);
+            ViewData["BookingId"] = booking.BookingId;
+            ViewData["bookingTotalPrice"] = booking.TotalPrice;
+            return View("~/Views/Payment/CreateFromBooking.cshtml", payment);
+        }
+
 
         // GET: Payment/Create
         public IActionResult Create()
@@ -155,6 +172,13 @@ namespace WebApplication.Controllers
         private bool PaymentExists(int id)
         {
             return _context.Payments.Any(e => e.PaymentId == id);
+        }
+
+        public async Task<IActionResult> StartPayment(Payment payment)
+        {
+
+            var result = await _paymentService.StartPayment(payment);
+            return View(result);
         }
     }
 }
