@@ -1,0 +1,124 @@
+﻿@model Booking
+
+@section Styles{
+    <style>
+        /* Hide all steps by default: */
+        .tab-wizard {
+            display: none;
+        }
+
+        /* Make circles that indicate the steps of the form: */
+        .step {
+            height: 15px;
+            width: 15px;
+            margin: 0 2px;
+            background-color: #2780e3;
+            border: none;
+            border-radius: 50%;
+            display: inline-block;
+            opacity: 0.3;
+            transition: opacity 0.4s;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        /* Mark the steps that are finished and valid: */
+        .step.finish {
+            background-color: #2780e3;
+        }
+    </style>
+}
+
+<div class="row justify-content-md-center">
+    <h1 id="dynamic-title" style="margin: 20px 0px;"><br /></h1>
+</div>
+
+<form asp-action="Index" id="booking">
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="row-cols-lg" style="width: 65%">
+
+                <!-- Circles which indicates the steps of the form; Buttons for next and previous page -->
+                <div style="margin:25px 0px; display: flex; align-items: baseline; justify-content: space-between;">
+                    <div>
+                        <span class="step"></span>
+                        <span class="step"></span>
+                        <span class="step"></span>
+                        <span class="step"></span>
+                        <span class="step"></span>
+                    </div>
+
+                    <div style="overflow: auto;">
+                        <button type="button" class="btn btn-secondary btn-lg" id="prevBtn" onclick="userChoice(-1)">Previous</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="nextBtn" onclick="userChoice(1)">Next</button>
+                    </div>
+                </div>
+
+                <!-- Select a boat for the booking, First step -->
+                <div class="tab-wizard">
+                    <div class="form-group">
+                        <label asp-for="Boat.Name" class="control-label">Select your boat</label>
+                        <select id="boat-select" asp-for="Boat.Name" class="form-control" asp-items="ViewBag.Boat"></select>
+                        <span asp-validation-for="Boat" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Initialize a booking line; Pick dates -->
+                <div class="tab-wizard">
+                    <div class="form-group">
+                        <label asp-for="BookingLines[0].StartDate" class="control-label">Start Date</label>
+                        <input id="start-date" asp-for="BookingLines[0].StartDate" type="date" class="form-control" asp-items="ViewBag.Boat" value="@DateTime.Now.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="BookingLines[0].StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BookingLines[0].EndDate" class="control-label">End date</label>
+                        <input id="end-date" asp-for="BookingLines[0].EndDate" type="date" class="form-control" asp-items="ViewBag.Boat" value="@DateTime.Now.ToString("yyyy-MM-dd")" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="BookingLines[0].EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Pick marina for the booking; Depends on the boat size and picked dates -->
+                <div class="tab-wizard">
+                    <div class="form-group">
+                        <div id="map-marina" class="leaflet-map-div"></div>
+                        <input class="form-control" id="selectedMarina" required readonly hidden/>
+                    </div>
+                </div>
+                <div class="tab-wizard">
+                    <div class="form-group">
+                        <div id="map-spot" class="leaflet-map-div"></div>
+                        <input class="form-control" id="selectedSpot" required readonly hidden />
+                    </div>
+                </div>
+
+                <!-- Final page; Now the user can see the cart, have more booking lines for the same boat or cancel
+                     At this point the Booking is added to the cart; -->
+                <div class="tab-wizard">
+                    <div style="display: flex; flex-direction: column;">
+
+                        <div style="margin-bottom: 25px;">
+                            <button class="btn btn-outline-primary btn-lg" asp-action="ShoppingCart" style="float: right;">Go to Cart</button>
+                        </div>
+
+                        <div>
+                            <!-- Cancel booking has to erase the session information -->
+                            <button type="button" class="btn btn-outline-danger btn-lg" style="float: right;" onclick="userChoice('cancel');">Cancel Booking</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <partial name="_TabWizardScriptsPartial" />
+    <partial name="_LeafletScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/js/leaflet/map_marina_booking.js"></script>
+    <script src="~/js/leaflet/map_spot_booking.js"></script>
+}

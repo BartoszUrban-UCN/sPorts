@@ -1,0 +1,42 @@
+﻿@model WebApplication.Models.Booking
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Booking</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BookingReferenceNo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BookingReferenceNo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TotalPrice)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TotalPrice)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PaymentStatus)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PaymentStatus)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Boat)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Boat.BoatId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.BookingId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

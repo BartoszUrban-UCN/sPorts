@@ -1,0 +1,113 @@
+﻿@model IEnumerable<WebApplication.Models.Spot>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+@* Initialize map showing available and unavailable spots *@
+<partial name="MapDivPartial" />
+@* End of initialization *@
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SpotNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Available)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaxWidth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaxLength)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaxDepth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Marina)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayName("Latitude")
+            </th>
+            <th>
+                @Html.DisplayName("Longitude")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="spot">
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpotNumber)
+                </td>
+                <td id="available">
+                    @Html.DisplayFor(modelItem => item.Available)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxWidth)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxLength)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxDepth)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Marina.MarinaId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location.LocationId)
+                </td>
+                <td id="lat">
+                    @Html.DisplayFor(modelItem => item.Location.Latitude)
+                </td>
+                <td id="long">
+                    @Html.DisplayFor(modelItem => item.Location.Longitude)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.SpotId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.SpotId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.SpotId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts{
+    <partial name="_LeafletScriptsPartial" />
+    <script src="~/js/leaflet/map_spot.js"></script>
+    <script>
+        $("tr#spot").each(function () {
+            var checked = $(this).find("#available").children().is(":checked")
+            var lat = $(this).find("td#lat").text().trim();
+            var long = $(this).find("td#long").text().trim();
+
+            if (lat) {
+                renderSpotMarker(lat, long, checked);
+            }
+            
+        })
+    </script>
+
+}

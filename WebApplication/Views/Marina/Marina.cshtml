@@ -1,0 +1,10 @@
+@model Marina
+
+@{
+    var url = $"/marina/{Model.MarinaId}/spots";
+    ViewData["Title"] = "Marina";
+}
+
+<h5 class="card-title text-left">@Model.Name</h5>
+<p class="card-text text-left">@Model.MarinaId</p>
+<a href=@url class="btn btn-success">Buy now</a>

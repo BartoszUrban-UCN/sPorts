@@ -1,0 +1,153 @@
+﻿@model WebApplication.Models.Marina
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Marina</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MarinaId" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Facilities" class="control-label"></label>
+                <input asp-for="Facilities" class="form-control" />
+                <span asp-validation-for="Facilities" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MarinaOwnerId" class="control-label"></label>
+                <select asp-for="MarinaOwnerId" class="form-control" asp-items="ViewBag.MarinaOwnerId"></select>
+                <span asp-validation-for="MarinaOwnerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AddressId" class="control-label"></label>
+                <select asp-for="AddressId" class="form-control" asp-items="ViewBag.AddressId"></select>
+                <span asp-validation-for="AddressId" class="text-danger"></span>
+            </div>
+
+            @* Initialize Leaflet Map and set the view with Denmark's coordinates *@
+
+            <partial name="MapDivPartial" />
+
+            @* End of initialization *@
+
+            <div class="form-group">
+                <label asp-for="LocationId" class="control-label"></label>
+                <input asp-for="LocationId" class="form-control" type="number" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.Latitude" class="control-label"></label>
+                <input id="location-latitude" class="form-control" name="Latitude" type="number" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.Longitude" class="control-label"></label>
+                <input id="location-longitude" class="form-control" name="Longitude" type="number" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.Radius" class="control-label"></label>
+                <input id="location-radius" class="form-control" name="Radius" type="number" readonly />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+
+    </div>
+    <div class="col-md-6">
+        Spots
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Spot Number</th>
+                    <th>Is Available</th>
+                    <th>Max Width</th>
+                    <th>Max Lenght</th>
+                    <th>Max Depth</th>
+                    <th>Spot Price</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Spots)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SpotNumber)
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Available)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxWidth)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxLength)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxDepth)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Price)
+                        </td>
+                        <td>
+                            <input type="submit" value="Edit" class="btn btn-primary" onclick="location.href='@Url.Action("Edit","Spot", new { id = item.SpotId})'" />
+
+                        </td>
+                        <td>
+                            <input type="submit" value="Delete" class="btn btn-primary" onclick="location.href='@Url.Action("Delete","Spot", new { id = item.SpotId})'" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+
+        </table>
+        <div class="col">
+            <button type="button" onclick="location.href='@Url.Action("Create","Spot")'">Add New Spot</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_LeafletScriptsPartial" />
+
+    <script src="~/js/leaflet/map_marina.js"></script>
+
+    <script>
+        var currentMarker = L.marker();
+        var currentCircleMarker = L.circle();
+
+        var latitude = $("#location-latitude");
+        var longitude = $("#location-longitude");
+        var radius = $("#location-radius");
+        var popupRadius;
+
+        mymap.on('click', onMapClick);
+    </script>
+    
+}

@@ -1,0 +1,65 @@
+@model IEnumerable<BoatOwner>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BoatOwnerId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Person.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Person.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Boats)
+            </th>
+            <th>
+                Bookings
+            </th>
+            <th>
+                Ongoing Bookings
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BoatOwnerId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Person.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Person.Email)
+                </td>
+                <td>
+                    <a asp-action="GetBoats" asp-route-id="@item.BoatOwnerId">Boats</a>
+                </td>
+                <td>
+                    <a asp-action="GetBookings" asp-route-id="@item.BoatOwnerId">Bookings</a>
+                </td>
+                <td>
+                    <a asp-action="GetOngoingBookings" asp-route-id="@item.BoatOwnerId">OngoingBookings</a>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.BoatOwnerId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.BoatOwnerId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.BoatOwnerId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

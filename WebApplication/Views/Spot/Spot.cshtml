@@ -1,0 +1,19 @@
+@model Spot
+
+@{
+    ViewData["Title"] = "Spots";
+    var available = "text-success";
+    var unavailable = "text-available";
+}
+
+<h5 class="card-title text-left">@Model.Price</h5>
+<p class="card-text text-left">@Model.SpotId</p>
+
+@if (Model.Available)
+{
+    <p class="card-text @available text-left">Available</p>
+}
+else
+{
+    <p class="card-text @unavailable text-left">Unavailable</p>
+}

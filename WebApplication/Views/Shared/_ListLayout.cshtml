@@ -1,0 +1,27 @@
+@model IEnumerable<Object>
+
+@{
+    string viewName = (string)ViewData["ViewName"];
+    string imgPath = (string)ViewData["ImgPath"];
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/listview.css"/>
+}
+
+<div class="container-fluid">
+    <div class="row row-cols-1 row-cols-sm-2">
+        @foreach(var mod in Model){
+            <div class="col mb-4">
+                <div class="card white text-right h-100" style="width: 18rem;">
+                    <img class="card-img-top" src=@imgPath>
+                    <div class="card-body">
+                        @{
+                            await Html.RenderPartialAsync(viewName, mod);
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,36 @@
+@model BoatOwner;
+
+@{
+    ViewData["Title"] = "Details";
+    var totalSpent = ViewData["TotalSpent"];
+    var totalTime = ViewData["TotalTime"];
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>BoatOwner</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Person.FirstName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Person.FirstName)
+        </dd>
+        <dt class = "col-sm-2">
+             TotalSpent       
+        </dt>
+        <dd class = "col-sm-10">
+            @totalSpent
+        </dd>
+        <dt class = "col-sm-2">
+            TotalTime
+        </dt>
+        <dd class = "col-sm-10">
+            @totalTime
+        </dd>
+    </dl>
+</div>
+<div>
+</div>

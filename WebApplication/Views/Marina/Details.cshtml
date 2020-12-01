@@ -1,0 +1,97 @@
+﻿@model WebApplication.Models.Marina
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+
+<h4>Marina</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <dl class="row">
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.Facilities)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.Facilities)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.MarinaOwner)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.MarinaOwner.MarinaOwnerId)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.Address)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.Address.AddressId)
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-6">
+        Spots
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Spot Number</th>
+                    <th>Is Available</th>
+                    <th>Max Width</th>
+                    <th>Max Lenght</th>
+                    <th>Max Depth</th>
+                    <th>Spot Price</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Spots)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SpotNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Available)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxWidth)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxLength)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxDepth)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Price)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+
+        </table>
+    </div>
+
+</div>
+    
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.MarinaId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,86 @@
+﻿@model WebApplication.Models.MarinaOwner
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+
+<h4>MarinaOwner</h4>
+<hr />
+   
+        <div class="row">
+            <div class="col-md-4">
+                <dl class="row">
+                    <dt class="col-sm-6">
+                        @Html.DisplayNameFor(model => model.Person.FirstName)
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Html.DisplayFor(model => model.Person.FirstName)
+                    </dd>
+                    <dt class="col-sm-6">
+                        @Html.DisplayNameFor(model => model.Person.LastName)
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Html.DisplayFor(model => model.Person.LastName)
+                    </dd>
+                    <dt class="col-sm-6">
+                        @Html.DisplayNameFor(model => model.Person.PhoneNumber)
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Html.DisplayFor(model => model.Person.PhoneNumber)
+                    </dd>
+                    <dt class="col-sm-6">
+                        @Html.DisplayNameFor(model => model.Person.Address)
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Html.DisplayFor(model => model.Person.Address)
+                    </dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                Spots
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Marina Id</th>
+                            <th>Name</th>
+                            <th>Facilities</th>
+                            <th>Address</th>
+                            <th>Location</th>
+                            <th>Reviews</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.Marinas)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MarinaId)
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Facilities)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Address)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Location)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Reviews)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            <div>
+                <a asp-action="Edit" asp-route-id="@Model.MarinaOwnerId">Edit</a> |
+                <a asp-action="Index">Back to List</a>
+            </div>

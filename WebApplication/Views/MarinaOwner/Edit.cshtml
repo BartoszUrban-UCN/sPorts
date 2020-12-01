@@ -1,0 +1,85 @@
+﻿@model WebApplication.Models.MarinaOwner
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>MarinaOwner</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MarinaOwnerId" />
+            <div class="form-group">
+                <label asp-for="PersonId" class="control-label"></label>
+                <select asp-for="PersonId" class="form-control" asp-items="ViewBag.PersonId"></select>
+                <span asp-validation-for="PersonId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    
+
+    </div>
+        <div class="col-md-6">
+            Spots
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Marina Id</th>
+                        <th>Name</th>
+                        <th>Facilities</th>
+                        <th>Address</th>
+                        <th>Location</th>
+                        <th>Reviews</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.Marinas)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.MarinaId)
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Facilities)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Address)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Location)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Reviews)
+                            </td>
+                            <td>
+                                <input type="submit" value="Edit" class="btn btn-primary" onclick="location.href='@Url.Action("Edit","Marina", new { id = item.MarinaId})'" />
+                            </td>
+                            <td>
+                                <input type="submit" value="Delete" class="btn btn-primary" onclick="location.href='@Url.Action("Delete","Marina", new { id = item.MarinaId})'" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

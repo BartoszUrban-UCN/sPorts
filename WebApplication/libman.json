@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "leaflet@1.7.1",
+      "destination": "wwwroot/lib/leaflet/"
+    },
+    {
+      "library": "globalize@1.6.0",
+      "destination": "wwwroot/lib/globalize/"
+    },
+    {
+      "library": "cldrjs@0.5.5",
+      "destination": "wwwroot/lib/cldrjs/"
+    }
+  ,
+  {
+    "provider": "unpkg",
+    "library": "jquery-validation-globalize@0.1.1",
+    "destination": "wwwroot/lib/jquery-validation-globalize/",
+    "files": [
+      "jquery.validate.globalize.min.js",
+      "jquery.validate.globalize.js"
+    ]
+  }
+  ]
+}

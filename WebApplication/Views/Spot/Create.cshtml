@@ -1,0 +1,90 @@
+﻿@model WebApplication.Models.Spot
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Spot</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SpotNumber" class="control-label"></label>
+                <input asp-for="SpotNumber" class="form-control" />
+                <span asp-validation-for="SpotNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxWidth" class="control-label"></label>
+                <input asp-for="MaxWidth" class="form-control" />
+                <span asp-validation-for="MaxWidth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxLength" class="control-label"></label>
+                <input asp-for="MaxLength" class="form-control" />
+                <span asp-validation-for="MaxLength" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxDepth" class="control-label"></label>
+                <input asp-for="MaxDepth" class="form-control" />
+                <span asp-validation-for="MaxDepth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MarinaId" class="control-label"></label>
+                <select asp-for="MarinaId" class="form-control" asp-items="ViewBag.MarinaId"></select>
+            </div>
+
+            @* Initialize Leaflet Map and set the view with Denmark's coordinates *@
+
+            <partial name="MapDivPartial" />
+
+            @* End of initialization *@
+
+            <div class="form-group">
+                <label asp-for="Location.Latitude" class="control-label"></label>
+                <input id="lat" class="form-control" name="Latitude" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location.Longitude" class="control-label"></label>
+                <input id="long" class="form-control" name="Longitude" readonly />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_LeafletScriptsPartial" />
+    <script src="~/js/leaflet/map_spot.js"></script>
+
+    @* JavaScript to be able to click on map, select a Location and read the coordinates *@
+    <script>
+        var currentMarker = L.marker();
+        var available = $("#Available");
+        var latitude = $("#lat");
+        var longitude = $("#long");
+        mymap.on('click', onMapClick);
+        currentMarker.on('dblclick', removeMarker);
+    </script>
+}
