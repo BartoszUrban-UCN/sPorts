@@ -262,7 +262,7 @@ namespace WebApplication.BusinessLogic
         {
             var booking = await GetSingle(bookingId);
 
-            _pdfService.CreatePDFFile(booking);
+            await _pdfService.CreatePDFFile(booking);
             SendEmail(bookingReference: booking.BookingReferenceNo);
             _pdfService.DeleteBookingFiles(booking.BookingReferenceNo);
         }

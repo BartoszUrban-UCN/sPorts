@@ -49,19 +49,18 @@ namespace WebApplication.Controllers
 
             return View(payment);
         }
+
         public async Task<IActionResult> CreateFromBooking()
         {
             //Session 
-            //var booking = HttpContext.Session.Get<Booking>("Booking");
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             sessionBooking = await _bookingService.LoadSpots(sessionBooking);
             var booking = await _bookingService.ValidateShoppingCart(sessionBooking);
 
             if (booking.BookingReferenceNo != 0)
             {
-                await _bookingService.SaveBooking(booking);
-                //HttpContext.Session.Set("Booking", new Booking());
                 HttpContext.Session.Clear();
+                await _bookingService.SaveBooking(booking);
                 var payment = await _paymentService.CreateFromBooking(booking);
                 ViewData["BookingId"] = booking.BookingId;
                 ViewData["bookingTotalPrice"] = booking.TotalPrice;

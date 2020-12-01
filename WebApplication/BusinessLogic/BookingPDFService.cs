@@ -1,17 +1,21 @@
 ﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
     public class BookingPDFService : IPDFService<Booking>
     {
+
+        private static string fileFolder = Path.GetTempPath();
         /// <summary>
         /// Create pdf file with information about booking
         /// </summary>
         /// <param name="booking"></param>
-        public void CreatePDFFile(Booking booking)
+        public async Task CreatePDFFile(Booking booking)
         {
             PdfDocument pdf = new PdfDocument();
             pdf.Info.Title = booking.BookingReferenceNo.ToString();
@@ -26,8 +30,7 @@ namespace WebApplication.BusinessLogic
                                     $"Payment Status - {booking.PaymentStatus}\n" +
                                     $"Total Price: {booking.TotalPrice}\n" +
                                     "--------------------------------------------------------\n";
-            string bookingLinesData = "";
-            booking.BookingLines.ForEach(bookingLine => bookingLinesData += ($"Item #{bookingLine.BookingLineId}\n" +
+            booking.BookingLines.ForEach(bookingLine => bookingData += ($"Item #{bookingLine.BookingLineId}\n" +
                                                                                 $"Marina Owner - {bookingLine.Spot?.Marina?.MarinaOwner?.Person?.Email}\n" +
                                                                                 $"Marina - {bookingLine.Spot?.Marina?.Name}\n" +
                                                                                 $"Marina Address - {bookingLine.Spot?.Marina?.Address?.City}\n" +
@@ -40,13 +43,16 @@ namespace WebApplication.BusinessLogic
                                                                                 $"Confirmed - {bookingLine.Confirmed}\n" +
                                                                                 "--------------------------------------------------------\n"));
 
-            using (StreamWriter file = new StreamWriter($@"\{booking.BookingReferenceNo}.txt", false))
+            using (StreamWriter file = new StreamWriter($@"{fileFolder}\{booking.BookingReferenceNo}.txt", false))
             {
                 file.WriteLine(bookingData);
-                file.WriteLine(bookingLinesData);
             }
 
-            using (StreamReader readFile = new StreamReader($@"\{booking.BookingReferenceNo}.txt"))
+
+            //await WriteTextAsync($@"{fileFolder}\{booking.BookingReferenceNo}.txt", bookingData);
+
+            // read from txt file & write to 
+            using (StreamReader readFile = new StreamReader($@"{fileFolder}\{booking.BookingReferenceNo}.txt"))
             {
                 graph.DrawString($"Booking - {booking.BookingReferenceNo}", fontTitle, XBrushes.Black, new XRect(0, 20, page.Width.Point, page.Height.Point), XStringFormats.TopCenter);
 
@@ -68,10 +74,23 @@ namespace WebApplication.BusinessLogic
                 }
             }
 
-            string pdfFileName = booking.BookingReferenceNo.ToString();
-            pdf.Save($@"\{pdfFileName}.pdf");
+            pdf.Save($@"{fileFolder}\{booking.BookingReferenceNo}.pdf");
             pdf.Close();
         }
+
+        //private async Task WriteTextAsync(string filePath, string text)
+        //{
+        //    byte[] encodedText = Encoding.Unicode.GetBytes(text);
+
+        //    using var sourceStream = new FileStream(
+        //    filePath,
+        //    FileMode.Append, FileAccess.Write, FileShare.Read,
+        //    bufferSize: 4096, useAsync: true
+        //    );
+
+        //    await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
+        //    sourceStream.Close();
+        //}
 
         #region Delete booking files by referenceNo
         /// <summary>
@@ -80,14 +99,22 @@ namespace WebApplication.BusinessLogic
         /// <param name="bookingReferenceNo"></param>
         public void DeleteBookingFiles(int bookingReferenceNo)
         {
-            var pathPdf = $@"\{bookingReferenceNo}.pdf";
-            var pathTxt = $@"\{bookingReferenceNo}.txt";
+            var pathPdf = $@"{fileFolder}\{bookingReferenceNo}.pdf";
+            var pathTxt = $@"{fileFolder}\{bookingReferenceNo}.txt";
 
-            if (File.Exists(pathPdf))
-                File.Delete($@"\{bookingReferenceNo}.pdf");
+            try
+            {
+                if (File.Exists(pathPdf))
+                    File.Delete(pathPdf);
 
-            if (File.Exists(pathTxt))
-                File.Delete($@"\{bookingReferenceNo}.txt");
+                if (File.Exists(pathTxt))
+                    File.Delete(pathTxt);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         #endregion Delete booking files by referenceNo
