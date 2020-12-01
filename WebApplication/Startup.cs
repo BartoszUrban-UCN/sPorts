@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using WebApplication.BusinessLogic;
 using WebApplication.Data;
+using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication
 {
@@ -36,12 +37,14 @@ namespace WebApplication
 
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
             else
             {
+                //app.UseSPortsExceptionHandler();
                 app.UseExceptionHandler("/Home/Error");
+                app.UseSPortsExceptionHandler();
                 // The default HSTS value is 30 days. You may want to change this for production
                 // scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -93,12 +96,7 @@ namespace WebApplication
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
 
-            //Configure DbContext, connect to the LocalDB
-            string dbString = "LocalDb";
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                dbString = "DragosDb"; // @Dragos there you go (i hope it works)
-            }
+            string dbString = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "LocalDb" : "DragosDb";
 
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbString)));
 
