@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using WebApplication.BusinessLogic;
+﻿using WebApplication.BusinessLogic;
 using WebApplication.Models;
 using WebApplication.Tests.Utils;
 using Xunit;
@@ -24,10 +22,8 @@ namespace WebApplication.Tests.BusinessLogic
                 booking.TotalPrice = 100;
                 var paymentService = new PaymentService(context);
 
-                
                 // Act
                 var payment = paymentService.CreateFromBooking(booking);
-
 
                 // Assert
                 Assert.Equal(booking.BookingId, payment.Result.BookingId);
@@ -38,7 +34,7 @@ namespace WebApplication.Tests.BusinessLogic
         [Fact]
         public async void ProcessPayment()
         {
-            using(var context = Fixture.CreateContext())
+            using (var context = Fixture.CreateContext())
             {
                 //Arrange
                 var booking = new Booking();

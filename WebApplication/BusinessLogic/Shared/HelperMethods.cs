@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using WebApplication.Models;
 
@@ -10,9 +9,9 @@ namespace WebApplication.BusinessLogic.Shared
         public static string Serialize(object @object)
         {
             return JsonConvert.SerializeObject(@object, Formatting.Indented, new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                });
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
         }
 
         public static bool DoesSpotFitBoat(Boat boat, Spot spot)
@@ -28,8 +27,8 @@ namespace WebApplication.BusinessLogic.Shared
         public static bool AreDatesIntersecting(DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd)
         {
             var doesDateRangeIntersect = false;
-            
-            if (aStart < bEnd && bStart < aEnd)
+
+            if (aStart <= bEnd && bStart <= aEnd)
                 doesDateRangeIntersect = true;
 
             return doesDateRangeIntersect;

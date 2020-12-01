@@ -107,13 +107,13 @@ namespace WebApplication.Tests.BusinessLogic
                     List<BookingLine> bookingLines1 = new List<BookingLine>
                     {
                         new BookingLine{StartDate=DateTime.Now, EndDate=DateTime.Now.AddDays(2), BookingId = 1},
-                        new BookingLine{StartDate=DateTime.Now.AddDays(3), EndDate=DateTime.Now.AddDays(5), BookingId = 1},
+                        new BookingLine{StartDate=DateTime.Now.AddDays(5), EndDate=DateTime.Now.AddDays(5), BookingId = 1},
                         new BookingLine{StartDate=DateTime.Now.AddDays(6), EndDate=DateTime.Now.AddDays(9), BookingId = 1},
                     };
                     List<BookingLine> bookingLines2 = new List<BookingLine>
                     {
                         new BookingLine{StartDate=DateTime.Now, EndDate=DateTime.Now.AddDays(2), BookingId = 1},
-                        new BookingLine{StartDate=DateTime.Now.AddDays(3), EndDate=DateTime.Now.AddDays(5), BookingId = 1},
+                        new BookingLine{StartDate=DateTime.Now.AddDays(5), EndDate=DateTime.Now.AddDays(5), BookingId = 1},
                         new BookingLine{StartDate=DateTime.Now.AddDays(6), EndDate=DateTime.Now.AddDays(9), BookingId = 1},
                     };
                     List<BookingLine> bookingLines3 = new List<BookingLine>
@@ -122,15 +122,15 @@ namespace WebApplication.Tests.BusinessLogic
                     };
                     List<Spot> spots = new List<Spot>
                     {
-                        new Spot{ SpotNumber = 1, MarinaId = 1, MaxDepth=10, MaxLength=20, MaxWidth=30, BookingLines=bookingLines1},
-                        new Spot{ SpotNumber = 2, MarinaId = 1, MaxDepth=30, MaxLength=40, MaxWidth=30, BookingLines=bookingLines2},
-                        new Spot{ SpotNumber = 3, MarinaId = 1, MaxDepth=30, MaxLength=30, MaxWidth=30, BookingLines=bookingLines3}
+                        new Spot{ SpotNumber = 1, MarinaId = 1, MaxDepth=10, MaxLength=20, MaxWidth=30, BookingLines=bookingLines1, Available=true},
+                        new Spot{ SpotNumber = 2, MarinaId = 1, MaxDepth=30, MaxLength=40, MaxWidth=30, BookingLines=bookingLines2, Available=true},
+                        new Spot{ SpotNumber = 3, MarinaId = 1, MaxDepth=30, MaxLength=30, MaxWidth=30, BookingLines=bookingLines3, Available=true}
                     };
 
                     Marina marina = new Marina { Name = "Hello", Spots = spots, MarinaOwnerId = 1 };
-                    Boat boat = new Boat { Depth = 30, Length = 30, Width = 30, BoatOwnerId = 1 };
-                    DateTime startDate = DateTime.Now;
-                    DateTime endDate = DateTime.Now.AddDays(6);
+                    Boat boat = new Boat { Depth = 1, Length = 2, Width = 3, BoatOwnerId = 1 };
+                    DateTime startDate = DateTime.Now.AddDays(3);
+                    DateTime endDate = DateTime.Now.AddDays(4);
 
                     context.AddRange(spots);
                     context.Add(marina);
@@ -148,7 +148,7 @@ namespace WebApplication.Tests.BusinessLogic
                     // Assert
                     Assert.NotNull(result);
                     //Assert.Single(result);
-                    Assert.Equal(3, result.First().SpotNumber);
+                    Assert.Equal(1, result.First().SpotNumber);
                 }
             }
         }
@@ -168,7 +168,7 @@ namespace WebApplication.Tests.BusinessLogic
             };
 
             // Act
-            var result = BookingFormService.DoesSpotFitBoat(boat, spot);
+            var result = HelperMethods.DoesSpotFitBoat(boat, spot);
 
             // Assert
             Assert.True(result);
@@ -190,7 +190,7 @@ namespace WebApplication.Tests.BusinessLogic
             };
 
             // Act
-            var result = BookingFormService.DoesSpotFitBoat(boat, spot);
+            var result = HelperMethods.DoesSpotFitBoat(boat, spot);
 
             // Assert
             Assert.False(result);
@@ -206,7 +206,7 @@ namespace WebApplication.Tests.BusinessLogic
             DateTime bEnd = DateTime.Now.AddDays(5);
 
             // Act
-            var result = BookingFormService.DoesDateRangeInsersect(
+            var result = HelperMethods.AreDatesIntersecting(
                 aStart,
                 aEnd,
                 bStart,
@@ -226,7 +226,7 @@ namespace WebApplication.Tests.BusinessLogic
             DateTime bEnd = DateTime.Now.AddDays(10);
 
             // Act
-            var result = BookingFormService.DoesDateRangeInsersect(
+            var result = HelperMethods.AreDatesIntersecting(
                 aStart,
                 aEnd,
                 bStart,
@@ -245,7 +245,7 @@ namespace WebApplication.Tests.BusinessLogic
             var endDate = DateTime.Now.AddDays(3);
 
             // Act
-            var areDatesValid = BookingFormService.AreDatesValid(startDate, endDate);
+            var areDatesValid = HelperMethods.AreDatesValid(startDate, endDate);
 
             // Assert
             Assert.True(areDatesValid);
@@ -260,7 +260,7 @@ namespace WebApplication.Tests.BusinessLogic
             var endDate = DateTime.Now.AddDays(3);
 
             // Act
-            var areDatesValid = BookingFormService.AreDatesValid(endDate, startDate);
+            var areDatesValid = HelperMethods.AreDatesValid(endDate, startDate);
 
             // Assert
             Assert.False(areDatesValid);
