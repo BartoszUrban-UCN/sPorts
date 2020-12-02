@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.BusinessLogic.Shared;
 
 namespace WebApplication.BusinessLogic
 {
@@ -24,7 +24,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.AddAsync(person);
 
-            return person.PersonId;
+            return person.Id;
         }
 
         public async Task Delete(int? id)
@@ -36,7 +36,7 @@ namespace WebApplication.BusinessLogic
         public async Task<bool> Exists(int? id)
         {
             id.ThrowIfInvalidId();
-            return await _context.Persons.AnyAsync(l => l.PersonId == id);
+            return await _context.Persons.AnyAsync(l => l.Id == id);
         }
 
         public async Task<IEnumerable<Person>> GetAll()
@@ -51,7 +51,7 @@ namespace WebApplication.BusinessLogic
             id.ThrowIfInvalidId();
 
             var spot = await _context.Persons
-                 .FirstOrDefaultAsync(s => s.PersonId == id);
+                 .FirstOrDefaultAsync(s => s.Id == id);
 
             spot.ThrowIfNull();
 
@@ -62,12 +62,12 @@ namespace WebApplication.BusinessLogic
         {
             person.ThrowIfNull();
 
-            if (_context.BoatOwners.AsQueryable().Any(p => p.PersonId.Equals(person.PersonId)))
+            if (_context.BoatOwners.AsQueryable().Any(p => p.PersonId.Equals(person.Id)))
             {
                 throw new BusinessException("Email", "You are already registered as a boat owner!");
             }
 
-            var boatOwner = new BoatOwner { PersonId = person.PersonId };
+            var boatOwner = new BoatOwner { PersonId = person.Id };
 
             await _context.BoatOwners.AddAsync(boatOwner);
 
@@ -76,12 +76,12 @@ namespace WebApplication.BusinessLogic
 
         public async Task<MarinaOwner> MakePersonMarinaOwner(Person person)
         {
-            if (_context.MarinaOwners.AsQueryable().Any(p => p.PersonId.Equals(person.PersonId)))
+            if (_context.MarinaOwners.AsQueryable().Any(p => p.PersonId.Equals(person.Id)))
             {
                 throw new BusinessException("Email", "You are already registered as a marina owner!");
             }
 
-            var marinaOwner = new MarinaOwner { PersonId = person.PersonId };
+            var marinaOwner = new MarinaOwner { PersonId = person.Id };
 
             await _context.MarinaOwners.AddAsync(marinaOwner);
 
@@ -93,7 +93,7 @@ namespace WebApplication.BusinessLogic
             person.ThrowIfNull();
 
             _context.Update(person);
-            
+
             return person;
         }
     }

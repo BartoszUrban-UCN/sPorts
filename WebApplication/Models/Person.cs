@@ -1,32 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication.Models
 {
-    public class Person
+    public class Person : IdentityUser<int>
     {
-        public int PersonId { get; set; }
-
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        //[RegularExpression("\\p{L}")]
         public string FirstName { get; set; }
 
         [Required]
-        //[RegularExpression("\\p{L}")]
         public string LastName { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-
-        [Phone]
-        public string PhoneNumber { get; set; }
+        public int? AddressId { get; set; }
 
         public Address Address { get; set; }
-
-        public int? AddressId { get; set; }
+        public BoatOwner BoatOwner { get; set; }
+        public MarinaOwner MarinaOwner { get; set; }
     }
 }

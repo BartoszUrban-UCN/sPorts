@@ -38,7 +38,7 @@ namespace WebApplication.Controllers
 
             var person = await _context.Persons
                 .Include(p => p.Address)
-                .FirstOrDefaultAsync(m => m.PersonId == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (person == null)
             {
                 return NotFound();
@@ -100,7 +100,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PersonId,AddressId,Email,FirstName,LastName,Password,PhoneNumber")] Person person)
         {
-            if (id != person.PersonId)
+            if (id != person.Id)
             {
                 return NotFound();
             }
@@ -114,7 +114,7 @@ namespace WebApplication.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PersonExists(person.PersonId))
+                    if (!PersonExists(person.Id))
                     {
                         return NotFound();
                     }
@@ -139,7 +139,7 @@ namespace WebApplication.Controllers
 
             var person = await _context.Persons
                 .Include(p => p.Address)
-                .FirstOrDefaultAsync(m => m.PersonId == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (person == null)
             {
                 return NotFound();
@@ -161,7 +161,7 @@ namespace WebApplication.Controllers
 
         private bool PersonExists(int id)
         {
-            return _context.Persons.Any(e => e.PersonId == id);
+            return _context.Persons.Any(e => e.Id == id);
         }
     }
 }

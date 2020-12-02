@@ -49,10 +49,10 @@ namespace WebApplication.Data
             {
                 var persons = new Person[]
                 {
-                    new Person{FirstName="Bartosz", LastName="Urban", Email="bartosz@email.com", Password="123456", AddressId=1},
-                    new Person{FirstName="Dragos", LastName="Ionescu", Email="dragos@email.com", Password="123456", AddressId=1},
-                    new Person{FirstName="Peter", LastName="Boelt", Email="peter@email.com", Password="123456", AddressId=2},
-                    new Person{FirstName="Zach", LastName="Horatau", Email="zaharia@email.com", Password="123456", AddressId=2}
+                    new Person{FirstName="Bartosz", LastName="Urban", Email="bartosz@email.com", AddressId=1},
+                    new Person{FirstName="Dragos", LastName="Ionescu", Email="dragos@email.com", AddressId=1},
+                    new Person{FirstName="Peter", LastName="Boelt", Email="peter@email.com", AddressId=2},
+                    new Person{FirstName="Zach", LastName="Horatau", Email="zaharia@email.com", AddressId=2}
                 };
 
                 context.Persons.AddRange(persons);
@@ -160,7 +160,7 @@ namespace WebApplication.Data
                     new BookingLine {Ongoing = false, BookingId = 3, SpotId= 1, DiscountedTotalPrice = 10},
                     new BookingLine {Ongoing = false, BookingId = 3, SpotId= 2, DiscountedTotalPrice = 10},
                     new BookingLine {Ongoing = false, BookingId = 3, SpotId= 3, DiscountedTotalPrice = 10},
-                    
+
                     // Ongoing: False
                     new BookingLine {Ongoing = false, BookingId = 4, SpotId= 1, DiscountedTotalPrice = 19},
                     new BookingLine {Ongoing = false, BookingId = 4, SpotId= 2, DiscountedTotalPrice = 11},

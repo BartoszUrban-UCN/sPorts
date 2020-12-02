@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +13,9 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 using WebApplication.BusinessLogic.Shared;
+using WebApplication.Data;
+using WebApplication.Models;
 
 namespace WebApplication
 {
@@ -55,6 +59,7 @@ namespace WebApplication
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             // Session configuration
@@ -63,6 +68,7 @@ namespace WebApplication
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
+                endpoints.MapRazorPages();
             });
 
             //Swagger configuration
@@ -91,16 +97,26 @@ namespace WebApplication
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
             });
 
+            // MVC and Razor pages support
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            services.AddRazorPages();
 
+            // EF Core Context and Database
             string dbString = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "LocalDb" : "DragosDb";
 
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbString)));
 
-            //Swagger service
+            // Authenitcation and Identity
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
+
+            services.AddIdentity<Person, Role>(cfg => { cfg.User.RequireUniqueEmail = true; }).AddEntityFrameworkStores<SportsContext>().AddDefaultTokenProviders().AddDefaultUI();
+
+            // Swagger service
             services.AddSwaggerGen(swagger =>
             {
                 swagger.SwaggerDoc("v1",
@@ -120,7 +136,7 @@ namespace WebApplication
                         }
                     });
 
-                //Point swagger to the generated xml file
+                // Point swagger to the generated xml file
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 swagger.IncludeXmlComments(xmlPath);

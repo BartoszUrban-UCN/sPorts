@@ -160,7 +160,7 @@ namespace WebApplication.Controllers
         [Route("{controller}/bookingLines")]
         public async Task<IActionResult> BookingsByMarinaOwner()
         {
-            // get logged in marina 
+            // get logged in marina
             var bookingLines = await _marinaOwnerService.GetUnconfirmedBookingLines(1);
 
             return View(bookingLines);

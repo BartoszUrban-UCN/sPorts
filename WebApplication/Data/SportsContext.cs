@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WebApplication.Models;
 
 namespace WebApplication.Data
 {
-    public class SportsContext : DbContext
+    public class SportsContext : IdentityDbContext<Person, Role, int>
     {
         public SportsContext(DbContextOptions<SportsContext> options) : base(options)
         {
@@ -24,20 +25,20 @@ namespace WebApplication.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Address>().ToTable("Address");
-            modelBuilder.Entity<Person>().ToTable("Person");
-            modelBuilder.Entity<BoatOwner>().ToTable("BoatOwner");
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Person>().HasOne<BoatOwner>(p => p.BoatOwner).WithOne(bO => bO.Person).HasForeignKey<BoatOwner>(bO => bO.PersonId);
+            modelBuilder.Entity<Person>().HasOne<MarinaOwner>(p => p.MarinaOwner).WithOne(bO => bO.Person).HasForeignKey<MarinaOwner>(bO => bO.PersonId);
+
             modelBuilder.Entity<BoatOwner>().HasOne(bO => bO.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Boat>().ToTable("Boat");
-            modelBuilder.Entity<MarinaOwner>().ToTable("MarinaOwner");
             modelBuilder.Entity<MarinaOwner>().HasOne(mo => mo.Person).WithOne().OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Marina>().ToTable("Marina");
-            modelBuilder.Entity<Review>().ToTable("Review");
-            modelBuilder.Entity<Spot>().ToTable("Spot");
-            modelBuilder.Entity<Booking>().ToTable("Booking");
-            modelBuilder.Entity<BookingLine>().ToTable("BookingLine");
-            modelBuilder.Entity<Location>().ToTable("Location");
-            modelBuilder.Entity<Payment>().ToTable("Payment");
+
+            // Singular Table Names
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                // Use the entity name instead of the Context.DbSet<T> name refs https://docs.microsoft.com/en-us/ef/core/modeling/entity-types?tabs=fluent-api#table-name
+                modelBuilder.Entity(entityType.ClrType).ToTable(entityType.ClrType.Name);
+            }
         }
     }
 }
