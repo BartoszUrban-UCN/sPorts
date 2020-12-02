@@ -54,6 +54,7 @@ namespace WebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventMultipleEvents]
         public async Task<IActionResult> Create([Bind("MarinaOwnerId,PersonId")] MarinaOwner marinaOwner)
         {
             if (ModelState.IsValid)

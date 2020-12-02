@@ -57,6 +57,7 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventMultipleEvents]
         public async Task<IActionResult> Create([Bind("MarinaId,Name,Description,Facilities,MarinaOwnerId,AddressId")] Marina marina)
         {
             if (ModelState.IsValid)
@@ -159,6 +160,7 @@ namespace WebApplication.Controllers
         // POST: Marina/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [PreventMultipleEvents]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (await _marinaService.Exists(id))

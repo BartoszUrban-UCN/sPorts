@@ -54,8 +54,13 @@ namespace WebApplication.Controllers
         {
             //Session 
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
-            sessionBooking = await _bookingService.LoadSpots(sessionBooking);
-            var booking = await _bookingService.ValidateShoppingCart(sessionBooking);
+            var booking = new Booking();
+
+            if (sessionBooking != null)
+            {
+                sessionBooking = await _bookingService.LoadSpots(sessionBooking);
+                booking = await _bookingService.ValidateShoppingCart(sessionBooking);
+            }
 
             if (booking.BookingReferenceNo != 0)
             {
@@ -67,10 +72,12 @@ namespace WebApplication.Controllers
                 //return View("~/Views/Payment/CreateFromBooking.cshtml", payment);
                 return await Create(payment);
             }
-            else
-            {
-                return View();
-            }
+            //else
+            //{
+            //    return View();
+            //}
+
+            return await Index();
         }
 
 

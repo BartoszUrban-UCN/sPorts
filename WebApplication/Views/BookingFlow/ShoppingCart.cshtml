@@ -79,11 +79,12 @@
                                 </div>
                                 <div class="col text-right text-secondary">
                                     <h6 class="card-text" style="flex-grow: 1;">Spot No #@bookingLine.Spot.SpotNumber</h6>
-                                    <a class="btn btn-outline-success removeBtn" name="@bookingLine.StartDate">Remove</a>
+                                    @*<a class="btn btn-outline-success removeBtn" name="@bookingLine.StartDate">Remove</a>*@
                                 </div>
                                 <div class="w-100"></div>
                                 <div class="col align-self-end text-right">
-                                    <a asp-controller="BookingLine" asp-action="Details" asp-route-id="@bookingLine.BookingLineId" class="btn btn-success">Details</a>
+                                    @*<a asp-controller="BookingLine" asp-action="Details" asp-route-id="@bookingLine.BookingLineId" class="btn btn-success">Details</a>*@
+                                    <a class="btn btn-outline-success removeBtn" name="@bookingLine.StartDate">Remove</a>
                                 </div>
                             </div>
                         }

@@ -50,6 +50,7 @@ namespace WebApplication.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventMultipleEvents]
         public async Task<IActionResult> Create([Bind("BoatId,Name,RegistrationNo,Width,Length,Depth,Type,BoatOwnerId")] Boat boat)
         {
             try
