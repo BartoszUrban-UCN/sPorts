@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
@@ -65,19 +66,27 @@ namespace WebApplication.Controllers
             if (booking.BookingReferenceNo != 0)
             {
                 HttpContext.Session.Clear();
-                await _bookingService.SaveBooking(booking);
+                try
+                {
+                    await _bookingService.SaveBooking(booking);
+                }
+                catch (Exception) { }
                 var payment = await _paymentService.CreateFromBooking(booking);
                 ViewData["BookingId"] = booking.BookingId;
                 ViewData["bookingTotalPrice"] = booking.TotalPrice;
                 //return View("~/Views/Payment/CreateFromBooking.cshtml", payment);
-                return await Create(payment);
+                //return await Create(payment);
+
+                // should call paymentService.SavePayment() or method that saves payment in db
+                _context.Add(payment);
+                await _context.SaveChangesAsync();
             }
             //else
             //{
             //    return View();
             //}
 
-            return await Index();
+            return RedirectToAction(nameof(Index));
         }
 
 

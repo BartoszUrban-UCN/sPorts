@@ -9,7 +9,6 @@ namespace WebApplication.BusinessLogic
 {
     public class BookingPDFService : IPDFService<Booking>
     {
-
         private static string fileFolder = Path.GetTempPath();
         /// <summary>
         /// Create pdf file with information about booking

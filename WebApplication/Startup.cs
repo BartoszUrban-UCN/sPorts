@@ -84,7 +84,7 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             // Add sessions
-            //services.AddDistributedMemoryCache();
+            services.AddDistributedMemoryCache();
 
             //services.Configure<CookiePolicyOptions>(options =>
             //{
