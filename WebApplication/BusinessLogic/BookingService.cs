@@ -26,6 +26,7 @@ namespace WebApplication.BusinessLogic
         }
 
         #region Create booking line based on data from the form
+
         public Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot)
         {
             var bookingLine = new BookingLine
@@ -52,7 +53,8 @@ namespace WebApplication.BusinessLogic
 
             return booking;
         }
-        #endregion Create booking lines based on data from the form
+
+        #endregion Create booking line based on data from the form
 
         public async Task<Booking> SaveBooking(Booking booking)
         {
@@ -60,9 +62,8 @@ namespace WebApplication.BusinessLogic
             await TrackBooking(booking);
             await Save();
 
-            // create pdf file with info about the booking
-            // send an email to boatOwner's email
-            // delete files create in CreateBookingPdfFile
+            // create pdf file with info about the booking send an email to
+            // boatOwner's email delete files create in CreateBookingPdfFile
             await SendConfirmationMail(booking.BookingId);
 
             return booking;
@@ -161,18 +162,6 @@ namespace WebApplication.BusinessLogic
             return booking.BookingId;
         }
 
-        private async Task TrackBooking(Booking booking)
-        {
-            booking.ThrowIfNull();
-
-            // For later use/test -Peter
-            //booking.PaymentStatus = "Paid";
-
-            await _context.AddAsync(booking);
-            booking.BookingLines.ForEach(async bl => await _context.BookingLines.AddAsync(bl));
-
-        }
-
         public async Task<Booking> GetSingle(int? id)
         {
             id.ThrowIfInvalidId();
@@ -232,7 +221,19 @@ namespace WebApplication.BusinessLogic
             return await _bookingLineService.GetSingle(id);
         }
 
+        private async Task TrackBooking(Booking booking)
+        {
+            booking.ThrowIfNull();
+
+            // For later use/test -Peter
+            //booking.PaymentStatus = "Paid";
+
+            await _context.AddAsync(booking);
+            booking.BookingLines.ForEach(async bl => await _context.BookingLines.AddAsync(bl));
+        }
+
         #region Confirm spot booked by boatOnwer
+
         /// <summary>
         /// Marina Owner confirms spot booked by a boat owner
         /// </summary>
@@ -252,11 +253,14 @@ namespace WebApplication.BusinessLogic
 
             return success;
         }
-        #endregion
+
+        #endregion Confirm spot booked by boatOnwer
 
         #region After time left has been spent or all booking lines have been confirmed, send mail with booking information to boat owner
+
         /// <summary>
-        /// Email with booking info is sent to boat owner's email if something has changed in the booking e.g. spot has been confirmed.
+        /// Email with booking info is sent to boat owner's email if something
+        /// has changed in the booking e.g. spot has been confirmed.
         /// </summary>
         private async Task SendConfirmationMail(int bookingId)
         {
@@ -266,7 +270,8 @@ namespace WebApplication.BusinessLogic
             SendEmail(bookingReference: booking.BookingReferenceNo);
             _pdfService.DeleteBookingFiles(booking.BookingReferenceNo);
         }
-        #endregion
+
+        #endregion After time left has been spent or all booking lines have been confirmed, send mail with booking information to boat owner
 
         #region IBookingLineService
 
@@ -279,16 +284,25 @@ namespace WebApplication.BusinessLogic
         {
             await _bookingLineService.AddTime(bookingLineId, amount);
         }
-        #endregion
+
+        #endregion IBookingLineService
 
         #region IBookingFormService
-        public async Task<List<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
+
+        public async Task<IEnumerable<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate)
         {
-            return (await _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate)).ToList();
+            return await _bookingFormService.GetAllAvailableSpotsCount(marinaIds, boatId, startDate, endDate);
         }
-        #endregion
+
+        public async Task<IList<Spot>> GetAvailableSpots(int marinaId, int boatId, DateTime startDate, DateTime endDate)
+        {
+            return await _bookingFormService.GetAvailableSpots(marinaId, boatId, startDate, endDate);
+        }
+
+        #endregion IBookingFormService
 
         #region Manage shoppping cart
+
         /// <summary>
         /// Check whether spots in the cart has not been booked by someone else
         /// If booked by someone else remove them from booking
@@ -348,6 +362,7 @@ namespace WebApplication.BusinessLogic
 
             return booking;
         }
-        #endregion
+
+        #endregion Manage shoppping cart
     }
 }

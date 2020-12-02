@@ -5,7 +5,7 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public interface IBookingService : ICRUD<Booking>
+    public interface IBookingService : ICRUD<Booking>, IBookingFormService
     {
         Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot);
 
@@ -31,9 +31,8 @@ namespace WebApplication.BusinessLogic
 
         Booking CartRemoveBookingLine(Booking booking, DateTime startDate);
 
-        Task<List<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
-
         double CalculateTotalPrice(Booking booking);
+
         double CalculateTotalDiscount(Booking booking);
     }
 }

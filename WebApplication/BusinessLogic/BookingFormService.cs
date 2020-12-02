@@ -57,15 +57,15 @@ namespace WebApplication.BusinessLogic
 
                             var booked = false;
                             foreach (BookingLine bookingLine in spot.BookingLines.Where<BookingLine>(bL => bL.EndDate > DateTime.Now))
-                            if (HelperMethods.AreDatesIntersecting(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
-                            {
-                                // Basically returns all spots that
-                                // 1. Fit the boat
-                                // 2. Have NO date intersects with any existing bookings with no
-                                // optimizations in mind whatsoever 🙂
-                                booked = true;
-                                break;
-                            }
+                                if (HelperMethods.AreDatesIntersecting(bookingLine.StartDate, bookingLine.EndDate, startDate, endDate))
+                                {
+                                    // Basically returns all spots that
+                                    // 1. Fit the boat
+                                    // 2. Have NO date intersects with any existing bookings with no
+                                    // optimizations in mind whatsoever 🙂
+                                    booked = true;
+                                    break;
+                                }
 
                             if (!booked)
                             {
@@ -77,17 +77,6 @@ namespace WebApplication.BusinessLogic
             }
 
             return availableSpots;
-        }
-
-        // ??
-        public async Task<Booking> CreateBooking()
-        {
-            var booking = new Booking { CreationDate = DateTime.Now };
-            var bookingLine = new BookingLine { Booking = booking };
-            booking.BookingLines.Add(bookingLine);
-
-            _context.Add(booking);
-            return booking;
         }
     }
 }

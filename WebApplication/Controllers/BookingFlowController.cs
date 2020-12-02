@@ -11,14 +11,12 @@ namespace WebApplication.Controllers
 {
     public class BookingFlowController : Controller
     {
-        private readonly IBookingFormService _bookingFormService;
         private readonly IBookingService _bookingService;
         private readonly IBoatService _boatService;
         private readonly IMarinaService _marinaService;
 
-        public BookingFlowController(IBookingFormService bookingFormService, IBookingService bookingService, IBoatService boatService, IMarinaService marinaService, ISpotService spotService)
+        public BookingFlowController(IBookingService bookingService, IBoatService boatService, IMarinaService marinaService, ISpotService spotService)
         {
-            _bookingFormService = bookingFormService;
             _bookingService = bookingService;
             _boatService = boatService;
             _marinaService = marinaService;
@@ -27,10 +25,11 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.Boat = new SelectList(await _boatService.GetAll(), "BoatId", "Name");
-            // Needed for user prompt when deciding to change important values in the booking
+            // Needed for user prompt when deciding to change important values
+            // in the booking
             ViewBag.SessionBooking = HttpContext.Session.Get<Booking>("Booking");
 
-            var booking = await _bookingFormService.CreateBooking();
+            var booking = await _bookingService.Create(new Booking { });
 
             return View(booking);
         }
@@ -51,7 +50,7 @@ namespace WebApplication.Controllers
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
 
-            var jsonString = HelperMethods.Serialize(await _bookingFormService.GetAllAvailableSpotsCount((await _marinaService.GetAll()).Select(m => m.MarinaId).ToList(), boatId, startDate, endDate));
+            var jsonString = HelperMethods.Serialize(await _bookingService.GetAllAvailableSpotsCount((await _marinaService.GetAll()).Select(m => m.MarinaId).ToList(), boatId, startDate, endDate));
 
             return new JsonResult(jsonString);
         }
@@ -64,7 +63,7 @@ namespace WebApplication.Controllers
             var endDate = DateTime.Parse(end);
             var marinaId = int.Parse(marina);
 
-            var jsonString = HelperMethods.Serialize(await _bookingFormService.GetAvailableSpots(marinaId, boatId, startDate, endDate));
+            var jsonString = HelperMethods.Serialize(await _bookingService.GetAvailableSpots(marinaId, boatId, startDate, endDate));
 
             return new JsonResult(jsonString);
         }
