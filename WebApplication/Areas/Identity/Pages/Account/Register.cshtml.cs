@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic;
 using WebApplication.Models;
 
 namespace WebApplication.Areas.Identity.Pages.Account
@@ -20,20 +22,32 @@ namespace WebApplication.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<Person> _signInManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly UserManager<Person> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IMarinaOwnerService _marinaOwnerService;
+        private readonly IBoatOwnerService _boatOwnerService;
+        private readonly ILoginService _loginService;
 
         public RegisterModel(
+            RoleManager<Role> roleManager,
             UserManager<Person> userManager,
             SignInManager<Person> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IMarinaOwnerService marinaOwnerService,
+            IBoatOwnerService boatOwnerService,
+            ILoginService loginService)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _marinaOwnerService = marinaOwnerService;
+            _boatOwnerService = boatOwnerService;
+            _loginService = loginService;
         }
 
         [BindProperty]
@@ -70,6 +84,15 @@ namespace WebApplication.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Display(Name = "Boat Owner")]
+            public bool IsBoatOwner { get; set; }
+
+            [Display(Name = "Marina Owner")]
+            public bool IsMarinaOwner { get; set; }
+
+            [Display(Name = "Admin")]
+            public bool IsAdmin { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -86,6 +109,30 @@ namespace WebApplication.Areas.Identity.Pages.Account
             {
                 var user = new Person { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
+                // TODO: Should not be here
+                if (await _roleManager.FindByNameAsync("MarinaOwner") == null)
+                    await _roleManager.CreateAsync(new Role() { Name = "MarinaOwner" });
+                if (await _roleManager.FindByNameAsync("BoatOwner") == null)
+                    await _roleManager.CreateAsync(new Role() { Name = "BoatOwner" });
+                if (await _roleManager.FindByNameAsync("Admin") == null)
+                    await _roleManager.CreateAsync(new Role() { Name = "Admin" });
+
+                if (Input.IsBoatOwner)
+                {
+                    await _userManager.AddToRoleAsync(user, "BoatOwner");
+                    await _loginService.MakePersonBoatOwner(user);
+                }
+                if (Input.IsMarinaOwner)
+                {
+                    await _userManager.AddToRoleAsync(user, "MarinaOwner");
+                    await _loginService.MakePersonMarinaOwner(user);
+                }
+                if (Input.IsAdmin)
+                {
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");

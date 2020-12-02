@@ -20,6 +20,34 @@
                 <input asp-for="Input.PhoneNumber" class="form-control" />
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
+
+            <h3>Groups</h3>
+            <hr />
+
+            <div class="form-group">
+                <div class="checkbox">
+                    <label asp-for="Input.IsBoatOwner">
+                        <input asp-for="Input.IsBoatOwner" />
+                        @Html.DisplayNameFor(model => model.Input.IsBoatOwner)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label asp-for="Input.IsMarinaOwner">
+                        <input asp-for="Input.IsMarinaOwner" />
+                        @Html.DisplayNameFor(model => model.Input.IsMarinaOwner)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label asp-for="Input.IsAdmin">
+                        <input asp-for="Input.IsAdmin" />
+                        @Html.DisplayNameFor(model => model.Input.IsAdmin)
+                    </label>
+                </div>
+            </div>
             <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>

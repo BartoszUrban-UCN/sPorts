@@ -50,12 +50,12 @@ namespace WebApplication.BusinessLogic
         {
             id.ThrowIfInvalidId();
 
-            var spot = await _context.Persons
+            var person = await _context.Persons
                  .FirstOrDefaultAsync(s => s.Id == id);
 
-            spot.ThrowIfNull();
+            person.ThrowIfNull();
 
-            return spot;
+            return person;
         }
 
         public async Task<BoatOwner> MakePersonBoatOwner(Person person)
@@ -76,6 +76,8 @@ namespace WebApplication.BusinessLogic
 
         public async Task<MarinaOwner> MakePersonMarinaOwner(Person person)
         {
+            person.ThrowIfNull();
+
             if (_context.MarinaOwners.AsQueryable().Any(p => p.PersonId.Equals(person.Id)))
             {
                 throw new BusinessException("Email", "You are already registered as a marina owner!");
@@ -86,6 +88,36 @@ namespace WebApplication.BusinessLogic
             await _context.MarinaOwners.AddAsync(marinaOwner);
 
             return marinaOwner;
+        }
+
+        public async Task<Person> RevokeBoatOwnerRights(Person person)
+        {
+            person.ThrowIfNull();
+
+            var boatOwner = await _context.BoatOwners.FirstOrDefaultAsync(foundBoatOwner => foundBoatOwner.PersonId.Equals(person.Id));
+
+            if (boatOwner is not null)
+            {
+                person.BoatOwner = null;
+                _context.BoatOwners.Remove(boatOwner);
+            }
+
+            return person;
+        }
+
+        public async Task<Person> RevokeMarinaOwnerRights(Person person)
+        {
+            person.ThrowIfNull();
+
+            var marinaOwner = await _context.MarinaOwners.FirstOrDefaultAsync(foundMarinaOwner => foundMarinaOwner.PersonId.Equals(person.Id));
+
+            if (marinaOwner is not null)
+            {
+                person.MarinaOwner = null;
+                _context.MarinaOwners.Remove(marinaOwner);
+            }
+
+            return person;
         }
 
         public Person Update(Person person)
