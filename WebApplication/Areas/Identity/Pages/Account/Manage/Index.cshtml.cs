@@ -47,8 +47,8 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Boat Owner")]
             public bool IsBoatOwner { get; set; }
 
-            [Display(Name = "Admin")]
-            public bool IsAdmin { get; set; }
+            [Display(Name = "Manager")]
+            public bool IsManager { get; set; }
         }
 
         private async Task LoadAsync(Person user)
@@ -57,7 +57,7 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var isMarinaOwner = await _userManager.IsInRoleAsync(user, "MarinaOwner");
             var isBoatOwner = await _userManager.IsInRoleAsync(user, "BoatOwner");
-            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var isManager = await _userManager.IsInRoleAsync(user, "Manager");
 
             Username = userName;
 
@@ -66,7 +66,7 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 PhoneNumber = phoneNumber,
                 IsBoatOwner = isBoatOwner,
                 IsMarinaOwner = isMarinaOwner,
-                IsAdmin = isAdmin
+                IsManager = isManager
             };
         }
 
@@ -143,16 +143,16 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var isManager = await _userManager.IsInRoleAsync(user, "Manager");
             // If user changed the admin status
-            if (Input.IsAdmin != isAdmin)
+            if (Input.IsManager != isManager)
             {
                 // If he decided to become one
-                if (Input.IsAdmin)
-                    await _userManager.AddToRoleAsync(user, "Admin");
+                if (Input.IsManager)
+                    await _userManager.AddToRoleAsync(user, "Manager");
                 // Else if he was one but decides not to be one anymore
                 else
-                    await _userManager.RemoveFromRoleAsync(user, "Admin");
+                    await _userManager.RemoveFromRoleAsync(user, "Manager");
             }
 
             await _signInManager.RefreshSignInAsync(user);

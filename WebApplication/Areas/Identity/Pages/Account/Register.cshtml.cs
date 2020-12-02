@@ -91,8 +91,8 @@ namespace WebApplication.Areas.Identity.Pages.Account
             [Display(Name = "Marina Owner")]
             public bool IsMarinaOwner { get; set; }
 
-            [Display(Name = "Admin")]
-            public bool IsAdmin { get; set; }
+            [Display(Name = "Manager")]
+            public bool IsManager { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -115,8 +115,8 @@ namespace WebApplication.Areas.Identity.Pages.Account
                     await _roleManager.CreateAsync(new Role() { Name = "MarinaOwner" });
                 if (await _roleManager.FindByNameAsync("BoatOwner") == null)
                     await _roleManager.CreateAsync(new Role() { Name = "BoatOwner" });
-                if (await _roleManager.FindByNameAsync("Admin") == null)
-                    await _roleManager.CreateAsync(new Role() { Name = "Admin" });
+                if (await _roleManager.FindByNameAsync("Manager") == null)
+                    await _roleManager.CreateAsync(new Role() { Name = "Manager" });
 
                 if (Input.IsBoatOwner)
                 {
@@ -128,9 +128,9 @@ namespace WebApplication.Areas.Identity.Pages.Account
                     await _userManager.AddToRoleAsync(user, "MarinaOwner");
                     await _loginService.MakePersonMarinaOwner(user);
                 }
-                if (Input.IsAdmin)
+                if (Input.IsManager)
                 {
-                    await _userManager.AddToRoleAsync(user, "Admin");
+                    await _userManager.AddToRoleAsync(user, "Manager");
                 }
 
                 if (result.Succeeded)

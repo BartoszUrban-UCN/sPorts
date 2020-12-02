@@ -53,7 +53,7 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Marina" asp-action="Index"><i class="fas fa-anchor"></i> Marinas</a>
                                 </li>
                             }
-                            if (currentUser.IsInRole("Admin"))
+                            if (currentUser.IsInRole("Manager"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="BoatOwner" asp-action="Index"><i class="fas fa-user"></i> BoatOwner</a>
