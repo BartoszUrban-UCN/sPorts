@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -116,6 +117,32 @@ namespace WebApplication
 
             services.AddIdentity<Person, Role>(cfg => { cfg.User.RequireUniqueEmail = true; }).AddEntityFrameworkStores<SportsContext>().AddDefaultTokenProviders().AddDefaultUI();
 
+            // More convenient password options at the beginning since we are developing
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequiredUniqueChars = 0;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+            });
+
+            // The lines below make it so that only authenticated users can access pages, regardless of what page it is
+
+            //services.AddAuthorization(options =>
+            //{
+            //    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            //        .RequireAuthenticatedUser()
+            //        .Build();
+            //});
+
             // Swagger service
             services.AddSwaggerGen(swagger =>
             {
@@ -144,6 +171,8 @@ namespace WebApplication
 
             // Adds all services in the Business Layer for dependency injection
             services.AddBusinessServices();
+
+            
         }
     }
 }
