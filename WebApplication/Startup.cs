@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -12,11 +13,11 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.Authorization;
 
 namespace WebApplication
 {
@@ -80,9 +81,6 @@ namespace WebApplication
             {
                 swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "sPorts API v1");
             });
-
-            // Init roles
-            app.ApplicationServices.SeedRoles().Wait();
         }
 
         // This method gets called by the runtime. Use this method to add
@@ -120,7 +118,11 @@ namespace WebApplication
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
 
-            services.AddIdentity<Person, Role>().AddEntityFrameworkStores<SportsContext>().AddDefaultTokenProviders().AddDefaultUI();
+            services.AddIdentity<Person, Role>()
+                .AddEntityFrameworkStores<SportsContext>()
+                .AddDefaultTokenProviders()
+                .AddDefaultUI()
+                .AddUserManager<UserService>();
 
             // More convenient password options at the beginning since we are developing
             services.Configure<IdentityOptions>(options =>
@@ -147,9 +149,9 @@ namespace WebApplication
 
             services.AddAuthorization(options =>
             {
-               options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                   .RequireAuthenticatedUser()
-                   .Build();
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
             });
 
             services.AddAuthorizationServices();

@@ -14,22 +14,17 @@ namespace WebApplication.Data
         private static readonly string[] RoleNames = { "Manager", "BoatOwner", "MarinaOwner" };
 
         // Seed roles in the db if they don't exist
-        public static async Task SeedRoles(this IServiceProvider serviceProvider)
+        public static async Task SeedRoles(IServiceProvider serviceProvider, SportsContext context)
         {
-            using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            if (!context.UserRoles.Any())
             {
-                var dbContext = serviceScope.ServiceProvider.GetService<SportsContext>();
+                var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
 
-                if (!dbContext.UserRoles.Any())
+                foreach (var role in RoleNames)
                 {
-                    var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
-
-                    foreach (var role in RoleNames)
+                    if (!await roleManager.RoleExistsAsync(role))
                     {
-                        if (!await roleManager.RoleExistsAsync(role))
-                        {
-                            await roleManager.CreateAsync(new Role(role));
-                        }
+                        await roleManager.CreateAsync(new WebApplication.Models.Role(role));
                     }
                 }
             }

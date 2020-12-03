@@ -11,5 +11,10 @@ namespace WebApplication.Models
         public Role(string roleName) : base(roleName)
         {
         }
+
+        public Role() : base()
+        {
+
+        }
     }
 }
