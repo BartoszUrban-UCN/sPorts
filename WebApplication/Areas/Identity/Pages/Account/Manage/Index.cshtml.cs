@@ -114,15 +114,22 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 // If he decided to become one
                 if (Input.IsBoatOwner)
                 {
+                    // First add it to the context as a boat owner, and then assign the role to that as well
+                    // Take note of the order of operations, since only the AddToRoleAsync persists changes in the DB
                     await _userManager.AddToRoleAsync(user, "BoatOwner");
                     await _loginService.MakePersonBoatOwner(user);
                 }
                 // Else if he was one but decides not to be one anymore
                 else
                 {
+                    // First revoke the boat owner rights, and then remove its role also
+                    // Take note of the order of operations, since only the RemoveFromRoleAsync persists changes in the DB
                     await _userManager.RemoveFromRoleAsync(user, "BoatOwner");
                     await _loginService.RevokeBoatOwnerRights(user);
                 }
+
+                // Persist the changes to the database
+                await _loginService.Save();
             }
 
             var isMarinaOwner = await _userManager.IsInRoleAsync(user, "MarinaOwner");
@@ -132,14 +139,18 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 // If he decided to become one
                 if (Input.IsMarinaOwner)
                 {
-                    await _userManager.AddToRoleAsync(user, "MarinaOwner");
+                    // First add it to the context as a marina owner, and then assign the role to that as well
+                    // Take note of the order of operations, since only the AddToRoleAsync persists changes in the DB
                     await _loginService.MakePersonMarinaOwner(user);
+                    await _userManager.AddToRoleAsync(user, "MarinaOwner");
                 }
                 // Else if he was one but decides not to be one anymore
                 else
                 {
-                    await _userManager.RemoveFromRoleAsync(user, "MarinaOwner");
+                    // First revoke the marina owner rights, and then remove its role also
+                    // Take note of the order of operations, since only the RemoveFromRoleAsync persists changes in the DB
                     await _loginService.RevokeMarinaOwnerRights(user);
+                    await _userManager.RemoveFromRoleAsync(user, "MarinaOwner");
                 }
             }
 

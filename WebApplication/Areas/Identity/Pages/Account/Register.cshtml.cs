@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -120,13 +119,15 @@ namespace WebApplication.Areas.Identity.Pages.Account
 
                 if (Input.IsBoatOwner)
                 {
-                    await _userManager.AddToRoleAsync(user, "BoatOwner");
+                    // Order of methods matter!
                     await _loginService.MakePersonBoatOwner(user);
+                    await _userManager.AddToRoleAsync(user, "BoatOwner");
                 }
                 if (Input.IsMarinaOwner)
                 {
-                    await _userManager.AddToRoleAsync(user, "MarinaOwner");
+                    // Order of methods matter!
                     await _loginService.MakePersonMarinaOwner(user);
+                    await _userManager.AddToRoleAsync(user, "MarinaOwner");
                 }
                 if (Input.IsManager)
                 {
