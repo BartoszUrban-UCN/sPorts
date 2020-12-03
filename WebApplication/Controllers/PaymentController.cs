@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Interfaces;
-using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -50,45 +48,6 @@ namespace WebApplication.Controllers
 
             return View(payment);
         }
-
-        public async Task<IActionResult> CreateFromBooking()
-        {
-            //Session 
-            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
-            var booking = new Booking();
-
-            if (sessionBooking != null)
-            {
-                sessionBooking = await _bookingService.LoadSpots(sessionBooking);
-                booking = await _bookingService.ValidateShoppingCart(sessionBooking);
-            }
-
-            if (booking.BookingReferenceNo != 0)
-            {
-                HttpContext.Session.Clear();
-                try
-                {
-                    await _bookingService.SaveBooking(booking);
-                }
-                catch (Exception) { }
-                var payment = await _paymentService.CreateFromBooking(booking);
-                ViewData["BookingId"] = booking.BookingId;
-                ViewData["bookingTotalPrice"] = booking.TotalPrice;
-                //return View("~/Views/Payment/CreateFromBooking.cshtml", payment);
-                //return await Create(payment);
-
-                // should call paymentService.SavePayment() or method that saves payment in db
-                _context.Add(payment);
-                await _context.SaveChangesAsync();
-            }
-            //else
-            //{
-            //    return View();
-            //}
-
-            return RedirectToAction(nameof(Index));
-        }
-
 
         // GET: Payment/Create
         public IActionResult Create()

@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
+using WebApplication.BusinessLogic.Interfaces;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Models;
 
@@ -14,12 +15,14 @@ namespace WebApplication.Controllers
         private readonly IBookingService _bookingService;
         private readonly IBoatService _boatService;
         private readonly IMarinaService _marinaService;
+        private readonly IPaymentService _paymentService;
 
-        public BookingFlowController(IBookingService bookingService, IBoatService boatService, IMarinaService marinaService, ISpotService spotService)
+        public BookingFlowController(IBookingService bookingService, IBoatService boatService, IMarinaService marinaService, ISpotService spotService, IPaymentService paymentService)
         {
             _bookingService = bookingService;
             _boatService = boatService;
             _marinaService = marinaService;
+            _paymentService = paymentService;
         }
 
         public async Task<IActionResult> Index()
@@ -68,6 +71,7 @@ namespace WebApplication.Controllers
             return new JsonResult(jsonString);
         }
 
+        // GET: ShoppingCart
         public async Task<IActionResult> ShoppingCart()
         {
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
@@ -91,7 +95,46 @@ namespace WebApplication.Controllers
             ViewData["MarinaBLineDict"] = marinaBLineDict;
             ViewData["AppliedDiscounts"] = appliedDiscounts;
 
+            byte cartHasChanged = validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1;
+            ViewData["CartHasChanged"] = cartHasChanged;
+
             return View(validBooking);
+        }
+
+        public async Task<IActionResult> SaveBooking()
+        {
+            //Session 
+            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            var booking = new Booking();
+
+            if (sessionBooking != null)
+            {
+                sessionBooking = await _bookingService.LoadSpots(sessionBooking);
+                booking = await _bookingService.ValidateShoppingCart(sessionBooking);
+            }
+
+            if (booking.BookingReferenceNo != 0 && booking.BookingLines.Count > 0 && booking.BookingLines.Count == sessionBooking.BookingLines.Count)
+            {
+                HttpContext.Session.Clear();
+                // Ignore exceptions and continue the flow
+                try
+                {
+                    await _bookingService.SaveBooking(booking);
+                }
+                catch (Exception) { }
+                var payment = await _paymentService.CreateFromBooking(booking);
+                ViewData["BookingId"] = booking.BookingId;
+                ViewData["bookingTotalPrice"] = booking.TotalPrice;
+
+                await _paymentService.Create(payment);
+                await _paymentService.Save();
+
+                return RedirectToAction("Index", "Payment");
+            }
+            else
+            {
+                return RedirectToAction("ShoppingCart");
+            }
         }
     }
 }

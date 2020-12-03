@@ -121,14 +121,14 @@ namespace WebApplication.Controllers.RestApi
                         {
                             areBookingLinesDatesValid = false;
                         }
-                            
+
                     // Finally, if all conditions are met
                     if (areBookingLinesDatesValid)
                     {
                         // Add bookingLine to the booking lines inside the booking
                         booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
                     }
-                        
+
                 }
             }
 
@@ -183,7 +183,7 @@ namespace WebApplication.Controllers.RestApi
         public async Task<ActionResult<IEnumerable<BookingLine>>> InvalidBookingLines()
         {
             var booking = HttpContext.Session.Get<Booking>("Booking");
-            var invalidBookingLines = await _bookingService.InvalidBookingLines(booking); 
+            var invalidBookingLines = await _bookingService.InvalidBookingLines(booking);
 
             return Ok(invalidBookingLines);
         }
@@ -194,6 +194,30 @@ namespace WebApplication.Controllers.RestApi
             HttpContext.Session.Set("Booking", new Booking());
             var booking = HttpContext.Session.Get<Booking>("Booking");
             return booking;
+        }
+
+        [HttpPost("CreateSampleBooking")]
+        public async Task<ActionResult<bool>> CreateSampleBooking()
+        {
+            //Session 
+            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            var booking = new Booking();
+
+            if (sessionBooking != null)
+            {
+                booking = await _bookingService.LoadSpots(sessionBooking);
+            }
+
+            if (booking.BookingReferenceNo != 0)
+            {
+                try
+                {
+                    await _bookingService.SaveBooking(booking);
+                }
+                catch (Exception) { }
+            }
+
+            return true;
         }
     }
 }
