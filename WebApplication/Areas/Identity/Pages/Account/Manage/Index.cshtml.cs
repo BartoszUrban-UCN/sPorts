@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
 
@@ -34,41 +31,6 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
 
         [BindProperty]
         public InputModel Input { get; set; }
-
-        public class InputModel
-        {
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
-
-            [Display(Name = "Marina Owner")]
-            public bool IsMarinaOwner { get; set; }
-
-            [Display(Name = "Boat Owner")]
-            public bool IsBoatOwner { get; set; }
-
-            [Display(Name = "Manager")]
-            public bool IsManager { get; set; }
-        }
-
-        private async Task LoadAsync(Person user)
-        {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            var isMarinaOwner = await _userManager.IsInRoleAsync(user, "MarinaOwner");
-            var isBoatOwner = await _userManager.IsInRoleAsync(user, "BoatOwner");
-            var isManager = await _userManager.IsInRoleAsync(user, "Manager");
-
-            Username = userName;
-
-            Input = new InputModel
-            {
-                PhoneNumber = phoneNumber,
-                IsBoatOwner = isBoatOwner,
-                IsMarinaOwner = isMarinaOwner,
-                IsManager = isManager
-            };
-        }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -114,22 +76,25 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 // If he decided to become one
                 if (Input.IsBoatOwner)
                 {
-                    // First add it to the context as a boat owner, and then assign the role to that as well
-                    // Take note of the order of operations, since only the AddToRoleAsync persists changes in the DB
+                    // First add it to the context as a boat owner, and then
+                    // assign the role to that as well Take note of the order of
+                    // operations, since only the AddToRoleAsync persists
+                    // changes in the DB
                     await _userManager.AddToRoleAsync(user, "BoatOwner");
                     await _loginService.MakePersonBoatOwner(user);
                 }
                 // Else if he was one but decides not to be one anymore
                 else
                 {
-                    // First revoke the boat owner rights, and then remove its role also
-                    // Take note of the order of operations, since only the RemoveFromRoleAsync persists changes in the DB
+                    // First revoke the boat owner rights, and then remove its
+                    // role also Take note of the order of operations, since
+                    // only the RemoveFromRoleAsync persists changes in the DB
                     await _userManager.RemoveFromRoleAsync(user, "BoatOwner");
                     await _loginService.RevokeBoatOwnerRights(user);
                 }
 
                 // Persist the changes to the database
-                await _loginService.Save();
+                //await _loginService.Save();
             }
 
             var isMarinaOwner = await _userManager.IsInRoleAsync(user, "MarinaOwner");
@@ -139,16 +104,19 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 // If he decided to become one
                 if (Input.IsMarinaOwner)
                 {
-                    // First add it to the context as a marina owner, and then assign the role to that as well
-                    // Take note of the order of operations, since only the AddToRoleAsync persists changes in the DB
+                    // First add it to the context as a marina owner, and then
+                    // assign the role to that as well Take note of the order of
+                    // operations, since only the AddToRoleAsync persists
+                    // changes in the DB
                     await _loginService.MakePersonMarinaOwner(user);
                     await _userManager.AddToRoleAsync(user, "MarinaOwner");
                 }
                 // Else if he was one but decides not to be one anymore
                 else
                 {
-                    // First revoke the marina owner rights, and then remove its role also
-                    // Take note of the order of operations, since only the RemoveFromRoleAsync persists changes in the DB
+                    // First revoke the marina owner rights, and then remove its
+                    // role also Take note of the order of operations, since
+                    // only the RemoveFromRoleAsync persists changes in the DB
                     await _loginService.RevokeMarinaOwnerRights(user);
                     await _userManager.RemoveFromRoleAsync(user, "MarinaOwner");
                 }
@@ -169,6 +137,41 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
+        }
+
+        private async Task LoadAsync(Person user)
+        {
+            var userName = await _userManager.GetUserNameAsync(user);
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var isMarinaOwner = await _userManager.IsInRoleAsync(user, "MarinaOwner");
+            var isBoatOwner = await _userManager.IsInRoleAsync(user, "BoatOwner");
+            var isManager = await _userManager.IsInRoleAsync(user, "Manager");
+
+            Username = userName;
+
+            Input = new InputModel
+            {
+                PhoneNumber = phoneNumber,
+                IsBoatOwner = isBoatOwner,
+                IsMarinaOwner = isMarinaOwner,
+                IsManager = isManager
+            };
+        }
+
+        public class InputModel
+        {
+            [Phone]
+            [Display(Name = "Phone number")]
+            public string PhoneNumber { get; set; }
+
+            [Display(Name = "Marina Owner")]
+            public bool IsMarinaOwner { get; set; }
+
+            [Display(Name = "Boat Owner")]
+            public bool IsBoatOwner { get; set; }
+
+            [Display(Name = "Manager")]
+            public bool IsManager { get; set; }
         }
     }
 }

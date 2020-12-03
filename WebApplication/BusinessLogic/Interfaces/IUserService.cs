@@ -3,7 +3,7 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public interface IUserService : ICRUD<Person>
+    public interface IUserService
     {
         Task<BoatOwner> MakePersonBoatOwner(Person person);
 

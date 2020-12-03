@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,60 +12,23 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public static class UserService : ServiceBase, IUserService
+    public class UserService : UserManager<Person>, IUserService
     {
-        private readonly UserManager<Person> _userManager;
-        private readonly RoleManager<Role> _roleManager;
+        private readonly SportsContext _context;
 
-        public UserService(SportsContext context, UserManager<Person> userManager, RoleManager<Role> roleManager) : base(context)
+        // Base constructor of UserManager + Context
+        public UserService(SportsContext context, IUserStore<Person> store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<Person> passwordHasher, IEnumerable<IUserValidator<Person>> userValidators, IEnumerable<IPasswordValidator<Person>> passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<Person>> logger) : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _context = context;
         }
 
-        public async Task<int> Create(Person person)
+        public override Task<IdentityResult> AddToRoleAsync(Person user, string role)
         {
-            person.ThrowIfNull();
-
-            if (_context.Persons.AsQueryable().Any(p => p.Email.Equals(person.Email)))
+            if (role == "BoatOwner")
             {
-                throw new BusinessException("Email", "This email is already taken.");
             }
 
-            await _context.AddAsync(person);
-
-            return person.Id;
-        }
-
-        public async Task Delete(int? id)
-        {
-            var person = await GetSingle(id);
-            _context.Remove(person);
-        }
-
-        public async Task<bool> Exists(int? id)
-        {
-            id.ThrowIfInvalidId();
-            return await _context.Persons.AnyAsync(l => l.Id == id);
-        }
-
-        public async Task<IEnumerable<Person>> GetAll()
-        {
-            var sportsContext = _context.Persons;
-
-            return await sportsContext.ToListAsync();
-        }
-
-        public async Task<Person> GetSingle(int? id)
-        {
-            id.ThrowIfInvalidId();
-
-            var person = await _context.Persons
-                 .FirstOrDefaultAsync(s => s.Id == id);
-
-            person.ThrowIfNull();
-
-            return person;
+            return base.AddToRoleAsync(user, role);
         }
 
         public async Task<BoatOwner> MakePersonBoatOwner(Person person)
@@ -78,7 +44,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.BoatOwners.AddAsync(boatOwner);
 
-            await _userManager.AddToRoleAsync(person, "BoatOwner");
+            //await _userManager.AddToRoleAsync(person, "BoatOwner");
 
             return boatOwner;
         }
@@ -96,7 +62,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.MarinaOwners.AddAsync(marinaOwner);
 
-            await _userManager.AddToRoleAsync(person, "MarinaOwner");
+            //await _userManager.AddToRoleAsync(person, "MarinaOwner");
 
             return marinaOwner;
         }
@@ -113,7 +79,7 @@ namespace WebApplication.BusinessLogic
                 _context.BoatOwners.Remove(boatOwner);
             }
 
-            await _userManager.RemoveFromRoleAsync(person, "BoatOwner");
+            //await _userManager.RemoveFromRoleAsync(person, "BoatOwner");
 
             return person;
         }
@@ -130,16 +96,7 @@ namespace WebApplication.BusinessLogic
                 _context.MarinaOwners.Remove(marinaOwner);
             }
 
-            await _userManager.RemoveFromRoleAsync(person, "MarinaOwner");
-
-            return person;
-        }
-
-        public Person Update(Person person)
-        {
-            person.ThrowIfNull();
-
-            _context.Update(person);
+            //await _userManager.RemoveFromRoleAsync(person, "MarinaOwner");
 
             return person;
         }
