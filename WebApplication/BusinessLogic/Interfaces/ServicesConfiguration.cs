@@ -26,7 +26,7 @@ namespace WebApplication.BusinessLogic
             services.AddScoped<ISpotService, SpotService>();
             services.AddScoped<ILocationService, LocationService>();
 
-            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IPDFService<Booking>, BookingPDFService>();
 

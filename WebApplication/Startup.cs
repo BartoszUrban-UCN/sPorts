@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +29,8 @@ namespace WebApplication
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // This method gets called by the runtime. Use this method to configure
+        // the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var supportedCultures = new string[] { "en-US", "en-GB", "da-DK", "pl-PL", "ro-RO" };
@@ -51,8 +51,8 @@ namespace WebApplication
                 //app.UseSPortsExceptionHandler();
                 app.UseExceptionHandler("/Home/Error");
                 app.UseSPortsExceptionHandler();
-                // The default HSTS value is 30 days. You may want to change this for production
-                // scenarios, see https://aka.ms/aspnetcore-hsts.
+                // The default HSTS value is 30 days. You may want to change
+                // this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -80,9 +80,13 @@ namespace WebApplication
             {
                 swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "sPorts API v1");
             });
+
+            // Init roles
+            app.ApplicationServices.SeedRoles().Wait();
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // This method gets called by the runtime. Use this method to add
+        // services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add sessions
@@ -116,12 +120,15 @@ namespace WebApplication
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
 
-            services.AddIdentity<Person, Role>(cfg => { cfg.User.RequireUniqueEmail = true; }).AddEntityFrameworkStores<SportsContext>().AddDefaultTokenProviders().AddDefaultUI();
+            services.AddIdentity<Person, Role>().AddEntityFrameworkStores<SportsContext>().AddDefaultTokenProviders().AddDefaultUI();
 
             // More convenient password options at the beginning since we are developing
             services.Configure<IdentityOptions>(options =>
             {
-                // Password settings.
+                // User settings
+                options.User.RequireUniqueEmail = true;
+
+                // Password settings
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -129,13 +136,14 @@ namespace WebApplication
                 options.Password.RequiredLength = 1;
                 options.Password.RequiredUniqueChars = 0;
 
-                // Lockout settings.
+                // Lockout settings
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
             });
 
-            // The lines below make it so that only authenticated users can access pages, regardless of what page it is
+            // The lines below make it so that only authenticated users can
+            // access pages, regardless of what page it is
 
             services.AddAuthorization(options =>
             {
@@ -174,8 +182,6 @@ namespace WebApplication
 
             // Adds all services in the Business Layer for dependency injection
             services.AddBusinessServices();
-
-            
         }
     }
 }

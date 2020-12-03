@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,10 +9,16 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class LoginService : ServiceBase, ILoginService
+    public static class UserService : ServiceBase, IUserService
     {
-        public LoginService(SportsContext context) : base(context)
-        { }
+        private readonly UserManager<Person> _userManager;
+        private readonly RoleManager<Role> _roleManager;
+
+        public UserService(SportsContext context, UserManager<Person> userManager, RoleManager<Role> roleManager) : base(context)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
 
         public async Task<int> Create(Person person)
         {
@@ -71,6 +78,8 @@ namespace WebApplication.BusinessLogic
 
             await _context.BoatOwners.AddAsync(boatOwner);
 
+            await _userManager.AddToRoleAsync(person, "BoatOwner");
+
             return boatOwner;
         }
 
@@ -87,6 +96,8 @@ namespace WebApplication.BusinessLogic
 
             await _context.MarinaOwners.AddAsync(marinaOwner);
 
+            await _userManager.AddToRoleAsync(person, "MarinaOwner");
+
             return marinaOwner;
         }
 
@@ -102,6 +113,8 @@ namespace WebApplication.BusinessLogic
                 _context.BoatOwners.Remove(boatOwner);
             }
 
+            await _userManager.RemoveFromRoleAsync(person, "BoatOwner");
+
             return person;
         }
 
@@ -116,6 +129,8 @@ namespace WebApplication.BusinessLogic
                 person.MarinaOwner = null;
                 _context.MarinaOwners.Remove(marinaOwner);
             }
+
+            await _userManager.RemoveFromRoleAsync(person, "MarinaOwner");
 
             return person;
         }

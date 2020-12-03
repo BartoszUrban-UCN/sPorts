@@ -27,7 +27,7 @@ namespace WebApplication.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly IMarinaOwnerService _marinaOwnerService;
         private readonly IBoatOwnerService _boatOwnerService;
-        private readonly ILoginService _loginService;
+        private readonly IUserService _userService;
 
         public RegisterModel(
             RoleManager<Role> roleManager,
@@ -37,7 +37,7 @@ namespace WebApplication.Areas.Identity.Pages.Account
             IEmailSender emailSender,
             IMarinaOwnerService marinaOwnerService,
             IBoatOwnerService boatOwnerService,
-            ILoginService loginService)
+            IUserService userService)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -46,7 +46,7 @@ namespace WebApplication.Areas.Identity.Pages.Account
             _emailSender = emailSender;
             _marinaOwnerService = marinaOwnerService;
             _boatOwnerService = boatOwnerService;
-            _loginService = loginService;
+            _userService = userService;
         }
 
         [BindProperty]
@@ -55,44 +55,6 @@ namespace WebApplication.Areas.Identity.Pages.Account
         public string ReturnUrl { get; set; }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string Email { get; set; }
-
-            [Required]
-            [StringLength(30, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
-            [Display(Name = "First Name")]
-            public string FirstName { get; set; }
-
-            [Required]
-            [StringLength(30, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
-            [Display(Name = "Last Name")]
-            public string LastName { get; set; }
-
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
-
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
-
-            [Display(Name = "Boat Owner")]
-            public bool IsBoatOwner { get; set; }
-
-            [Display(Name = "Marina Owner")]
-            public bool IsMarinaOwner { get; set; }
-
-            [Display(Name = "Manager")]
-            public bool IsManager { get; set; }
-        }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -109,24 +71,15 @@ namespace WebApplication.Areas.Identity.Pages.Account
                 var user = new Person { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
-                // TODO: Should not be here
-                if (await _roleManager.FindByNameAsync("MarinaOwner") == null)
-                    await _roleManager.CreateAsync(new Role() { Name = "MarinaOwner" });
-                if (await _roleManager.FindByNameAsync("BoatOwner") == null)
-                    await _roleManager.CreateAsync(new Role() { Name = "BoatOwner" });
-                if (await _roleManager.FindByNameAsync("Manager") == null)
-                    await _roleManager.CreateAsync(new Role() { Name = "Manager" });
-
                 if (Input.IsBoatOwner)
                 {
-                    // Order of methods matter!
-                    await _loginService.MakePersonBoatOwner(user);
+                    await _userService.MakePersonBoatOwner(user);
                     await _userManager.AddToRoleAsync(user, "BoatOwner");
                 }
                 if (Input.IsMarinaOwner)
                 {
                     // Order of methods matter!
-                    await _loginService.MakePersonMarinaOwner(user);
+                    await _userService.MakePersonMarinaOwner(user);
                     await _userManager.AddToRoleAsync(user, "MarinaOwner");
                 }
                 if (Input.IsManager)
@@ -167,6 +120,44 @@ namespace WebApplication.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [EmailAddress]
+            [Display(Name = "Email")]
+            public string Email { get; set; }
+
+            [Required]
+            [StringLength(30, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [StringLength(30, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
+            [Required]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [DataType(DataType.Password)]
+            [Display(Name = "Password")]
+            public string Password { get; set; }
+
+            [DataType(DataType.Password)]
+            [Display(Name = "Confirm password")]
+            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            public string ConfirmPassword { get; set; }
+
+            [Display(Name = "Boat Owner")]
+            public bool IsBoatOwner { get; set; }
+
+            [Display(Name = "Marina Owner")]
+            public bool IsMarinaOwner { get; set; }
+
+            [Display(Name = "Manager")]
+            public bool IsManager { get; set; }
         }
     }
 }

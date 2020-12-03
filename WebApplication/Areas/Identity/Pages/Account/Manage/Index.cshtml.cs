@@ -15,12 +15,12 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<Person> _userManager;
         private readonly SignInManager<Person> _signInManager;
-        private readonly ILoginService _loginService;
+        private readonly IUserService _loginService;
 
         public IndexModel(
             UserManager<Person> userManager,
             SignInManager<Person> signInManager,
-            ILoginService loginService)
+            IUserService loginService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
