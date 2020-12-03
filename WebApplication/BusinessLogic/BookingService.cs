@@ -150,6 +150,14 @@ namespace WebApplication.BusinessLogic
             _context.Update(booking);
         }
 
+        public async Task<Booking> CreateEmptyBooking()
+        {
+            var booking = new Booking { };
+            await Create(booking);
+            booking.BookingLines.Add(new BookingLine { });
+            return booking;
+        }
+
         public async Task<int> Create(Booking booking)
         {
             booking.ThrowIfNull();

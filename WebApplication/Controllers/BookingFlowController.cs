@@ -29,7 +29,7 @@ namespace WebApplication.Controllers
             // in the booking
             ViewBag.SessionBooking = HttpContext.Session.Get<Booking>("Booking");
 
-            var booking = await _bookingService.Create(new Booking { });
+            var booking = await _bookingService.CreateEmptyBooking();
 
             return View(booking);
         }
