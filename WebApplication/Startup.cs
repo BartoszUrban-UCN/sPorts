@@ -17,6 +17,7 @@ using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.Authorization;
 
 namespace WebApplication
 {
@@ -136,12 +137,14 @@ namespace WebApplication
 
             // The lines below make it so that only authenticated users can access pages, regardless of what page it is
 
-            //services.AddAuthorization(options =>
-            //{
-            //    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-            //        .RequireAuthenticatedUser()
-            //        .Build();
-            //});
+            services.AddAuthorization(options =>
+            {
+               options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                   .RequireAuthenticatedUser()
+                   .Build();
+            });
+
+            services.AddAuthorizationServices();
 
             // Swagger service
             services.AddSwaggerGen(swagger =>
