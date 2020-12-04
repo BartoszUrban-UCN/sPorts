@@ -100,7 +100,7 @@ namespace WebApplication.Controllers
             ViewData["MarinaOwnerId"] = new SelectList(_context.MarinaOwners, "MarinaOwnerId", "MarinaOwnerId", marina.MarinaOwnerId);
 
             // Auth
-            var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operations.Update);
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
 
             if (isAuthorized.Succeeded)
             {

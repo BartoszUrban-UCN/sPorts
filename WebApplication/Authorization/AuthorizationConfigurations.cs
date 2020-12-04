@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WebApplication.BusinessLogic.Interfaces;
 using WebApplication.Models;
 using Microsoft.AspNetCore.Authorization;
+using WebApplication.Authorization.Shared;
 
 namespace WebApplication.Authorization
 {
@@ -15,7 +16,9 @@ namespace WebApplication.Authorization
         public static void AddAuthorizationServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthorizationHandler, MarinaOwnerAuthorizationHandler>();
-            services.AddSingleton<IAuthorizationHandler, MarinaManagerAuthorizationHandler>();
+
+            // Managers are authorized to do anything currently
+            services.AddSingleton<IAuthorizationHandler, ManagerAuthorizationHandler<object>>();
         }
     }
 }

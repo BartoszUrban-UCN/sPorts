@@ -2,30 +2,44 @@
 
 namespace WebApplication.Authorization
 {
-    public static class Operations
+    public static class Operation
     {
         public static OperationAuthorizationRequirement Create =
-          new OperationAuthorizationRequirement { Name = Constants.CreateOperationName };
+          new OperationAuthorizationRequirement { Name = Constants.Create };
         public static OperationAuthorizationRequirement Read =
-          new OperationAuthorizationRequirement { Name = Constants.ReadOperationName };
+          new OperationAuthorizationRequirement { Name = Constants.Read };
         public static OperationAuthorizationRequirement Update =
-          new OperationAuthorizationRequirement { Name = Constants.UpdateOperationName };
+          new OperationAuthorizationRequirement { Name = Constants.Update };
         public static OperationAuthorizationRequirement Delete =
-          new OperationAuthorizationRequirement { Name = Constants.DeleteOperationName };
+          new OperationAuthorizationRequirement { Name = Constants.Delete };
+
+        public static OperationAuthorizationRequirement Confirm =
+          new OperationAuthorizationRequirement { Name = Constants.Confirm };
         public static OperationAuthorizationRequirement Approve =
-          new OperationAuthorizationRequirement { Name = Constants.ApproveOperationName };
+          new OperationAuthorizationRequirement { Name = Constants.Approve };
         public static OperationAuthorizationRequirement Reject =
-          new OperationAuthorizationRequirement { Name = Constants.RejectOperationName };
+          new OperationAuthorizationRequirement { Name = Constants.Reject };
     }
 
     public class Constants
     {
-        public static readonly string CreateOperationName = "Create";
-        public static readonly string ReadOperationName = "Read";
-        public static readonly string UpdateOperationName = "Update";
-        public static readonly string DeleteOperationName = "Delete";
-        public static readonly string ConfirmOperationName = "Confirm";
-        public static readonly string ApproveOperationName = "Approve";
-        public static readonly string RejectOperationName = "Reject";
+        // Operation constant names
+        public static readonly string Create = "Create";
+        public static readonly string Read = "Read";
+        public static readonly string Update = "Update";
+        public static readonly string Delete = "Delete";
+
+        public static readonly string Confirm = "Confirm";
+        public static readonly string Approve = "Approve";
+        public static readonly string Reject = "Reject";
+    }
+
+    // Role constant namings
+    public class RoleName
+    {
+        public static readonly string Administrator = "Admin";
+        public static readonly string Manager = "Manager";
+        public static readonly string BoatOwner = "BoatOwner";
+        public static readonly string MarinaOwner = "MarinaOwner";
     }
 }

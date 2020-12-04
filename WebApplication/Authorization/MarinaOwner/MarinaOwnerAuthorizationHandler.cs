@@ -17,10 +17,10 @@ namespace WebApplication.Authorization
             }
 
             // If not asking for CRUD permission, return.
-            if (requirement.Name != Constants.CreateOperationName &&
-                requirement.Name != Constants.ReadOperationName &&
-                requirement.Name != Constants.UpdateOperationName &&
-                requirement.Name != Constants.DeleteOperationName)
+            if (requirement.Name != Constants.Create &&
+                requirement.Name != Constants.Read &&
+                requirement.Name != Constants.Update &&
+                requirement.Name != Constants.Delete)
             {
                 return Task.CompletedTask;
             }
