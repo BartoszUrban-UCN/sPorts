@@ -21,31 +21,19 @@ namespace WebApplication.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<Person> _signInManager;
-        private readonly RoleManager<Role> _roleManager;
-        private readonly UserManager<Person> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly IMarinaOwnerService _marinaOwnerService;
-        private readonly IBoatOwnerService _boatOwnerService;
-        private readonly IUserService _userService;
+        private readonly UserService _userService;
 
         public RegisterModel(
-            RoleManager<Role> roleManager,
-            UserManager<Person> userManager,
             SignInManager<Person> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IMarinaOwnerService marinaOwnerService,
-            IBoatOwnerService boatOwnerService,
-            IUserService userService)
+            UserService userService)
         {
-            _roleManager = roleManager;
-            _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _marinaOwnerService = marinaOwnerService;
-            _boatOwnerService = boatOwnerService;
             _userService = userService;
         }
 
@@ -69,29 +57,27 @@ namespace WebApplication.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new Person { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                var result = await _userService.CreateAsync(user, Input.Password);
 
                 if (Input.IsBoatOwner)
                 {
                     await _userService.MakePersonBoatOwner(user);
-                    await _userManager.AddToRoleAsync(user, "BoatOwner");
                 }
                 if (Input.IsMarinaOwner)
                 {
                     // Order of methods matter!
                     await _userService.MakePersonMarinaOwner(user);
-                    await _userManager.AddToRoleAsync(user, "MarinaOwner");
                 }
                 if (Input.IsManager)
                 {
-                    await _userManager.AddToRoleAsync(user, "Manager");
+                    await _userService.AddToRoleAsync(user, "Manager");
                 }
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var code = await _userService.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
@@ -102,7 +88,7 @@ namespace WebApplication.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    if (_userService.Options.SignIn.RequireConfirmedAccount)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }

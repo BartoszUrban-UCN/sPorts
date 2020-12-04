@@ -22,14 +22,14 @@ namespace WebApplication.BusinessLogic
             _context = context;
         }
 
-        public override Task<IdentityResult> AddToRoleAsync(Person user, string role)
-        {
-            if (role == "BoatOwner")
-            {
-            }
+        //public override Task<IdentityResult> AddToRoleAsync(Person user, string role)
+        //{
+        //    if (role == "BoatOwner")
+        //    {
+        //    }
 
-            return base.AddToRoleAsync(user, role);
-        }
+        //    return base.AddToRoleAsync(user, role);
+        //}
 
         public async Task<BoatOwner> MakePersonBoatOwner(Person person)
         {
@@ -44,7 +44,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.BoatOwners.AddAsync(boatOwner);
 
-            //await _userManager.AddToRoleAsync(person, "BoatOwner");
+            await AddToRoleAsync(person, "BoatOwner");
 
             return boatOwner;
         }
@@ -62,7 +62,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.MarinaOwners.AddAsync(marinaOwner);
 
-            //await _userManager.AddToRoleAsync(person, "MarinaOwner");
+            await AddToRoleAsync(person, "MarinaOwner");
 
             return marinaOwner;
         }
@@ -79,7 +79,7 @@ namespace WebApplication.BusinessLogic
                 _context.BoatOwners.Remove(boatOwner);
             }
 
-            //await _userManager.RemoveFromRoleAsync(person, "BoatOwner");
+            await RemoveFromRoleAsync(person, "BoatOwner");
 
             return person;
         }
@@ -96,7 +96,7 @@ namespace WebApplication.BusinessLogic
                 _context.MarinaOwners.Remove(marinaOwner);
             }
 
-            //await _userManager.RemoveFromRoleAsync(person, "MarinaOwner");
+            await RemoveFromRoleAsync(person, "MarinaOwner");
 
             return person;
         }

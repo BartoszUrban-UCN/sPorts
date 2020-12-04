@@ -10,18 +10,15 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<Person> _userManager;
         private readonly SignInManager<Person> _signInManager;
-        private readonly IUserService _loginService;
+        private readonly UserService _userService;
 
         public IndexModel(
-            UserManager<Person> userManager,
             SignInManager<Person> signInManager,
-            IUserService loginService)
+            UserService userService)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
-            _loginService = loginService;
+            _userService = userService;
         }
 
         public string Username { get; set; }
@@ -34,10 +31,10 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userService.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Unable to load user with ID '{_userService.GetUserId(User)}'.");
             }
 
             await LoadAsync(user);
@@ -46,10 +43,10 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userService.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Unable to load user with ID '{_userService.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -58,10 +55,10 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var phoneNumber = await _userService.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+                var setPhoneResult = await _userService.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
@@ -69,7 +66,7 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var isBoatOwner = await _userManager.IsInRoleAsync(user, "BoatOwner");
+            var isBoatOwner = await _userService.IsInRoleAsync(user, "BoatOwner");
             // If user changed the boat owner status
             if (Input.IsBoatOwner != isBoatOwner)
             {
@@ -80,8 +77,7 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                     // assign the role to that as well Take note of the order of
                     // operations, since only the AddToRoleAsync persists
                     // changes in the DB
-                    await _userManager.AddToRoleAsync(user, "BoatOwner");
-                    await _loginService.MakePersonBoatOwner(user);
+                    await _userService.MakePersonBoatOwner(user);
                 }
                 // Else if he was one but decides not to be one anymore
                 else
@@ -89,15 +85,14 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                     // First revoke the boat owner rights, and then remove its
                     // role also Take note of the order of operations, since
                     // only the RemoveFromRoleAsync persists changes in the DB
-                    await _userManager.RemoveFromRoleAsync(user, "BoatOwner");
-                    await _loginService.RevokeBoatOwnerRights(user);
+                    await _userService.RevokeBoatOwnerRights(user);
                 }
 
                 // Persist the changes to the database
                 //await _loginService.Save();
             }
 
-            var isMarinaOwner = await _userManager.IsInRoleAsync(user, "MarinaOwner");
+            var isMarinaOwner = await _userService.IsInRoleAsync(user, "MarinaOwner");
             // If user changed the marina owner status
             if (Input.IsMarinaOwner != isMarinaOwner)
             {
@@ -108,8 +103,7 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                     // assign the role to that as well Take note of the order of
                     // operations, since only the AddToRoleAsync persists
                     // changes in the DB
-                    await _loginService.MakePersonMarinaOwner(user);
-                    await _userManager.AddToRoleAsync(user, "MarinaOwner");
+                    await _userService.MakePersonMarinaOwner(user);
                 }
                 // Else if he was one but decides not to be one anymore
                 else
@@ -117,21 +111,20 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
                     // First revoke the marina owner rights, and then remove its
                     // role also Take note of the order of operations, since
                     // only the RemoveFromRoleAsync persists changes in the DB
-                    await _loginService.RevokeMarinaOwnerRights(user);
-                    await _userManager.RemoveFromRoleAsync(user, "MarinaOwner");
+                    await _userService.RevokeMarinaOwnerRights(user);
                 }
             }
 
-            var isManager = await _userManager.IsInRoleAsync(user, "Manager");
+            var isManager = await _userService.IsInRoleAsync(user, "Manager");
             // If user changed the admin status
             if (Input.IsManager != isManager)
             {
                 // If he decided to become one
                 if (Input.IsManager)
-                    await _userManager.AddToRoleAsync(user, "Manager");
+                    await _userService.AddToRoleAsync(user, "Manager");
                 // Else if he was one but decides not to be one anymore
                 else
-                    await _userManager.RemoveFromRoleAsync(user, "Manager");
+                    await _userService.RemoveFromRoleAsync(user, "Manager");
             }
 
             await _signInManager.RefreshSignInAsync(user);
@@ -141,11 +134,11 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(Person user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            var isMarinaOwner = await _userManager.IsInRoleAsync(user, "MarinaOwner");
-            var isBoatOwner = await _userManager.IsInRoleAsync(user, "BoatOwner");
-            var isManager = await _userManager.IsInRoleAsync(user, "Manager");
+            var userName = await _userService.GetUserNameAsync(user);
+            var phoneNumber = await _userService.GetPhoneNumberAsync(user);
+            var isMarinaOwner = await _userService.IsInRoleAsync(user, "MarinaOwner");
+            var isBoatOwner = await _userService.IsInRoleAsync(user, "BoatOwner");
+            var isManager = await _userService.IsInRoleAsync(user, "Manager");
 
             Username = userName;
 
