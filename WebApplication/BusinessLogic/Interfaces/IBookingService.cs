@@ -25,6 +25,8 @@ namespace WebApplication.BusinessLogic
 
         Task<bool> ConfirmSpotBooked(int bookingLineId);
 
+        Task<bool> CancelSpotBooked(int bookingLineId);
+
         Task CancelBooking(int? id);
 
         Task<Booking> ValidateShoppingCart(Booking booking);

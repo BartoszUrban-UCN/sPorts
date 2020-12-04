@@ -165,6 +165,18 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
+        /// <summary>
+        /// Cancel spot / bookingline based on booking line id (marina owner)
+        /// </summary>
+        /// <param name="id">Booking line id</param>
+        /// <returns>True or false whether if was cancelled or not</returns>
+        [HttpPut("{id}/bookinglinecancellation")]
+        public async Task<ActionResult<bool>> CancelSpotBookedByBookingLineId(int id)
+        {
+            var success = await _bookingService.CancelSpotBooked(id);
+            return success;
+        }
+
 
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] string start)

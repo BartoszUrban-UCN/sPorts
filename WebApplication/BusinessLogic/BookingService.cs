@@ -37,7 +37,7 @@ namespace WebApplication.BusinessLogic
                 EndDate = endDate,
 
                 Ongoing = default,
-                Confirmed = default,
+                Confirmed = true,
                 AppliedDiscounts = default,
 
                 OriginalTotalPrice = spot.Price * (endDate.Subtract(startDate).TotalDays + 1)
@@ -263,6 +263,30 @@ namespace WebApplication.BusinessLogic
         }
 
         #endregion Confirm spot booked by boatOnwer
+
+        #region Cancel / decline spot booked by boatOnwer
+
+        /// <summary>
+        /// Marina Owner cancels the spot booked by a boat owner
+        /// </summary>
+        /// <param name="bookingLineId"></param>
+        /// <returns>bool whether it has been successfully cancelled or not</returns>
+        public async Task<bool> CancelSpotBooked(int bookingLineId)
+        {
+            var bookingLine = await _bookingLineService.GetSingle(bookingLineId);
+
+            bookingLine.Confirmed = false;
+            bookingLine.Ongoing = true;
+
+            _bookingLineService.Update(bookingLine);
+
+            var success = await Save() > 0;
+            await SendConfirmationMail(bookingLine.BookingId);
+
+            return success;
+        }
+
+        #endregion Cancel / decline spot booked by boatOnwer
 
         #region After time left has been spent or all booking lines have been confirmed, send mail with booking information to boat owner
 

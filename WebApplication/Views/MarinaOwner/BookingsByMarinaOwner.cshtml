@@ -42,6 +42,7 @@ else
                     @Html.DisplayNameFor(model => model.Confirmed)
                 </th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -75,6 +76,9 @@ else
                     <td>
                         <input class="btn btn-outline-success confirmBtn" data-bookingline-id="@item.BookingLineId" type="button" value="Confirm" />
                     </td>
+                    <td>
+                        <input class="btn btn-outline-success cancelBtn" data-bookingline-id="@item.BookingLineId" type="button" value="Cancel" />
+                    </td>
                 </tr>
             }
 
@@ -82,29 +86,6 @@ else
     </table>
 }
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("input.confirmBtn").click(function () {
-            var bookingLineId = $(this).attr("data-bookingLine-id")
-            $.ajax({
-                type: "PUT",
-                url: "/api/booking/" + bookingLineId + "/bookinglineconfirmation",
-                data: { bookingLineId: bookingLineId },
-                success: function (result) {
-                    console.log(bookingLineId);
-                    $("#marinaOwnerBookings").on('click', '.confirmBtn', function () {
-                        $(this).closest('tr').fadeOut(1000);
-                    });
-                },
-                error: function (req, status, error) {
-                    //$("h2").text("Failed to confirm the spot.");
-                    //$("h2").show();
-                    //$("h2").fadeOut(1000);
-
-                }
-            });
-        })
-    })
-
-</script>
+@section Scripts{
+    <script src="~/js/booking/spot_manager.js"></script>
+}
