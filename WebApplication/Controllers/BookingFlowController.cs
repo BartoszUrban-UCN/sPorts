@@ -98,6 +98,10 @@ namespace WebApplication.Controllers
             sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             byte cartHasChanged = validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1;
             ViewData["CartHasChanged"] = cartHasChanged;
+            if (cartHasChanged == 1)
+            {
+                HttpContext.Session.Set("Booking", validBooking);
+            }
 
             return View(validBooking);
         }
