@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
@@ -49,8 +48,6 @@ namespace WebApplication.Controllers
         {
             try
             {
-                id.ThrowIfInvalidId();
-
                 var marina = await _marinaService.GetSingle(id);
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Read);
@@ -187,8 +184,6 @@ namespace WebApplication.Controllers
         {
             try
             {
-                id.ThrowIfInvalidId();
-
                 var marina = await _marinaService.GetSingle(id);
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Delete);
@@ -211,8 +206,6 @@ namespace WebApplication.Controllers
         {
             try
             {
-                id.ThrowIfNegativeId();
-                
                 var marina = await _marinaService.GetSingle(id);
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Delete);

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
@@ -28,11 +30,29 @@ namespace WebApplication.BusinessLogic
             _context.Remove(spot);
         }
 
+        private IIncludableQueryable<Spot, Location> LoadSpots()
+        {
+            var spots = _context.Spots
+                .Include(spot => spot.Marina)
+                    .ThenInclude(marina => marina.MarinaOwner)
+                .Include(spot => spot.Location);
+            
+            return spots;
+        }
+        
         public async Task<IEnumerable<Spot>> GetAll()
         {
-            var spots = await _context.Spots
-                .Include(spot => spot.Marina)
-                .Include(spot => spot.Location)
+            var spots = await LoadSpots().ToListAsync();
+
+            return spots;
+        }
+
+        public async Task<IEnumerable<Spot>> GetAll(int marinaOwnerId)
+        {
+            marinaOwnerId.ThrowIfNegativeId();
+
+            var spots = await LoadSpots()
+                .Where(predicate => predicate.Marina.MarinaOwnerId == marinaOwnerId)
                 .ToListAsync();
 
             return spots;
@@ -42,9 +62,7 @@ namespace WebApplication.BusinessLogic
         {
             id.ThrowIfInvalidId();
 
-            var spot = await _context.Spots
-                .Include(s => s.Marina)
-                .Include(s => s.Location)
+            var spot = await LoadSpots()
                 .FirstOrDefaultAsync(s => s.SpotId == id);
 
             spot.ThrowIfNull();

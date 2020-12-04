@@ -6,43 +6,65 @@ using System.Globalization;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using WebApplication.Authorization;
 
 namespace WebApplication.Controllers
 {
+    [Authorize(Roles="MarinaOwner")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class SpotController : Controller
     {
         private readonly ISpotService _spotService;
         private readonly IMarinaService _marinaService;
+        private readonly UserManager<Person> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
-        public SpotController(ISpotService spotService, IMarinaService marinaService)
+        public SpotController(ISpotService spotService, IAuthorizationService authorizationService,
+            IMarinaService marinaService, UserManager<Person> userManager)
         {
             _spotService = spotService;
             _marinaService = marinaService;
+            _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
-        // GET: Spot
         public async Task<IActionResult> Index()
         {
-            return View(await _spotService.GetAll());
+            try
+            {
+                var userId = int.Parse(_userManager.GetUserId(User));
+                
+                var spots = await _spotService.GetAll(userId);
+                
+                return View(spots);
+            }
+            catch (BusinessException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
-        // GET: Spot/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
+                var spot = await _spotService.GetSingle(id);
+
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, spot, Operation.Read);
+
+                if (isAuthorized.Succeeded)
+                    return View(spot);
+
+                return Forbid();
             }
-
-            var spot = await _spotService.GetSingle(id);
-
-            if (spot == null)
+            catch (BusinessException e)
             {
-                return NotFound();
+                Console.WriteLine(e);
+                throw;
             }
-
-            return View(spot);
         }
 
         // GET: Spot/Create
