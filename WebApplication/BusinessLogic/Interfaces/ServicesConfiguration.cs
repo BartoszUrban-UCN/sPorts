@@ -7,8 +7,8 @@ namespace WebApplication.BusinessLogic
     public static class ServicesConfiguration
     {
         /// <summary>
-        /// Extension method for adding all services within the Business layer to the Dependency
-        /// Injection framework. Should get called in Startup.cs
+        /// Extension method for adding all services within the Business layer
+        /// to the Dependency Injection framework. Should get called in Startup.cs
         /// </summary>
         /// <param name="services"></param>
         public static void AddBusinessServices(this IServiceCollection services)
@@ -25,8 +25,6 @@ namespace WebApplication.BusinessLogic
             services.AddScoped<IMarinaService, MarinaService>();
             services.AddScoped<ISpotService, SpotService>();
             services.AddScoped<ILocationService, LocationService>();
-
-            services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IPDFService<Booking>, BookingPDFService>();
 

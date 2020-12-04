@@ -12,7 +12,7 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public class UserService : UserManager<Person>, IUserService
+    public class UserService : UserManager<Person>
     {
         private readonly SportsContext _context;
 
