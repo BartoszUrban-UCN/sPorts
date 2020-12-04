@@ -35,8 +35,9 @@ namespace WebApplication
                 try
                 {
                     var context = services.GetRequiredService<SportsContext>();
-                    DbInitializer.InitializeDb(context);
+                    await DbInitializer.InitializeDb(services, context);
                     await RoleInitializer.SeedRoles(services, context);
+                    //await DbInitializer.EnsureMarinaOwner(services, "123456", "marinaowner@gmail.com");
                 }
                 catch (Exception ex)
                 {

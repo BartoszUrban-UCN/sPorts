@@ -1,12 +1,20 @@
-﻿using System;
-using System.Linq;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
+using WebApplication.BusinessLogic;
+using System.Threading.Tasks;
 using WebApplication.Models;
+using System.Linq;
+using System;
 
 namespace WebApplication.Data
 {
-    public class DbInitializer
+    public static class DbInitializer
     {
-        public static void InitializeDb(SportsContext context)
+        public static async Task InitializeDb(IServiceProvider serviceProvider, SportsContext context)
+        {
+            SeedDb(context);
+        }
+        public static void SeedDb(SportsContext context)
         {
             //TODO: Remove in Release :)
             context.Database.EnsureDeleted();
@@ -66,6 +74,7 @@ namespace WebApplication.Data
                     new MarinaOwner{ PersonId=1 },
                     new MarinaOwner{ PersonId=2 },
                     new MarinaOwner{ PersonId=3 },
+                    new MarinaOwner{ PersonId=4 },
                 };
 
                 context.MarinaOwners.AddRange(marinaOwners);
@@ -178,6 +187,32 @@ namespace WebApplication.Data
                 context.BookingLines.AddRange(bookingLines);
                 context.SaveChanges();
             }
+        }
+
+        public static async Task<int> EnsureMarinaOwner(IServiceProvider serviceProvider,
+                                                            string testUserPw, string UserEmail)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<Person>>();
+            var userService = serviceProvider.GetRequiredService<UserService>();
+
+            var user = await userManager.FindByEmailAsync(UserEmail);
+            if (user == null)
+            {
+                user = new Person
+                {
+                    Email = UserEmail,
+                    EmailConfirmed = true
+                };
+                var marinaOwner = await userService.MakePersonMarinaOwner(user);
+
+                await userManager.CreateAsync(user, testUserPw);
+                await userManager.AddToRoleAsync(user, "MarinaOwner");
+            }
+
+            if (user == null)
+                throw new Exception("Not strong password.");
+
+            return user.Id;
         }
     }
 }

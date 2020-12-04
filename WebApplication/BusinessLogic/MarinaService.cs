@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace WebApplication.BusinessLogic
 {
@@ -93,27 +99,42 @@ namespace WebApplication.BusinessLogic
 
             return !await _context.Marinas.AnyAsync(m => m.MarinaId == id);
         }
-
         // Get all Marinas and load their related entities also
-        public async Task<IEnumerable<Marina>> GetAll()
+        private IIncludableQueryable<Marina, Location> LoadMarinas()
         {
-            var marinas = await _context.Marinas
+            var marinas = _context.Marinas
                 .Include(marina => marina.Address)
                 .Include(marina => marina.MarinaOwner)
+                    .ThenInclude(marinaOwner => marinaOwner.Person)
                 .Include(marina => marina.Location)
                 .Include(marina => marina.Spots)
                     .ThenInclude(spot => spot.BookingLines)
                 .Include(marina => marina.Spots)
-                    .ThenInclude(spot => spot.Location)
-                .ToListAsync();
+                    .ThenInclude(spot => spot.Location);
+            
+            return marinas;
+        }
+        public async Task<IEnumerable<Marina>> GetAll()
+        {
+            var marinas = await LoadMarinas()
+                                    .ToListAsync();
 
             foreach (var marina in marinas)
-            {
                 if (marina.Location is null && marina.Spots.Count > 0 && marina.Spots.Any(spot => spot.LocationId != null))
-                {
                     CalculateMarinaLocation(marina);
-                }
-            }
+
+            return marinas;
+        }
+
+        public async Task<IEnumerable<Marina>> GetAll(int marinaOwnerId)
+        {
+            var marinas = await LoadMarinas()
+                                    .Where(p => p.MarinaOwner.PersonId == marinaOwnerId)
+                                    .ToListAsync();
+            
+            foreach (var marina in marinas)
+                if (marina.Location is null && marina.Spots.Count > 0 && marina.Spots.Any(spot => spot.LocationId != null))
+                    CalculateMarinaLocation(marina);
 
             return marinas;
         }
@@ -121,14 +142,8 @@ namespace WebApplication.BusinessLogic
         public async Task<Marina> GetSingle(int? id)
         {
             id.ThrowIfInvalidId();
-            var marina = await _context.Marinas
-                 .Include(marina => marina.Address)
-                .Include(marina => marina.MarinaOwner)
-                .Include(marina => marina.Location)
-                .Include(marina => marina.Spots)
-                    .ThenInclude(spot => spot.BookingLines)
-                .Include(marina => marina.Spots)
-                    .ThenInclude(spot => spot.Location)
+            
+            var marina = await LoadMarinas()
                 .FirstOrDefaultAsync(marina => marina.MarinaId == id);
 
             marina.ThrowIfNull();

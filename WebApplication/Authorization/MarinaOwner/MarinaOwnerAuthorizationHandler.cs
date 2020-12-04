@@ -3,15 +3,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
-using System.Security.Claims;
+using WebApplication.Authorization;
 
-namespace WebApplication.Authorization
+namespace WebApplication.Authorization.MarinaOwner
 {
     public class MarinaOwnerAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Marina>
     {
+        private readonly UserManager<Person> _userManager;
+        public MarinaOwnerAuthorizationHandler(UserManager<Person> userManager)
+        {
+            _userManager = userManager;
+        }
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Marina resource)
         {
-            if (context.User == null || resource == null)
+            if (resource == null)
             {
                 return Task.CompletedTask;
             }
@@ -25,8 +30,8 @@ namespace WebApplication.Authorization
                 return Task.CompletedTask;
             }
 
-            var loggedUserId = int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
+            var loggedUserId = int.Parse(_userManager.GetUserId(context.User));
+            
             if (loggedUserId == resource.MarinaOwner.PersonId)
             {
                 context.Succeed(requirement);

@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using WebApplication.BusinessLogic.Interfaces;
-using WebApplication.Models;
 using Microsoft.AspNetCore.Authorization;
 using WebApplication.Authorization.Shared;
+using WebApplication.Authorization.MarinaOwner;
 
 namespace WebApplication.Authorization
 {
