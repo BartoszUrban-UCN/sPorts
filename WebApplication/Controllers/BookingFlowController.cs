@@ -95,6 +95,7 @@ namespace WebApplication.Controllers
             ViewData["MarinaBLineDict"] = marinaBLineDict;
             ViewData["AppliedDiscounts"] = appliedDiscounts;
 
+            sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             byte cartHasChanged = validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1;
             ViewData["CartHasChanged"] = cartHasChanged;
 
