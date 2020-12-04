@@ -14,7 +14,8 @@ namespace WebApplication.Authorization
         /// <param name="services"></param>
         public static void AddAuthorizationServices(this IServiceCollection services)
         {
-            services.AddScoped<IAuthorizationHandler, MarinaOwnerIsOwnerAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MarinaOwnerAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, MarinaManagerAuthorizationHandler>();
         }
     }
 }

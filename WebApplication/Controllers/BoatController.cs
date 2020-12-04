@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
+using System.Linq;
+using System.Security.Claims;
+using WebApplication.Authorization.BoatOwner;
+using WebApplication.Authorization;
 
 namespace WebApplication.Controllers
 {
@@ -11,15 +16,20 @@ namespace WebApplication.Controllers
     {
         private readonly IBoatService _boatService;
         private readonly IBoatOwnerService _boatOwnerService;
-        public BoatController(IBoatService boatService, IBoatOwnerService boatOwnerService)
+        private readonly IAuthorizationService _authorizationService;
+
+        public BoatController(IBoatService boatService, IBoatOwnerService boatOwnerService, IAuthorizationService authorizationService)
         {
             _boatService = boatService;
             _boatOwnerService = boatOwnerService;
+            _authorizationService = authorizationService;
         }
+
         // GET: Boats
         public async Task<IActionResult> Index()
         {
             var result = await _boatService.GetAll();
+
             return View(result);
         }
 
@@ -29,7 +39,17 @@ namespace WebApplication.Controllers
             try
             {
                 var boat = await _boatService.GetSingle(id);
-                return View(boat);
+
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operations.Create);
+
+                if (isAuthorized.Succeeded)
+                {
+                    return View(boat);
+                }
+                else
+                {
+                    return Forbid();
+                }
             }
             catch (BusinessException)
             {
@@ -76,7 +96,17 @@ namespace WebApplication.Controllers
             {
                 var boat = await _boatService.GetSingle(id);
                 var boatOwnerId = ViewData["BoatOwnerId"];
-                return View(boat);
+
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operations.Update);
+
+                if (isAuthorized.Succeeded)
+                {
+                    return View(boat);
+                }
+                else
+                {
+                    return Forbid();
+                }
             }
             catch (BusinessException)
             { }

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
@@ -16,11 +18,13 @@ namespace WebApplication.Controllers
     {
         private readonly SportsContext _context;
         private readonly IMarinaService _marinaService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public MarinaController(SportsContext context, IMarinaService marinaService)
+        public MarinaController(SportsContext context, IMarinaService marinaService, IAuthorizationService authorizationService)
         {
             _context = context;
             _marinaService = marinaService;
+            _authorizationService = authorizationService;
         }
 
         // GET: Marina
@@ -94,7 +98,18 @@ namespace WebApplication.Controllers
 
             ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "AddressId", marina.AddressId);
             ViewData["MarinaOwnerId"] = new SelectList(_context.MarinaOwners, "MarinaOwnerId", "MarinaOwnerId", marina.MarinaOwnerId);
-            return View(marina);
+
+            // Auth
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operations.Update);
+
+            if (isAuthorized.Succeeded)
+            {
+                return View(marina);
+            }
+            else
+            {
+                return Forbid();
+            }
         }
 
         // POST: Marina/Edit/5

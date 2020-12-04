@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.BusinessLogic.Shared;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApplication.BusinessLogic
 {

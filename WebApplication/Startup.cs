@@ -18,6 +18,7 @@ using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
+using WebApplication.Authorization.BoatOwner;
 
 namespace WebApplication
 {
@@ -144,15 +145,15 @@ namespace WebApplication
                 options.Lockout.AllowedForNewUsers = true;
             });
 
-            // The lines below make it so that only authenticated users can
-            // access pages, regardless of what page it is
-
+            // The lines below make it so that only authenticated users can access pages, regardless of what page it is
             services.AddAuthorization(options =>
             {
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
+                   .RequireAuthenticatedUser()
+                   .Build();
             });
+
+            services.AddSingleton<IAuthorizationHandler, BoatOwnerAuthorizationHandler>();
 
             services.AddAuthorizationServices();
 
