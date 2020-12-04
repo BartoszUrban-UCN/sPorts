@@ -325,11 +325,17 @@ namespace WebApplication.BusinessLogic
 
             foreach (var bookingLine in booking.BookingLines.ToList())
             {
-                var availableSpots = (List<Spot>)await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, booking.BoatId, bookingLine.StartDate, bookingLine.EndDate);
+                var availableSpots = (List<Spot>)await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId,
+                    booking.BoatId,
+                    bookingLine.StartDate,
+                    bookingLine.EndDate);
 
                 if (availableSpots.Contains(bookingLine.Spot))
                     validBookingLines.Add(bookingLine);
             }
+
+            double totalPrice = CalculateTotalPrice(booking);
+            booking.TotalPrice = totalPrice;
 
             booking.BookingLines = new List<BookingLine>(validBookingLines);
 
