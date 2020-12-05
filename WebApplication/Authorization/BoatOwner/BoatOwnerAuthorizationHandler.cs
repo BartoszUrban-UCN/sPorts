@@ -37,9 +37,11 @@ namespace WebApplication.Authorization.BoatOwner
                 return Task.CompletedTask;
             }
 
+            // Get the current logged in user's attached Person, and then its related BoatOwner object
             var loggedPerson = await _userService.GetUserAsync(context.User);
             var boatOwner = _userService.GetBoatOwnerFromPerson(loggedPerson);
 
+            // Verify whether the boat owner that asks for access matches the resource's boat owner information
             if (boatOwner.BoatOwnerId == resource.BoatOwnerId)
             {
                 context.Succeed(requirement);
