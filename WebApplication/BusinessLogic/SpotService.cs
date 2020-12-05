@@ -38,6 +38,7 @@ namespace WebApplication.BusinessLogic
             var spots = _context.Spots
                 .Include(spot => spot.Marina)
                     .ThenInclude(marina => marina.MarinaOwner)
+                        .ThenInclude(marinaOwner => marinaOwner.Person)
                 .Include(spot => spot.Location);
             
             return spots;

@@ -29,7 +29,9 @@ namespace WebApplication.Authorization
         public static void AddAuthorizationHandlers(this IServiceCollection services)
         {
             services.AddScoped<IAuthorizationHandler, BoatOwnerAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, MarinaOwnerAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MarinaAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, SpotAuthorizationHandler>();
+            
 
             // Managers are authorized to do anything currently
             services.AddScoped<IAuthorizationHandler, ManagerAuthorizationHandler<object>>();
