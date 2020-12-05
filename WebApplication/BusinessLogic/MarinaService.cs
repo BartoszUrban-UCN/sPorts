@@ -83,6 +83,7 @@ namespace WebApplication.BusinessLogic
         {
             marina = await GetSingle(marina.MarinaId);
             marina.ThrowIfNull();
+            marina.LocationId.ThrowIfInvalidId();
             await _locationService.Delete(marina.LocationId);
             return marina;
         }
@@ -187,7 +188,7 @@ namespace WebApplication.BusinessLogic
             if (marina is not null)
                 if (MarinaSpotsHaveLocations(marina))
                 {
-                    IList<Point> locations = new List<Point>();
+                    var locations = new List<Point>();
 
                     // Verify for spots with locations once again
                     // (When the method gets called it is made sure that the spots inside have a valid location, but let's verify again)

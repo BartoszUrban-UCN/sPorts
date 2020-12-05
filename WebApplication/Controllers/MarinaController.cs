@@ -7,6 +7,7 @@ using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WebApplication.Authorization;
 
 namespace WebApplication.Controllers
@@ -18,22 +19,25 @@ namespace WebApplication.Controllers
         private readonly IMarinaService _marinaService;
         private readonly UserManager<Person> _userManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly UserService _userService;
 
         public MarinaController(IMarinaService marinaService, UserManager<Person> userManager,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService, UserService userService)
         {
             _marinaService = marinaService;
             _userManager = userManager;
             _authorizationService = authorizationService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> Index()
         {
             try
             {
-                var userId = int.Parse(_userManager.GetUserId(User));
-                
-                var marinas = await _marinaService.GetAll(userId);
+                var person = await _userManager.GetUserAsync(User);
+                var marinaOwnerId = _userService.GetMarinaOwnerFromPerson(person).MarinaOwnerId;
+
+                var marinas = await _marinaService.GetAll(marinaOwnerId);
                 
                 return View(marinas);
             }
@@ -48,10 +52,12 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var marina = await _marinaService.GetSingle(id);
+                var person = await _userManager.GetUserAsync(User);
+                var marinaOwnerId = _userService.GetMarinaOwnerFromPerson(person).MarinaOwnerId;
+
+                var marina = await _marinaService.GetSingle(marinaOwnerId);
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Read);
-
                 if (isAuthorized.Succeeded)
                     return View(marina);
                 
@@ -68,116 +74,117 @@ namespace WebApplication.Controllers
 
         public IActionResult Create()
         {
-            //ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId", "AddressId");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [PreventMultipleEvents]
-        public async Task<IActionResult> Create([Bind("Name,Description,Facilities")] Marina marina)
+        public async Task<IActionResult> Create([Bind("Name, Description, Facilities")] Marina marina)
         {
-            if (!ModelState.IsValid)
-            { 
-                //ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId",
-                                                //"AddressId", marina.AddressId); 
-                return View(marina);
-            }
-
-            var loggedUserId = int.Parse(_userManager.GetUserId(User));
-            marina.MarinaOwnerId = loggedUserId;
-                
-            // Marina with Location on map
-            if (MarinaLocationIsSelected())
-            {
-                var marinaLocation = GetLocationFormData();
-
-                if (marinaLocation is not null)
-                    await _marinaService.CreateWithLocation(marina, marinaLocation);
-            }
-            // Marina without Location on map
-            else
-                await _marinaService.Create(marina);
-
             try
             {
+                // Reload the page if the model is invalid
+                if (!ModelState.IsValid)
+                    return View(marina);
+                
+                // Set the marina's marinaOwner id to logged user
+                var person = await _userManager.GetUserAsync(User);
+                var marinaOwnerId = _userService.GetMarinaOwnerFromPerson(person).MarinaOwnerId;
+                marina.MarinaOwnerId = marinaOwnerId;
+                
+                if (MarinaLocationIsSelected())
+                {
+                    var marinaLocation = GetLocationFormData();
+                    
+                    await _marinaService.CreateWithLocation(marina, marinaLocation);
+                }
+                else
+                    await _marinaService.Create(marina);
+
                 await _marinaService.Save();
+                // Return to index if successful
+                return RedirectToAction(nameof(Index));
             }
-            catch (BusinessException e)
+            catch (BusinessException exception)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(exception);
                 throw;
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
             try
             {
-                var marina = await _marinaService.GetSingle(id);
+                var marinaTask = _marinaService.GetSingle(id);
+                var marina = await marinaTask;
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
+                if (!isAuthorized.Succeeded)
+                    return Forbid();
 
-                //ViewData["AddressId"] = new SelectList(_context.Addresses,"AddressId",
-                                            //"AddressId", marina.AddressId);
-                
-                if (isAuthorized.Succeeded)
-                    return View(marina);
-                
-                return Forbid();
+                var marinaCopy = new Marina
+                {
+                    Name = marina.Name,
+                    Description = marina.Description,
+                    Facilities = marina.Facilities,
+                    LocationId = marina.LocationId
+                };
+                    
+                marinaTask.Dispose();
+                    
+                return View(marinaCopy);
             }
-            catch (BusinessException e)
+            catch (BusinessException exception)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(exception);
                 throw;
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id,
-            [Bind("Name,Description,Facilities,LocationId")]
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Name, Description, Facilities, LocationId")]
             Marina marina)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                //ViewData["AddressId"] = new SelectList(_context.Addresses, "AddressId",
-                                                                 //"AddressId", marina.AddressId);
-                return View(marina);
-            }
-            
-            var loggedUserId = int.Parse(_userManager.GetUserId(User));
-            marina.MarinaOwner = new MarinaOwner { PersonId = loggedUserId };
-            
-            var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
+                var marinaDb = await _marinaService.GetSingle(id);
+                
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marinaDb, Operation.Update);
+                if (!isAuthorized.Succeeded)
+                    Forbid();
 
-            if (!isAuthorized.Succeeded)
-                Forbid();
+                if (!ModelState.IsValid)
+                    return View(marina);
 
-            if (MarinaLocationIsSelected())
-            {
-                var marinaLocation = GetLocationFormData();
-
-                if (marinaLocation is not null)
+                marinaDb.Name = marina.Name;
+                marinaDb.Description = marina.Description;
+                marinaDb.Facilities = marina.Facilities;
+                marinaDb.LocationId = marina.LocationId;
+                
+                if (MarinaLocationIsSelected())
                 {
-                    if (marina.LocationId.IsValidId())
-                        _marinaService.UpdateMarinaLocation(marina, marinaLocation);
-                    else
-                        await _marinaService.CreateLocationForMarina(marina, marinaLocation);
+                    var marinaLocation = GetLocationFormData();
+
+                    _marinaService.UpdateMarinaLocation(marinaDb, marinaLocation);
+                    await _marinaService.CreateLocationForMarina(marinaDb, marinaLocation);
                 }
+                else
+                    marinaDb = await _marinaService.DeleteMarinaLocation(marinaDb);
+
+                _marinaService.Update(marinaDb);
+                await _marinaService.Save();
+
+                return RedirectToAction(nameof(Index));
             }
-            else
+            catch (BusinessException exception)
             {
-                marina.LocationId.ThrowIfInvalidId(); 
-                marina = await _marinaService.DeleteMarinaLocation(marina);
+                Console.WriteLine(exception);
+                throw;
             }
-
-            _marinaService.Update(marina);
-            await _marinaService.Save();
-
-            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int? id)
@@ -190,6 +197,7 @@ namespace WebApplication.Controllers
                 
                 if (isAuthorized.Succeeded)
                     return View(marina);
+                
                 return Forbid();
             }
             catch (BusinessException e)
@@ -212,8 +220,6 @@ namespace WebApplication.Controllers
                 if (!isAuthorized.Succeeded)
                     Forbid();
                 
-                marina.LocationId.ThrowIfInvalidId();
-
                 await _marinaService.DeleteMarinaLocation(marina);
                 await _marinaService.Delete(id);
                 await _marinaService.Save();
@@ -260,8 +266,7 @@ namespace WebApplication.Controllers
                     Forbid();
 
                 ViewData["ViewName"] = "Marina";
-                var marinaList = new List<Marina>();
-                marinaList.Add(marina);
+                var marinaList = new List<Marina> {marina};
                 return View("_ListLayout", marinaList);
             }
             catch (BusinessException e)
@@ -277,10 +282,7 @@ namespace WebApplication.Controllers
             string longitude = Request.Form["Longitude"];
             string radius = Request.Form["Radius"];
 
-            if (latitude.IsNotNullEmptyWhitespace() && longitude.IsNotNullEmptyWhitespace() && radius.IsNotNullEmptyWhitespace())
-                return true;
-
-            return false;
+            return latitude.IsNotNullEmptyWhitespace() && longitude.IsNotNullEmptyWhitespace() && radius.IsNotNullEmptyWhitespace();
         }
 
         private Location GetLocationFormData()
@@ -289,19 +291,18 @@ namespace WebApplication.Controllers
             string longitude = Request.Form["Longitude"];
             string radius = Request.Form["Radius"];
 
-            if (latitude.IsNotNullEmptyWhitespace() && longitude.IsNotNullEmptyWhitespace() && radius.IsNotNullEmptyWhitespace())
+            if (!latitude.IsNotNullEmptyWhitespace() || !longitude.IsNotNullEmptyWhitespace() ||
+                !radius.IsNotNullEmptyWhitespace())
+                throw new BusinessException("GetLocationFormData", "Something went wrong when calculating location.");
+
+            Location spotLocation = new Location
             {
-                Location spotLocation = new Location
-                {
-                    Latitude = Convert.ToDouble(latitude),
-                    Longitude = Convert.ToDouble(longitude),
-                    Radius = Convert.ToDouble(radius),
-                };
+                Latitude = Convert.ToDouble(latitude),
+                Longitude = Convert.ToDouble(longitude),
+                Radius = Convert.ToDouble(radius),
+            };
 
-                return spotLocation;
-            }
-
-            return null;
+            return spotLocation;
         }
     }
 }
