@@ -12,9 +12,12 @@ namespace WebApplication.BusinessLogic
     public class SpotService : ServiceBase, ISpotService
     {
         private readonly ILocationService _locationService;
-        public SpotService(SportsContext context, ILocationService locationService) : base(context)
+        private readonly UserService _userService;
+
+        public SpotService(SportsContext context, ILocationService locationService, UserService userService) : base(context)
         {
             _locationService = locationService;
+            _userService = userService;
         }
 
         public async Task<int> Create(Spot spot)

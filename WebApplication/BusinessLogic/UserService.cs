@@ -100,5 +100,25 @@ namespace WebApplication.BusinessLogic
 
             return person;
         }
+
+        // Returns the person's associated marina owner, or null if there is none associated
+        public MarinaOwner GetMarinaOwnerFromPerson(Person person)
+        {
+            person.ThrowIfNull();
+
+            var foundMarinaOwner = _context.MarinaOwners.FirstOrDefault(marinaOwner => marinaOwner.PersonId == person.Id);
+
+            return foundMarinaOwner;
+        }
+
+        // Returns the person's associated boat owner, or null if there is none associated
+        public BoatOwner GetBoatOwnerFromPerson(Person person)
+        {
+            person.ThrowIfNull();
+
+            var foundBoatOwner = _context.BoatOwners.FirstOrDefault(boatOwner => boatOwner.PersonId == person.Id);
+
+            return foundBoatOwner;
+        }
     }
 }

@@ -13,7 +13,14 @@ namespace WebApplication.Authorization.BoatOwner
 {
     public class BoatOwnerAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Boat>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Boat resource)
+        private readonly UserService _userService;
+
+        public BoatOwnerAuthorizationHandler(UserService userService)
+        {
+            _userService = userService;
+        }
+
+        protected override async Task<Task> HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Boat resource)
         {
             if (context.User == null || resource == null)
             {
@@ -30,9 +37,10 @@ namespace WebApplication.Authorization.BoatOwner
                 return Task.CompletedTask;
             }
 
-            var loggedUserId = int.Parse(context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var loggedPerson = await _userService.GetUserAsync(context.User);
+            var boatOwner = _userService.GetBoatOwnerFromPerson(loggedPerson);
 
-            if (loggedUserId == resource.BoatOwner.PersonId)
+            if (boatOwner.BoatOwnerId == resource.BoatOwnerId)
             {
                 context.Succeed(requirement);
             }

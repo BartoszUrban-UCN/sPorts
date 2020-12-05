@@ -17,12 +17,14 @@ namespace WebApplication.Controllers
         private readonly IBoatService _boatService;
         private readonly IBoatOwnerService _boatOwnerService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly UserService _userService;
 
-        public BoatController(IBoatService boatService, IBoatOwnerService boatOwnerService, IAuthorizationService authorizationService)
+        public BoatController(IBoatService boatService, IBoatOwnerService boatOwnerService, IAuthorizationService authorizationService, UserService userService)
         {
             _boatService = boatService;
             _boatOwnerService = boatOwnerService;
             _authorizationService = authorizationService;
+            _userService = userService;
         }
 
         // GET: Boat
@@ -45,10 +47,12 @@ namespace WebApplication.Controllers
             // If user is only a boat owner instead
             if (User.IsInRole(RoleName.BoatOwner))
             {
-                var loggedUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                // Get the logged in user's related boat owner object
+                var loggedPerson = await _userService.GetUserAsync(User);
+                var boatOwner = _userService.GetBoatOwnerFromPerson(loggedPerson);
 
                 // Filter results so that he only sees his boats rather than all of them
-                result = result.Where(boat => boat.BoatOwner?.PersonId == loggedUserId);
+                result = result.Where(boat => boat.BoatOwnerId == boatOwner.BoatOwnerId);
 
                 // Return a view that only displays that boat owner's boats
                 return View(result);
@@ -117,14 +121,10 @@ namespace WebApplication.Controllers
                 if (ModelState.IsValid)
                 {
                     // Check whether user is allowed to create a boat
-                    // TODO: Could be even more secure, but AuthorizeAsync has to search for BoatOwnerId inside the authorization handler
-                    var isAuthorized =
-                        User.IsInRole(RoleName.Administrator) ||
-                        User.IsInRole(RoleName.Manager) ||
-                        User.IsInRole(RoleName.BoatOwner);//await _authorizationService.AuthorizeAsync(User, boat, Operation.Create);
+                    var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Create);
 
                     // If he is authorized for that
-                    if (isAuthorized)
+                    if (isAuthorized.Succeeded)
                     {
                         // Create a boat
                         await _boatService.Create(boat);

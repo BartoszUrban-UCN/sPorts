@@ -19,6 +19,7 @@ using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.Authorization.BoatOwner;
+using Microsoft.AspNetCore.Authorization.Policy;
 
 namespace WebApplication
 {
@@ -145,18 +146,6 @@ namespace WebApplication
                 options.Lockout.AllowedForNewUsers = true;
             });
 
-            // The lines below make it so that only authenticated users can access pages, regardless of what page it is
-            services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                   .RequireAuthenticatedUser()
-                   .Build();
-            });
-
-            services.AddSingleton<IAuthorizationHandler, BoatOwnerAuthorizationHandler>();
-
-            services.AddAuthorizationServices();
-
             // Swagger service
             services.AddSwaggerGen(swagger =>
             {
@@ -183,8 +172,23 @@ namespace WebApplication
                 swagger.IncludeXmlComments(xmlPath);
             });
 
+            // Adds authorization and authorization handlers
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                   .RequireAuthenticatedUser()
+                   .Build();
+            });
+
+            // Adds all needed authorization services
+            services.AddAuthorizationServices();
+            // Adds all necessary authorization handlers
+            services.AddAuthorizationHandlers();
+
             // Adds all services in the Business Layer for dependency injection
             services.AddBusinessServices();
+
+            
         }
     }
 }
