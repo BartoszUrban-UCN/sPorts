@@ -3,37 +3,43 @@
 }
 
 function confirmSpotBooked() {
+    $(this).find("span").addClass("spinner-border");
+    $(this).find("span").addClass("spinner-border-sm");
     var bookingLineId = $(this).attr("data-bookingLine-id")
     $.ajax({
         type: "PUT",
         url: "/api/booking/" + bookingLineId + "/bookinglineconfirmation",
         data: { bookingLineId: bookingLineId },
         success: function (result) {
-            $("#marinaOwnerBookings").on('click', '.confirmBtn', function () {
-                $(this).closest('tr').fadeOut(1000);
-            });
+            location.reload();
+            //$("#marinaOwnerBookings").on('click', '.cancelBtn', function () {
+            //    $(this).closest('tr').fadeOut(1000);
+            //});
         },
         error: {}
     });
 }
 
 function cancelSpotBooked(ele) {
+    $(this).find("span").addClass("spinner-border");
+    $(this).find("span").addClass("spinner-border-sm");
     var bookingLineId = $(this).attr("data-bookingLine-id")
     $.ajax({
         type: "PUT",
         url: "/api/booking/" + bookingLineId + "/bookinglinecancellation",
         data: { bookingLineId: bookingLineId },
         success: function (result) {
-            $("#marinaOwnerBookings").on('click', '.cancelBtn', function () {
-                $(this).closest('tr').fadeOut(1000);
-            });
+            location.reload();
+            //$("#marinaOwnerBookings").on('click', '.cancelBtn', function () {
+            //    $(this).closest('tr').fadeOut(1000);
+            //});
         },
         error: {}
     });
 }
 
 $(function () {
-    $("input.confirmBtn").on("click", confirmSpotBooked)
+    $("button.confirmBtn").on("click", confirmSpotBooked)
 
-    $("input.cancelBtn").on("click", cancelSpotBooked)
+    $("button.cancelBtn").on("click", cancelSpotBooked)
 })

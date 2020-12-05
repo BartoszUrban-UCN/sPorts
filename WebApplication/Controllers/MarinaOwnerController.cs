@@ -162,7 +162,7 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> BookingsByMarinaOwner()
         {
             // get logged in marina
-            var bookingLines = await _marinaOwnerService.GetUnconfirmedBookingLines(1);
+            var bookingLines = await _marinaOwnerService.GetBookingLines(1);
 
             return View(bookingLines);
         }

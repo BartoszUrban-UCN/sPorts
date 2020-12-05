@@ -3,10 +3,8 @@ function checkInvalid(data, status) {
 }
 
 function checkoutButtonClicked() {
-    var cartHasChanged = $(this).attr("name")
-    if (cartHasChanged == 1) {
-        $(".cartAlert").show();
-    }
+    $(this).find("span").addClass("spinner-border");
+    $(this).find("span").addClass("spinner-border-sm");
     //$.get("Checkout",
     //    (data, status) => checkInvalid(data, status))
 }

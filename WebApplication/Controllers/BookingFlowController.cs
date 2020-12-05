@@ -86,6 +86,7 @@ namespace WebApplication.Controllers
             var validBooking = await _bookingService.ValidateShoppingCart(sessionBooking);
 
             var totalPrice = _bookingService.CalculateTotalPrice(validBooking);
+            validBooking.TotalPrice = totalPrice;
 
             var appliedDiscounts = _bookingService.CalculateTotalDiscount(validBooking);
 
@@ -95,7 +96,7 @@ namespace WebApplication.Controllers
             ViewData["AppliedDiscounts"] = appliedDiscounts;
 
             sessionBooking = HttpContext.Session.Get<Booking>("Booking");
-            byte cartHasChanged = (byte) (validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1);
+            byte cartHasChanged = (byte)(validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1);
             ViewData["CartHasChanged"] = cartHasChanged;
             if (cartHasChanged == 1)
             {

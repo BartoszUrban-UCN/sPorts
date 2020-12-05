@@ -139,7 +139,10 @@
                 <br>
                 @if (!nullOrEmpty)
                 {
-                    <a asp-action="SaveBooking" asp-controller="BookingFlow" name="@cartHasChanged" class="btn btn-block btn-lg text-center btn-success checkoutBtn">Checkout (@Model.BookingLines.Count)</a>
+                    <a asp-action="SaveBooking" asp-controller="BookingFlow" type="button" class="btn btn-block btn-lg text-center btn-success checkoutBtn">
+                        <span class=""></span>
+                        Checkout (@Model.BookingLines.Count)
+                    </a>
                     @*<a asp-action="CreateFromBooking" asp-controller="Payment" class="btn btn-block btn-lg text-center btn-success">Checkout (@Model.BookingLines.Count)</a>*@
                     <input type="button" class="btn btn-block btn-lg text-center btn-success simulateBtn" value="Simulate Concurrency" data-toggle="modal" data-target="#simulationModal" />
                 }
