@@ -71,7 +71,6 @@ namespace WebApplication.Controllers
             return new JsonResult(jsonString);
         }
 
-        // GET: ShoppingCart
         public async Task<IActionResult> ShoppingCart()
         {
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
@@ -96,7 +95,7 @@ namespace WebApplication.Controllers
             ViewData["AppliedDiscounts"] = appliedDiscounts;
 
             sessionBooking = HttpContext.Session.Get<Booking>("Booking");
-            byte cartHasChanged = validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1;
+            byte cartHasChanged = (byte) (validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1);
             ViewData["CartHasChanged"] = cartHasChanged;
             if (cartHasChanged == 1)
             {
