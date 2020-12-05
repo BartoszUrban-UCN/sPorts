@@ -237,7 +237,7 @@ namespace WebApplication.Controllers
                 var spot = await _spotService.GetSingle(id);
 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, spot, Operation.Delete);
-                if (!isAuthorized.Succeeded)
+                if (isAuthorized.Succeeded)
                     return View(spot);
 
                 return Forbid();

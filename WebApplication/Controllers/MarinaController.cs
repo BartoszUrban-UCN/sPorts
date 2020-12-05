@@ -52,10 +52,7 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var person = await _userManager.GetUserAsync(User);
-                var marinaOwnerId = _userService.GetMarinaOwnerFromPerson(person).MarinaOwnerId;
-
-                var marina = await _marinaService.GetSingle(marinaOwnerId);
+                var marina = await _marinaService.GetSingle(id);
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Read);
                 if (isAuthorized.Succeeded)
