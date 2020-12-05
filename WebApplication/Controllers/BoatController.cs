@@ -136,15 +136,16 @@ namespace WebApplication.Controllers
                         return RedirectToAction(nameof(Index));
                     }
 
+                    // Forbid the post if user is not authorized for that
                     return Forbid();
                 }
 
-                var boatOwnerId = ViewBag.BoatOwnerId;
                 return View(boat);
             }
             catch (BusinessException)
-            { }
-            return View("Error");
+            {
+                return View("Error");
+            }
         }
 
         // GET: Boat/Edit/5
@@ -152,24 +153,28 @@ namespace WebApplication.Controllers
         {
             try
             {
+                // Load the boat
                 var boat = await _boatService.GetSingle(id);
-                var boatOwnerId = ViewData["BoatOwnerId"];
 
+                // Check whether user is allowed to update the boat
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Update);
 
+                // If he is authorized for that
                 if (isAuthorized.Succeeded)
                 {
+                    // Return the Create view
+                    var boatOwners = await _boatOwnerService.GetAll();
+                    ViewBag.BoatOwnerId = new SelectList(boatOwners, "BoatOwnerId", "BoatOwnerId");
                     return View(boat);
                 }
-                else
-                {
-                    return Forbid();
-                }
+
+                // Forbid if user is not authorized for that
+                return Forbid();
             }
             catch (BusinessException)
-            { }
-
-            return View("Error");
+            {
+                return View("Error");
+            }
         }
 
         // POST: Boat/Edit/5
@@ -183,15 +188,32 @@ namespace WebApplication.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _boatService.Update(boat);
-                    var boatOwnerId = ViewData["BoatOwnerId"];
-                    return View(boat);
+                    // Check whether user is allowed to create a boat
+                    var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Update);
+
+                    // If he is authorized for that
+                    if (isAuthorized.Succeeded)
+                    {
+                        // Update the boat
+                        _boatService.Update(boat);
+
+                        // Persist changes to the database
+                        await _boatService.Save();
+
+                        // Go to index
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    // Forbid the post if user is not authorized for that
+                    return Forbid();
                 }
+
+                return View(boat);
             }
             catch (BusinessException)
-            { }
-
-            return View("Error");
+            {
+                return View("Error");
+            }
         }
 
         // GET: Boat/Delete/5
@@ -200,12 +222,22 @@ namespace WebApplication.Controllers
             try
             {
                 var boat = await _boatService.GetSingle(id);
-                return View(boat);
+
+                // Check whether user is allowed to create a boat
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Delete);
+
+                // If he is authorized for that
+                if (isAuthorized.Succeeded)
+                    // Return the view
+                    return View(boat);
+
+                // Forbid the post if user is not authorized for that
+                return Forbid();
             }
             catch (BusinessException)
-            { }
-
-            return View("Error");
+            {
+                return View("Error");
+            }
         }
 
         // POST: Boat/Delete/5
@@ -215,18 +247,31 @@ namespace WebApplication.Controllers
         {
             try
             {
-                await _boatService.Delete(id);
-                return RedirectToAction(nameof(Index));
+                var boat = await _boatService.GetSingle(id);
+
+                // Check whether user is allowed to create a boat
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Delete);
+
+                // If he is authorized for that
+                if (isAuthorized.Succeeded)
+                {
+                    // Delete the boat
+                    await _boatService.Delete(id);
+
+                    // Persist changes to the database
+                    await _boatService.Save();
+
+                    // Go to index
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Forbid the post method if the user is unauthorized
+                return Forbid();
             }
             catch (BusinessException)
-            { }
-
-            return View("Error");
-        }
-
-        private async Task<bool> BoatExists(int? id)
-        {
-            return await _boatService.Exists(id);
+            {
+                return View("Error");
+            }
         }
     }
 }
