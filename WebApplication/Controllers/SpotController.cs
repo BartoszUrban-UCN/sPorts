@@ -141,7 +141,7 @@ namespace WebApplication.Controllers
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, spot, Operation.Update);
                 if (!isAuthorized.Succeeded)
-                    Forbid();
+                    return Forbid();
 
                 var spotCopy = new Spot
                 {

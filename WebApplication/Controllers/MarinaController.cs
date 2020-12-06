@@ -148,31 +148,31 @@ namespace WebApplication.Controllers
         {
             try
             {
-                //var marinaDb = await _marinaService.GetSingle(id);
-                
-                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
+                var marinaDb = await _marinaService.GetSingle(id);
+
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marinaDb, Operation.Update);
                 if (!isAuthorized.Succeeded)
-                    return Forbid();
+                    Forbid();
 
                 if (!ModelState.IsValid)
                     return View(marina);
 
-                //marinaDb.Name = marina.Name;
-                //marinaDb.Description = marina.Description;
-                //marinaDb.Facilities = marina.Facilities;
-                //marinaDb.LocationId = marina.LocationId;
-                
+                marinaDb.Name = marina.Name;
+                marinaDb.Description = marina.Description;
+                marinaDb.Facilities = marina.Facilities;
+                marinaDb.LocationId = marina.LocationId;
+
                 if (MarinaLocationIsSelected())
                 {
                     var marinaLocation = GetLocationFormData();
 
-                    _marinaService.UpdateMarinaLocation(marina, marinaLocation);
-                    await _marinaService.CreateLocationForMarina(marina, marinaLocation);
+                    _marinaService.UpdateMarinaLocation(marinaDb, marinaLocation);
+                    await _marinaService.CreateLocationForMarina(marinaDb, marinaLocation);
                 }
                 else
-                    marina = await _marinaService.DeleteMarinaLocation(marina);
+                    marinaDb = await _marinaService.DeleteMarinaLocation(marinaDb);
 
-                _marinaService.Update(marina);
+                _marinaService.Update(marinaDb);
                 await _marinaService.Save();
 
                 return RedirectToAction(nameof(Index));
