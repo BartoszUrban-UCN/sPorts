@@ -116,9 +116,9 @@ namespace WebApplication.Controllers
         [PreventMultipleEvents]
         public async Task<IActionResult> Create([Bind("BoatId,Name,RegistrationNo,Width,Length,Depth,Type,BoatOwnerId")] Boat boat)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                try
                 {
                     // Check whether user is allowed to create a boat
                     var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Create);
@@ -139,13 +139,13 @@ namespace WebApplication.Controllers
                     // Forbid the post if user is not authorized for that
                     return Forbid();
                 }
+                catch (BusinessException)
+                {
+                    return View("Error");
+                }
+            }
 
-                return View(boat);
-            }
-            catch (BusinessException)
-            {
-                return View("Error");
-            }
+            return View(boat);
         }
 
         // GET: Boat/Edit/5
@@ -184,9 +184,14 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("BoatId,Name,RegistrationNo,Width,Length,Depth,Type,BoatOwnerId")] Boat boat)
         {
-            try
+            if (id != boat.BoatId)
             {
-                if (ModelState.IsValid)
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
                 {
                     // Check whether user is allowed to create a boat
                     var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Update);
@@ -207,13 +212,13 @@ namespace WebApplication.Controllers
                     // Forbid the post if user is not authorized for that
                     return Forbid();
                 }
+                catch (BusinessException)
+                {
+                    return View("Error");
+                }
+            }
 
-                return View(boat);
-            }
-            catch (BusinessException)
-            {
-                return View("Error");
-            }
+            return View(boat);
         }
 
         // GET: Boat/Delete/5

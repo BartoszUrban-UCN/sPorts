@@ -143,36 +143,36 @@ namespace WebApplication.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
-            [Bind("Name, Description, Facilities, LocationId")]
+            [Bind("MarinaId, Name, Description, Facilities, LocationId")]
             Marina marina)
         {
             try
             {
-                var marinaDb = await _marinaService.GetSingle(id);
+                //var marinaDb = await _marinaService.GetSingle(id);
                 
-                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marinaDb, Operation.Update);
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
                 if (!isAuthorized.Succeeded)
-                    Forbid();
+                    return Forbid();
 
                 if (!ModelState.IsValid)
                     return View(marina);
 
-                marinaDb.Name = marina.Name;
-                marinaDb.Description = marina.Description;
-                marinaDb.Facilities = marina.Facilities;
-                marinaDb.LocationId = marina.LocationId;
+                //marinaDb.Name = marina.Name;
+                //marinaDb.Description = marina.Description;
+                //marinaDb.Facilities = marina.Facilities;
+                //marinaDb.LocationId = marina.LocationId;
                 
                 if (MarinaLocationIsSelected())
                 {
                     var marinaLocation = GetLocationFormData();
 
-                    _marinaService.UpdateMarinaLocation(marinaDb, marinaLocation);
-                    await _marinaService.CreateLocationForMarina(marinaDb, marinaLocation);
+                    _marinaService.UpdateMarinaLocation(marina, marinaLocation);
+                    await _marinaService.CreateLocationForMarina(marina, marinaLocation);
                 }
                 else
-                    marinaDb = await _marinaService.DeleteMarinaLocation(marinaDb);
+                    marina = await _marinaService.DeleteMarinaLocation(marina);
 
-                _marinaService.Update(marinaDb);
+                _marinaService.Update(marina);
                 await _marinaService.Save();
 
                 return RedirectToAction(nameof(Index));

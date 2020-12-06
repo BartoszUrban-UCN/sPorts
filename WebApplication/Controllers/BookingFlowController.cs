@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Interfaces;
 using WebApplication.BusinessLogic.Shared;
@@ -16,25 +18,59 @@ namespace WebApplication.Controllers
         private readonly IBoatService _boatService;
         private readonly IMarinaService _marinaService;
         private readonly IPaymentService _paymentService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly UserService _userService;
 
-        public BookingFlowController(IBookingService bookingService, IBoatService boatService, IMarinaService marinaService, ISpotService spotService, IPaymentService paymentService)
+        public BookingFlowController(IBookingService bookingService, IBoatService boatService, IMarinaService marinaService, ISpotService spotService, IPaymentService paymentService, IAuthorizationService authorizationService, UserService userService)
         {
             _bookingService = bookingService;
             _boatService = boatService;
             _marinaService = marinaService;
             _paymentService = paymentService;
+            _authorizationService = authorizationService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.Boat = new SelectList(await _boatService.GetAll(), "BoatId", "Name");
-            // Needed for user prompt when deciding to change important values
-            // in the booking
-            ViewBag.SessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            // User is fully authorized to all content if he is a manager or admin
+            var isFullyAuthorized =
+                User.IsInRole(RoleName.Administrator) ||
+                User.IsInRole(RoleName.Manager);
 
-            var booking = await _bookingService.CreateEmptyBooking();
+            // If he is an admin or manager indeed
+            if (isFullyAuthorized)
+            {
+                // Get all the boats in the system as choices of booking
+                var boats = await _boatService.GetAll();
 
-            return View(booking);
+                ViewBag.Boat = new SelectList(boats, "BoatId", "Name");
+                // Needed for user prompt when deciding to change important values in the booking
+                ViewBag.SessionBooking = HttpContext.Session.Get<Booking>("Booking");
+                var booking = await _bookingService.CreateEmptyBooking();
+
+                return View(booking);
+            }
+
+            // If user is only a boat owner instead
+            if (User.IsInRole(RoleName.BoatOwner))
+            {
+                // Get the logged in user's related boat owner object
+                var loggedPerson = await _userService.GetUserAsync(User);
+                var boatOwner = _userService.GetBoatOwnerFromPerson(loggedPerson);
+
+                // Filter results so that he only gets his boats rather than all of them
+                var boats = (await _boatService.GetAll()).Where(boat => boat.BoatOwnerId == boatOwner.BoatOwnerId);
+
+                ViewBag.Boat = new SelectList(boats, "BoatId", "Name");
+                // Needed for user prompt when deciding to change important values in the booking
+                ViewBag.SessionBooking = HttpContext.Session.Get<Booking>("Booking");
+                var booking = await _bookingService.CreateEmptyBooking();
+
+                return View(booking);
+            }
+
+            return Forbid();
         }
 
         [HttpPost]
