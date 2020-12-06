@@ -13,6 +13,8 @@ namespace WebApplication.Authorization
         public static OperationAuthorizationRequirement Delete =
           new OperationAuthorizationRequirement { Name = Constants.Delete };
 
+        public static OperationAuthorizationRequirement Book =
+          new OperationAuthorizationRequirement { Name = Constants.Book };
         public static OperationAuthorizationRequirement Confirm =
           new OperationAuthorizationRequirement { Name = Constants.Confirm };
         public static OperationAuthorizationRequirement Approve =
@@ -29,6 +31,7 @@ namespace WebApplication.Authorization
         public static readonly string Update = "Update";
         public static readonly string Delete = "Delete";
 
+        public static readonly string Book = "Book";
         public static readonly string Confirm = "Confirm";
         public static readonly string Approve = "Approve";
         public static readonly string Reject = "Reject";

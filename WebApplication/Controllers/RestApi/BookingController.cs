@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Models;
@@ -16,12 +18,14 @@ namespace WebApplication.Controllers.RestApi
         private readonly IBookingService _bookingService;
         private readonly IBoatService _boatService;
         private readonly ISpotService _spotService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public BookingController(IBookingService bookingService, IBoatService boatService, ISpotService spotService)
+        public BookingController(IBookingService bookingService, IBoatService boatService, ISpotService spotService, IAuthorizationService authorizationService)
         {
             _bookingService = bookingService;
             _boatService = boatService;
             _spotService = spotService;
+            _authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -92,9 +96,17 @@ namespace WebApplication.Controllers.RestApi
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
 
-            // find boat & spot objects in db
+            // Find boat & spot objects in db
             var boat = await _boatService.GetSingle(boatId);
             var spot = await _spotService.GetSingle(spotId);
+
+            // Check whether the logged user owns the boat
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Book);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Unauthorized();
+            }
 
             // get booking from session if created before
             var booking = HttpContext.Session.Get<Booking>("Booking");

@@ -11,27 +11,27 @@ using WebApplication.Models;
 
 namespace WebApplication.Authorization.BoatOwner
 {
-    public class BoatOwnerAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Boat>
+    public class BookingAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Booking>
     {
         private readonly UserService _userService;
+        private readonly IBoatService _boatService;
 
-        public BoatOwnerAuthorizationHandler(UserService userService)
+        public BookingAuthorizationHandler(UserService userService, IBoatService boatService)
         {
             _userService = userService;
+            _boatService = boatService;
         }
 
-        protected override async Task<Task> HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Boat resource)
+        protected override async Task<Task> HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Booking resource)
         {
             if (context.User == null || resource == null)
             {
                 return Task.CompletedTask;
             }
 
-            // If not asking for CRUD permission, return.
+            // If not asking for Create or Read permission and user is not a Boat Owner, return.
             if (requirement.Name != Constants.Create &&
                 requirement.Name != Constants.Read &&
-                requirement.Name != Constants.Update &&
-                requirement.Name != Constants.Delete &&
                 !context.User.IsInRole(RoleName.BoatOwner))
             {
                 return Task.CompletedTask;
@@ -41,8 +41,11 @@ namespace WebApplication.Authorization.BoatOwner
             var loggedPerson = await _userService.GetUserAsync(context.User);
             var boatOwner = _userService.GetBoatOwnerFromPerson(loggedPerson);
 
+            // Make sure we load all the information we need about the boat in the bookingBoat
+            var bookingBoat = await _boatService.GetSingle(resource.BoatId);
+
             // Verify whether the boat owner that asks for access matches the resource's boat owner information
-            if (boatOwner.BoatOwnerId == resource.BoatOwnerId)
+            if (boatOwner.BoatOwnerId == bookingBoat.BoatOwnerId)
             {
                 context.Succeed(requirement);
             }

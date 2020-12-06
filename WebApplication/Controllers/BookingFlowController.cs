@@ -38,7 +38,7 @@ namespace WebApplication.Controllers
                 User.IsInRole(RoleName.Administrator) ||
                 User.IsInRole(RoleName.Manager);
 
-            // If he is an admin or manager indeed
+            // If he is an admin or manager
             if (isFullyAuthorized)
             {
                 // Get all the boats in the system as choices of booking
