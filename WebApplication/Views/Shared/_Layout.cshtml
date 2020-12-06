@@ -28,7 +28,7 @@
                         @{
                             // Grab the current logged in user, which will either be anon or logged in user
                             System.Security.Claims.ClaimsPrincipal currentUser = this.User;
-                            
+
                             // Always display the index and privacy, regardless of what kind of user it is
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Home</a>
@@ -40,6 +40,9 @@
                             // If the user is a boat owner, the navbar will contain the booking process option and the shopping cart
                             if (currentUser.IsInRole("BoatOwner"))
                             {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Boat" asp-action="Index"><i class="fas fa-ship"></i> Boats</a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="Index"><i class="fas fa-shopping-basket"></i> Book</a>
                                 </li>
