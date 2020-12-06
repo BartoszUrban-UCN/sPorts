@@ -3,17 +3,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using WebApplication.BusinessLogic;
 
 namespace WebApplication.Authorization.MarinaOwner
 {
     public class SpotAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Spot>
     {
-        private readonly UserManager<Person> _userManager;
-        public SpotAuthorizationHandler(UserManager<Person> userManager)
+        private readonly UserService _userService;
+
+        public SpotAuthorizationHandler(UserService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Spot resource)
+
+        protected override async Task<Task> HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Spot resource)
         {
             if (resource == null)
             {
@@ -29,9 +32,11 @@ namespace WebApplication.Authorization.MarinaOwner
                 return Task.CompletedTask;
             }
 
-            var loggedUserId = int.Parse(_userManager.GetUserId(context.User));
-            
-            if (loggedUserId == resource.Marina.MarinaOwner.PersonId)
+            // Get the current logged in user's attached Person, and then its related MarinaOwner object
+            var loggedPerson = await _userService.GetUserAsync(context.User);
+            var marinaOwner = _userService.GetMarinaOwnerFromPerson(loggedPerson);
+
+            if (marinaOwner.MarinaOwnerId == resource.Marina?.MarinaOwnerId)
             {
                 context.Succeed(requirement);
             }
