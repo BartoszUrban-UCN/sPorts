@@ -89,7 +89,7 @@ namespace WebApplication.Controllers
                 var person = await _userManager.GetUserAsync(User);
                 var marinaOwnerId = _userService.GetMarinaOwnerFromPerson(person).MarinaOwnerId;
                 marina.MarinaOwnerId = marinaOwnerId;
-                
+
                 if (MarinaLocationIsSelected())
                 {
                     var marinaLocation = GetLocationFormData();
@@ -126,11 +126,13 @@ namespace WebApplication.Controllers
                     Name = marina.Name,
                     Description = marina.Description,
                     Facilities = marina.Facilities,
-                    LocationId = marina.LocationId
+                    Location = marina.Location,
+                    LocationId = marina.LocationId,
+                    MarinaOwnerId = marina.MarinaOwnerId
                 };
-                    
+
                 marinaTask.Dispose();
-                    
+                
                 return View(marinaCopy);
             }
             catch (BusinessException exception)
@@ -143,36 +145,30 @@ namespace WebApplication.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
-            [Bind("MarinaId, Name, Description, Facilities, LocationId")]
+            [Bind("MarinaOwnerId, Name, Description, Facilities, LocationId")]
             Marina marina)
         {
+            marina.MarinaId = id;
             try
             {
-                var marinaDb = await _marinaService.GetSingle(id);
-
-                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marinaDb, Operation.Update);
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
                 if (!isAuthorized.Succeeded)
                     Forbid();
 
                 if (!ModelState.IsValid)
                     return View(marina);
 
-                marinaDb.Name = marina.Name;
-                marinaDb.Description = marina.Description;
-                marinaDb.Facilities = marina.Facilities;
-                marinaDb.LocationId = marina.LocationId;
-
                 if (MarinaLocationIsSelected())
                 {
                     var marinaLocation = GetLocationFormData();
 
-                    _marinaService.UpdateMarinaLocation(marinaDb, marinaLocation);
-                    await _marinaService.CreateLocationForMarina(marinaDb, marinaLocation);
+                    _marinaService.UpdateMarinaLocation(marina, marinaLocation);
+                    await _marinaService.CreateLocationForMarina(marina, marinaLocation);
                 }
                 else
-                    marinaDb = await _marinaService.DeleteMarinaLocation(marinaDb);
+                    marina = await _marinaService.DeleteMarinaLocation(marina);
 
-                _marinaService.Update(marinaDb);
+                _marinaService.Update(marina);
                 await _marinaService.Save();
 
                 return RedirectToAction(nameof(Index));

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Edit";
+    var marinaOwnerId = ViewData["MarinaOwnerId"];
 }
 
 <h1>Edit</h1>
@@ -11,8 +12,13 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="SpotId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"`></div>
+            <div class="form-group">
+                <input style="display: none" asp-for="MarinaId" />
+            </div>
+            <div class="form-group">
+                <input style="display: none" asp-for="LocationId" />
+            </div>
             <div class="form-group">
                 <label asp-for="SpotNumber" class="control-label"></label>
                 <input asp-for="SpotNumber" class="form-control" />
@@ -42,11 +48,6 @@
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MarinaId" class="control-label"></label>
-                <select asp-for="MarinaId" class="form-control" asp-items="ViewBag.MarinaId"></select>
-                <span asp-validation-for="MarinaId" class="text-danger"></span>
             </div>
 
             @* Initialize Leaflet Map and set the view with Denmark's coordinates *@

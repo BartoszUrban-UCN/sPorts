@@ -9,6 +9,7 @@ using WebApplication.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PdfSharp.Drawing;
 using WebApplication.Authorization;
 
 namespace WebApplication.Controllers
@@ -100,9 +101,8 @@ namespace WebApplication.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [PreventMultipleEvents]
-        public async Task<IActionResult> Create([Bind("SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId")] Spot spot)
+        public async Task<IActionResult> Create([Bind("MarinaId, SpotNumber, Available, MaxWidth, MaxLength, MaxDepth, Price")] Spot spot)
         {
-            
             try
             {
                 if (!ModelState.IsValid)
@@ -153,10 +153,10 @@ namespace WebApplication.Controllers
                     Price = spot.Price,
                     MarinaId = spot.MarinaId,
                     LocationId = spot.LocationId,
+                    Location = spot.Location
                 };
-                
-                ViewData["MarinaId"] = await MarinaList(); 
-                
+
+                ViewData["MarinaId"] = await MarinaList();
                 spotTask.Dispose();
                 
                 return View(spotCopy);
@@ -171,13 +171,12 @@ namespace WebApplication.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
-            [Bind("SpotNumber,Available,MaxWidth,MaxLength,MaxDepth,Price,MarinaId,LocationId")]
+            [Bind("MarinaId, LocationId, SpotNumber, Available, MaxWidth, MaxLength, MaxDepth, Price")]
             Spot spot)
         {
             try
             {
                 var spotDb = await _spotService.GetSingle(id);
-                var locationDb = spotDb.Location;
                 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, spotDb, Operation.Update);
                 if (!isAuthorized.Succeeded)
@@ -186,28 +185,32 @@ namespace WebApplication.Controllers
                 if (!ModelState.IsValid)
                 {
                     ViewData["MarinaId"] = await MarinaList();
-
                     return View(spot);
                 }
 
+                spotDb.MarinaId = spot.MarinaId;
+                spotDb.LocationId = spot.LocationId;
                 spotDb.SpotNumber = spot.SpotNumber;
                 spotDb.Available = spot.Available;
                 spotDb.MaxWidth = spot.MaxWidth;
-                spotDb.MaxLength = spot.MaxLength;
-                spotDb.MaxDepth = spot.MaxDepth;
+                spotDb.MaxLength = spot.MaxDepth;
                 spotDb.Price = spot.Price;
-                spotDb.MarinaId = spot.MarinaId;
-                spotDb.LocationId = spot.LocationId;
-                
+
                 // If user has chosen a location for the spot by using the Leaflet map
                 if (SpotLocationIsSelected())
                 {
                     // Either update the location linked to the spot with the new data
                     // Or create related data (Location) for the Spot and assign the newly created Location to the Spot
+                    
                     var location = GetLocationData();
-                    locationDb.Latitude = location.Latitude;
-                    locationDb.Longitude = location.Longitude;
-                    await _spotService.UpdateSpotLocation(spotDb, locationDb);
+                    if (spotDb.Location == null)
+                        spotDb.Location = location;
+                    else
+                    {
+                        spotDb.Location.Latitude = location.Latitude;
+                        spotDb.Location.Longitude = location.Longitude;
+                    }
+                    await _spotService.UpdateSpotLocation(spotDb, spotDb.Location);
                 }
                 // But if the spot does not have a location now
                 else

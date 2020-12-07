@@ -96,7 +96,7 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Spot> UpdateSpotLocation(Spot spot, Location location)
         {
-            if (spot.LocationId == null)
+            if (spot.LocationId == null || spot.LocationId == 0)
             {
                 await _locationService.Create(location);
                 spot.Location = location;
