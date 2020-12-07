@@ -3,20 +3,11 @@ function checkInvalid(data, status) {
 }
 
 function checkoutButtonClicked() {
-    //$(this).prop('disabled', true);
     $(this).css("pointer-events", "none");
     $(this).css("cursor", "default");
     $(this).addClass("disabled");
     $(this).find("span").addClass("spinner-border");
     $(this).find("span").addClass("spinner-border-sm");
-
-    //var url = $(this).attr("name")
-    //$.ajax({
-    //    type: "POST",
-    //    url: url,
-    //    success: () => { },
-    //    error: error
-    //})
 }
 
 function CreateBookingFromSession() {
