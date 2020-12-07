@@ -6,9 +6,11 @@ namespace WebApplication.Models
     public class Person : IdentityUser<int>
     {
         [Required]
+        [PersonalData]
         public string FirstName { get; set; }
 
         [Required]
+        [PersonalData]
         public string LastName { get; set; }
 
         public int? AddressId { get; set; }

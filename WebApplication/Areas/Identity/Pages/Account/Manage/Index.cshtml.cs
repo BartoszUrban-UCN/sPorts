@@ -22,6 +22,8 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
         }
 
         public string Username { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -141,6 +143,8 @@ namespace WebApplication.Areas.Identity.Pages.Account.Manage
             var isManager = await _userService.IsInRoleAsync(user, "Manager");
 
             Username = userName;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
 
             Input = new InputModel
             {
