@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
@@ -44,7 +45,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.BoatOwners.AddAsync(boatOwner);
 
-            await AddToRoleAsync(person, "BoatOwner");
+            await AddToRoleAsync(person, RoleName.BoatOwner);
 
             return boatOwner;
         }
@@ -62,7 +63,7 @@ namespace WebApplication.BusinessLogic
 
             await _context.MarinaOwners.AddAsync(marinaOwner);
 
-            await AddToRoleAsync(person, "MarinaOwner");
+            await AddToRoleAsync(person, RoleName.MarinaOwner);
 
             return marinaOwner;
         }
@@ -79,7 +80,7 @@ namespace WebApplication.BusinessLogic
                 _context.BoatOwners.Remove(boatOwner);
             }
 
-            await RemoveFromRoleAsync(person, "BoatOwner");
+            await RemoveFromRoleAsync(person, RoleName.BoatOwner);
 
             return person;
         }
@@ -96,12 +97,13 @@ namespace WebApplication.BusinessLogic
                 _context.MarinaOwners.Remove(marinaOwner);
             }
 
-            await RemoveFromRoleAsync(person, "MarinaOwner");
+            await RemoveFromRoleAsync(person, RoleName.MarinaOwner);
 
             return person;
         }
 
-        // Returns the person's associated marina owner, or null if there is none associated
+        // Returns the person's associated marina owner, or null if there is
+        // none associated
         public MarinaOwner GetMarinaOwnerFromPerson(Person person)
         {
             person.ThrowIfNull();
