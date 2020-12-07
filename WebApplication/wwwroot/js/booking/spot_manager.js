@@ -20,7 +20,7 @@ function confirmSpotBooked() {
     });
 }
 
-function cancelSpotBooked(ele) {
+function cancelSpotBooked() {
     $(this).find("span").addClass("spinner-border");
     $(this).find("span").addClass("spinner-border-sm");
     var bookingLineId = $(this).attr("data-bookingLine-id")
