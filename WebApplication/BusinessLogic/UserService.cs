@@ -122,5 +122,29 @@ namespace WebApplication.BusinessLogic
 
             return foundBoatOwner;
         }
+
+        public async Task<Address> GetAddressFromPerson(Person person)
+        {
+            person.ThrowIfNull();
+
+            return await _context.Addresses.FindAsync(person.AddressId);
+        }
+
+        public async Task UpdateAddress(Person person, Address address)
+        {
+            if (person.AddressId != null)
+            {
+                address.AddressId = (int)person.AddressId;
+                _context.Addresses.Update(address);
+            }
+            else
+            {
+                person.Address = address;
+                _context.Add(address);
+                _context.Update(person);
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }
