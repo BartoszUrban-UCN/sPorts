@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
 {
+    [Authorize(Roles = "Manager")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BoatOwnerController : Controller
     {
         private readonly IBoatOwnerService _boatOwnerService;
+
         public BoatOwnerController(IBoatOwnerService boatOwnerService)
         {
             _boatOwnerService = boatOwnerService;

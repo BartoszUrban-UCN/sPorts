@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [Authorize(Roles = "Manager")]
     public class MarinaOwnerController : Controller
     {
         private readonly IMarinaOwnerService _marinaOwnerService;
@@ -49,9 +51,8 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        // POST: MarinaOwner/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: MarinaOwner/Create To protect from overposting attacks, enable
+        // the specific properties you want to bind to. For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [PreventMultipleEvents]
@@ -89,9 +90,8 @@ namespace WebApplication.Controllers
             return View(marinaOwner);
         }
 
-        // POST: MarinaOwner/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: MarinaOwner/Edit/5 To protect from overposting attacks, enable
+        // the specific properties you want to bind to. For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("MarinaOwnerId,PersonId")] MarinaOwner marinaOwner)

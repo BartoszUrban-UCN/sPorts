@@ -16,7 +16,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/logo.png" /></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img style="max-height:15vh; height:auto; width:auto; max-width:15vh" src="~/logo.png" /></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -29,14 +29,6 @@
                             // Grab the current logged in user, which will either be anon or logged in user
                             System.Security.Claims.ClaimsPrincipal currentUser = this.User;
 
-                            // Always display the index and privacy, regardless of what kind of user it is
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy"><i class="fas fa-user-secret"></i> Privacy</a>
-                            </li>
-
                             // If the user is a boat owner, the navbar will contain the booking process option and the shopping cart
                             if (currentUser.IsInRole("BoatOwner"))
                             {
@@ -47,7 +39,7 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="Index"><i class="fas fa-shopping-basket"></i> Book</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="ShoppingCart"><i class="fas fa-cart-plus"></i> Shopping Cart</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="ShoppingCart"><i class="fas fa-cart-plus"></i> Shopping Cart</a> 
                                 </li>
                             }
 
