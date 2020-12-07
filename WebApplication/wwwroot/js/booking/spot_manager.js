@@ -3,6 +3,7 @@
 }
 
 function confirmSpotBooked() {
+    $(this).prop('disabled', true);
     $(this).find("span").addClass("spinner-border");
     $(this).find("span").addClass("spinner-border-sm");
     var bookingLineId = $(this).attr("data-bookingLine-id")
@@ -21,6 +22,7 @@ function confirmSpotBooked() {
 }
 
 function cancelSpotBooked() {
+    $(this).prop('disabled', true);
     $(this).find("span").addClass("spinner-border");
     $(this).find("span").addClass("spinner-border-sm");
     var bookingLineId = $(this).attr("data-bookingLine-id")
