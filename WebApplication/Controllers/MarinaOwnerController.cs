@@ -12,10 +12,12 @@ namespace WebApplication.Controllers
     public class MarinaOwnerController : Controller
     {
         private readonly IMarinaOwnerService _marinaOwnerService;
+        private readonly IBookingLineService _bookingLineService;
 
-        public MarinaOwnerController(IMarinaOwnerService marinaOwnerService)
+        public MarinaOwnerController(IMarinaOwnerService marinaOwnerService, IBookingLineService bookingLineService)
         {
             _marinaOwnerService = marinaOwnerService;
+            _bookingLineService = bookingLineService;
         }
 
         // GET: MarinaOwner
@@ -162,7 +164,8 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> BookingsByMarinaOwner()
         {
             // get logged in marina
-            var bookingLines = await _marinaOwnerService.GetBookingLines(1);
+            //var bookingLines = await _marinaOwnerService.GetBookingLines(1);
+            var bookingLines = await _bookingLineService.GetAll();
 
             return View(bookingLines);
         }
