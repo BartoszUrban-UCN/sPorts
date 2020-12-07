@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
 
@@ -13,11 +14,13 @@ namespace WebApplication.Controllers
     {
         private readonly IMarinaOwnerService _marinaOwnerService;
         private readonly IBookingLineService _bookingLineService;
+        private readonly UserService _userService;
 
-        public MarinaOwnerController(IMarinaOwnerService marinaOwnerService, IBookingLineService bookingLineService)
+        public MarinaOwnerController(IMarinaOwnerService marinaOwnerService, IBookingLineService bookingLineService, UserService userService)
         {
             _marinaOwnerService = marinaOwnerService;
             _bookingLineService = bookingLineService;
+            _userService = userService;
         }
 
         // GET: MarinaOwner
@@ -163,11 +166,36 @@ namespace WebApplication.Controllers
         [Route("{controller}/bookingLines")]
         public async Task<IActionResult> BookingsByMarinaOwner()
         {
-            // get logged in marina
-            //var bookingLines = await _marinaOwnerService.GetBookingLines(1);
             var bookingLines = await _bookingLineService.GetAll();
 
-            return View(bookingLines);
+            // User is fully authorized to all content if he is a manager or admin
+            var isFullyAuthorized =
+                User.IsInRole(RoleName.Administrator) ||
+                User.IsInRole(RoleName.Manager);
+
+            // If he is an admin or manager indeed
+            if (isFullyAuthorized)
+            {
+                // Return a view with all the resources displayed
+                return View(bookingLines);
+            }
+
+            // If user is only a boat owner instead
+            if (User.IsInRole(RoleName.MarinaOwner))
+            {
+                // Get the logged in user's related marina owner object
+                var loggedPerson = await _userService.GetUserAsync(User);
+                var marinaOwner = _userService.GetMarinaOwnerFromPerson(loggedPerson);
+
+                // Filter results so that they only see their spots in bookings
+                bookingLines = await _marinaOwnerService.GetBookingLines(marinaOwner.MarinaOwnerId);
+
+                // Return a view that only displays that marina owner's spots to confirm / cancel
+                return View(bookingLines);
+            }
+
+            // Forbid access to the page if user is none of the roles of a marinaowner owner, manager or admin
+            return Forbid();
         }
     }
 }
