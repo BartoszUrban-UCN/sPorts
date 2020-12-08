@@ -21,7 +21,10 @@
                 greeting = "Marina";
         }
 
-        greeting += " Owner";
+        if (greeting.Equals(""))
+            greeting += "User";
+        else
+            greeting += " Owner";
     }
 
     greeting += " " + User.Identity.Name;
