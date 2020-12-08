@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Models;
@@ -16,12 +18,14 @@ namespace WebApplication.Controllers.RestApi
         private readonly IBookingService _bookingService;
         private readonly IBoatService _boatService;
         private readonly ISpotService _spotService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public BookingController(IBookingService bookingService, IBoatService boatService, ISpotService spotService)
+        public BookingController(IBookingService bookingService, IBoatService boatService, ISpotService spotService, IAuthorizationService authorizationService)
         {
             _bookingService = bookingService;
             _boatService = boatService;
             _spotService = spotService;
+            _authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -92,9 +96,17 @@ namespace WebApplication.Controllers.RestApi
             var startDate = DateTime.Parse(start);
             var endDate = DateTime.Parse(end);
 
-            // find boat & spot objects in db
+            // Find boat & spot objects in db
             var boat = await _boatService.GetSingle(boatId);
             var spot = await _spotService.GetSingle(spotId);
+
+            // Check whether the logged user owns the boat
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, boat, Operation.Book);
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Unauthorized();
+            }
 
             // get booking from session if created before
             var booking = HttpContext.Session.Get<Booking>("Booking");
@@ -121,14 +133,14 @@ namespace WebApplication.Controllers.RestApi
                         {
                             areBookingLinesDatesValid = false;
                         }
-                            
+
                     // Finally, if all conditions are met
                     if (areBookingLinesDatesValid)
                     {
                         // Add bookingLine to the booking lines inside the booking
                         booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
                     }
-                        
+
                 }
             }
 
@@ -165,6 +177,18 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
+        /// <summary>
+        /// Cancel spot / bookingline based on booking line id (marina owner)
+        /// </summary>
+        /// <param name="id">Booking line id</param>
+        /// <returns>True or false whether if was cancelled or not</returns>
+        [HttpPut("{id}/bookinglinecancellation")]
+        public async Task<ActionResult<bool>> CancelSpotBookedByBookingLineId(int id)
+        {
+            var success = await _bookingService.CancelSpotBooked(id);
+            return success;
+        }
+
 
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] string start)
@@ -183,7 +207,7 @@ namespace WebApplication.Controllers.RestApi
         public async Task<ActionResult<IEnumerable<BookingLine>>> InvalidBookingLines()
         {
             var booking = HttpContext.Session.Get<Booking>("Booking");
-            var invalidBookingLines = await _bookingService.InvalidBookingLines(booking); 
+            var invalidBookingLines = await _bookingService.InvalidBookingLines(booking);
 
             return Ok(invalidBookingLines);
         }
@@ -194,6 +218,30 @@ namespace WebApplication.Controllers.RestApi
             HttpContext.Session.Set("Booking", new Booking());
             var booking = HttpContext.Session.Get<Booking>("Booking");
             return booking;
+        }
+
+        [HttpPost("CreateSampleBooking")]
+        public async Task<ActionResult<bool>> CreateSampleBooking()
+        {
+            //Session 
+            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            var booking = new Booking();
+
+            if (sessionBooking != null)
+            {
+                booking = await _bookingService.LoadSpots(sessionBooking);
+            }
+
+            if (booking.BookingReferenceNo != 0)
+            {
+                try
+                {
+                    await _bookingService.SaveBooking(booking);
+                }
+                catch (Exception) { }
+            }
+
+            return true;
         }
     }
 }

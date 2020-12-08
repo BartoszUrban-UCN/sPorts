@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,8 +13,13 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
+using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
+using WebApplication.Models;
+using WebApplication.Authorization.BoatOwner;
+using Microsoft.AspNetCore.Authorization.Policy;
 
 namespace WebApplication
 {
@@ -23,7 +32,8 @@ namespace WebApplication
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // This method gets called by the runtime. Use this method to configure
+        // the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var supportedCultures = new string[] { "en-US", "en-GB", "da-DK", "pl-PL", "ro-RO" };
@@ -41,9 +51,11 @@ namespace WebApplication
             }
             else
             {
+                //app.UseSPortsExceptionHandler();
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production
-                // scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseSPortsExceptionHandler();
+                // The default HSTS value is 30 days. You may want to change
+                // this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -52,6 +64,7 @@ namespace WebApplication
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             // Session configuration
@@ -60,6 +73,7 @@ namespace WebApplication
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
+                endpoints.MapRazorPages();
             });
 
             //Swagger configuration
@@ -71,11 +85,12 @@ namespace WebApplication
             });
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // This method gets called by the runtime. Use this method to add
+        // services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add sessions
-            //services.AddDistributedMemoryCache();
+            services.AddDistributedMemoryCache();
 
             //services.Configure<CookiePolicyOptions>(options =>
             //{
@@ -88,21 +103,50 @@ namespace WebApplication
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
             });
 
+            // MVC and Razor pages support
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            services.AddRazorPages();
 
-            //Configure DbContext, connect to the LocalDB
-            string dbString = "LocalDb";
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                dbString = "DragosDb"; // @Dragos there you go (i hope it works)
-            }
+            // EF Core Context and Database
+            string dbString = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "LocalDb" : "DragosDb";
 
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbString)));
 
-            //Swagger service
+            // Authentication and Identity
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
+
+            services.AddIdentity<Person, Role>()
+                .AddEntityFrameworkStores<SportsContext>()
+                .AddDefaultTokenProviders()
+                .AddDefaultUI()
+                .AddUserManager<UserService>();
+
+            // More convenient password options at the beginning since we are developing
+            services.Configure<IdentityOptions>(options =>
+            {
+                // User settings
+                options.User.RequireUniqueEmail = true;
+
+                // Password settings
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequiredUniqueChars = 0;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+            });
+
+            // Swagger service
             services.AddSwaggerGen(swagger =>
             {
                 swagger.SwaggerDoc("v1",
@@ -122,14 +166,29 @@ namespace WebApplication
                         }
                     });
 
-                //Point swagger to the generated xml file
+                // Point swagger to the generated xml file
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 swagger.IncludeXmlComments(xmlPath);
             });
 
+            // Adds authorization and authorization handlers
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                   .RequireAuthenticatedUser()
+                   .Build();
+            });
+
+            // Adds all needed authorization services
+            services.AddAuthorizationServices();
+            // Adds all necessary authorization handlers
+            services.AddAuthorizationHandlers();
+
             // Adds all services in the Business Layer for dependency injection
             services.AddBusinessServices();
+
+            
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
@@ -10,9 +12,12 @@ namespace WebApplication.BusinessLogic
     public class SpotService : ServiceBase, ISpotService
     {
         private readonly ILocationService _locationService;
-        public SpotService(SportsContext context, ILocationService locationService) : base(context)
+        private readonly UserService _userService;
+
+        public SpotService(SportsContext context, ILocationService locationService, UserService userService) : base(context)
         {
             _locationService = locationService;
+            _userService = userService;
         }
 
         public async Task<int> Create(Spot spot)
@@ -28,11 +33,30 @@ namespace WebApplication.BusinessLogic
             _context.Remove(spot);
         }
 
+        private IIncludableQueryable<Spot, Location> LoadSpots()
+        {
+            var spots = _context.Spots
+                .Include(spot => spot.Marina)
+                    .ThenInclude(marina => marina.MarinaOwner)
+                        .ThenInclude(marinaOwner => marinaOwner.Person)
+                .Include(spot => spot.Location);
+            
+            return spots;
+        }
+        
         public async Task<IEnumerable<Spot>> GetAll()
         {
-            var spots = await _context.Spots
-                .Include(spot => spot.Marina)
-                .Include(spot => spot.Location)
+            var spots = await LoadSpots().ToListAsync();
+
+            return spots;
+        }
+
+        public async Task<IEnumerable<Spot>> GetAll(int marinaOwnerId)
+        {
+            marinaOwnerId.ThrowIfNegativeId();
+
+            var spots = await LoadSpots()
+                .Where(predicate => predicate.Marina.MarinaOwnerId == marinaOwnerId)
                 .ToListAsync();
 
             return spots;
@@ -42,9 +66,7 @@ namespace WebApplication.BusinessLogic
         {
             id.ThrowIfInvalidId();
 
-            var spot = await _context.Spots
-                .Include(s => s.Marina)
-                .Include(s => s.Location)
+            var spot = await LoadSpots()
                 .FirstOrDefaultAsync(s => s.SpotId == id);
 
             spot.ThrowIfNull();
@@ -74,7 +96,7 @@ namespace WebApplication.BusinessLogic
 
         public async Task<Spot> UpdateSpotLocation(Spot spot, Location location)
         {
-            if (spot.LocationId == null)
+            if (spot.LocationId == null || spot.LocationId == 0)
             {
                 await _locationService.Create(location);
                 spot.Location = location;

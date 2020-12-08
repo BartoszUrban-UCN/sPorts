@@ -121,5 +121,24 @@ namespace WebApplication.Tests.BusinessLogic
             }
         }
 
+        [Fact]
+        public async void CancelSpotBooked_ExpectedTrue_Success()
+        {
+            using (var context = Fixture.CreateContext())
+            {
+                bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot() != null;
+                bool expected = true;
+                IBookingLineService service = new BookingLineService(context);
+                IPDFService<Booking> pDFService = new BookingPDFService();
+                IBookingService bookingService = new BookingService(context, service, null, pDFService, null);
+                IMarinaOwnerService marinaOwnerService = new MarinaOwnerService(context, service);
+
+                var confirmedBookingLines = (List<BookingLine>)await marinaOwnerService.GetConfirmedBookingLines(1);
+                bool actual = await bookingService.CancelSpotBooked(confirmedBookingLines.First().BookingLineId);
+
+                Assert.True(spotsCreated);
+                Assert.Equal(expected, actual);
+            }
+        }
     }
 }

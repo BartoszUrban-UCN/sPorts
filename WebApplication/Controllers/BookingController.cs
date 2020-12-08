@@ -111,6 +111,7 @@ namespace WebApplication.Controllers
         // POST: Booking/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [PreventMultipleEvents]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _bookingService.Delete(id);

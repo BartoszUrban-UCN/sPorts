@@ -7,6 +7,7 @@
     var appliedDiscounts = (double)ViewData["AppliedDiscounts"];
     var subtotal = Model.TotalPrice + appliedDiscounts;
     var nullOrEmpty = (Model is null || marinaBLineDict.Count < 1);
+    var cartHasChanged = (byte)ViewData["CartHasChanged"];
 }
 
 @section Styles{
@@ -14,6 +15,16 @@
 }
 <div class="row">
     <div class="col-8">
+        @if (cartHasChanged == 1)
+        {
+            <div class="alert alert-warning alert-dismissible fade show cartAlert" role="alert">
+                <h4 class="alert-heading">Cart changed!</h4>
+                <strong>Cart has changed.</strong> Someone else has booked the spots you had in the cart.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+        }
         <div class="card border-ligth shadow">
             <div class="card-header border-light bg-primary">
                 <h4 class="card-text">Shopping Cart (@Model.BookingLines.Count)</h4>
@@ -79,11 +90,12 @@
                                 </div>
                                 <div class="col text-right text-secondary">
                                     <h6 class="card-text" style="flex-grow: 1;">Spot No #@bookingLine.Spot.SpotNumber</h6>
-                                    <a class="btn btn-outline-success removeBtn" name="@bookingLine.StartDate">Remove</a>
+                                    @*<a class="btn btn-outline-success removeBtn" name="@bookingLine.StartDate">Remove</a>*@
                                 </div>
                                 <div class="w-100"></div>
                                 <div class="col align-self-end text-right">
-                                    <a asp-controller="BookingLine" asp-action="Details" asp-route-id="@bookingLine.BookingLineId" class="btn btn-success">Details</a>
+                                    @*<a asp-controller="BookingLine" asp-action="Details" asp-route-id="@bookingLine.BookingLineId" class="btn btn-success">Details</a>*@
+                                    <a class="btn btn-outline-success removeBtn" name="@bookingLine.StartDate">Remove</a>
                                 </div>
                             </div>
                         }
@@ -127,7 +139,11 @@
                 <br>
                 @if (!nullOrEmpty)
                 {
-                    <a asp-action="CreateFromBooking" asp-controller="Payment" class="btn btn-block btn-lg text-center btn-success">Checkout (@Model.BookingLines.Count)</a>
+                    <a asp-action="SaveBooking" asp-controller="BookingFlow" type="button" class="btn btn-block btn-lg text-center btn-success checkoutBtn">
+                        <span class=""></span>
+                        Checkout (@Model.BookingLines.Count)
+                    </a>
+                    <input type="button" class="btn btn-block btn-lg text-center btn-success simulateBtn" value="Simulate Concurrency" data-toggle="modal" data-target="#simulationModal" />
                 }
                 else
                 {
@@ -136,8 +152,29 @@
             </div>
         </div>
     </div>
+
+    <!-- Simulate Concurrency Modal -->
+    <div class="modal fade" id="simulationModal" tabindex="-1" role="dialog" aria-labelledby="simulationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Booking</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Booking has been created.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts{
     <script src="~/js/shoppingcart/remove.js"></script>
+    <script src="~/js/shoppingcart/checkout.js"></script>
 }

@@ -1,8 +1,67 @@
-﻿@{
+﻿@using WebApplication.Authorization;
+@{
     ViewData["Title"] = "Home Page";
+
+    string greeting = "";
+
+    if (User.IsInRole(RoleName.Manager))
+        greeting = "Manager";
+    else if (User.IsInRole(RoleName.Administrator))
+        greeting = "Administrator";
+
+    if (greeting.Equals(""))
+    {
+        if (User.IsInRole(RoleName.BoatOwner))
+            greeting = "Boat";
+        if (User.IsInRole(RoleName.MarinaOwner))
+        {
+            if (!greeting.Equals(""))
+                greeting += " and Marina";
+            else
+                greeting = "Marina";
+        }
+
+        greeting += " Owner";
+    }
+
+    greeting += " " + User.Identity.Name;
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h3 id="fadein-title"><br /></h3>
+
+    <div id="fadein-user-options" class="col-md-3" style="display: none;">
+        @{
+            if (User.IsInRole(RoleName.BoatOwner))
+            {
+                <a class="btn btn-lg btn-primary p-3 m-2" asp-controller="BookingFlow" asp-action="Index">Book a spot</a>
+                <a class="btn btn-lg btn-outline-primary p-3 m-2" asp-controller="Boat" asp-action="Index">Manage your boats</a>
+            }
+            if (User.IsInRole(RoleName.MarinaOwner))
+            {
+                <a class="btn btn-lg btn-outline-success p-3 m-2" asp-controller="Marina" asp-action="Index">Manage your marinas</a>
+            }
+            if (User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.Administrator))
+            {
+                <a class="btn btn-lg btn-outline-dark p-3 m-2" asp-controller="BoatOwner" asp-action="Index">Manage boat owners</a>
+                <a class="btn btn-lg btn-outline-dark p-3 m-2" asp-controller="MarinaOwner" asp-action="Index">Manage marina owners</a>
+            }
+        }
+    </div>
+    
 </div>
+
+<script>
+    $(window).on("load", function () {
+        $("#fadein-title").fadeOut("fast", function () {
+            $(this).html("@greeting");
+            $(this).fadeIn("slow");
+        });
+
+        $("#fadein-user-options").fadeOut("fast", function () {
+            $(this).fadeIn("slow");
+            $(this).attr("style", "display: flex; flex-direction: column; margin: auto;");
+        });
+    });
+</script>

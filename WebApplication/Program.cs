@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using WebApplication.Data;
 
 namespace WebApplication
@@ -16,17 +17,17 @@ namespace WebApplication
                     webBuilder.UseStartup<Startup>();
                 });
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
 
             //Application startup - connect to the DB
-            ConnectDb(host);
+            await ConnectDb(host);
 
             host.Run();
         }
 
-        public static void ConnectDb(IHost host)
+        public static async Task ConnectDb(IHost host)
         {
             using (var scope = host.Services.CreateScope())
             {
@@ -34,7 +35,9 @@ namespace WebApplication
                 try
                 {
                     var context = services.GetRequiredService<SportsContext>();
-                    DbInitializer.InitializeDb(context);
+                    await DbInitializer.InitializeDb(services, context);
+                    await RoleInitializer.SeedRoles(services, context);
+                    //await DbInitializer.EnsureMarinaOwner(services, "123456", "marinaowner@gmail.com");
                 }
                 catch (Exception ex)
                 {

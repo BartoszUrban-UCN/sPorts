@@ -7,6 +7,8 @@ namespace WebApplication.BusinessLogic
 {
     public static class EmailService
     {
+        private static string fileFolder = Path.GetTempPath();
+
         /// <summary>
         /// Send an email to user with booking info
         /// </summary>
@@ -37,8 +39,8 @@ namespace WebApplication.BusinessLogic
                 mail.Subject = $"Booking - {bookingReference}";
                 mail.Body = "Document with information about your booking.";
 
-                var pathPdf = $@"\{bookingReference}.pdf";
-                var pathTxt = $@"\{bookingReference}.txt";
+                var pathPdf = $@"{fileFolder}\{bookingReference}.pdf";
+                var pathTxt = $@"{ fileFolder}\{ bookingReference}.txt";
                 if (bookingReference > 0 && File.Exists(pathTxt) && File.Exists(pathPdf))
                 {
                     Attachment attachment;

@@ -1,4 +1,4 @@
-﻿@model WebApplication.Models.Marina
+﻿@model Marina
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,7 +12,9 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="MarinaId" />
+            <div class="form-group">
+                <input style="display: none" asp-for="MarinaOwnerId" />
+            </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -28,17 +30,6 @@
                 <input asp-for="Facilities" class="form-control" />
                 <span asp-validation-for="Facilities" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="MarinaOwnerId" class="control-label"></label>
-                <select asp-for="MarinaOwnerId" class="form-control" asp-items="ViewBag.MarinaOwnerId"></select>
-                <span asp-validation-for="MarinaOwnerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AddressId" class="control-label"></label>
-                <select asp-for="AddressId" class="form-control" asp-items="ViewBag.AddressId"></select>
-                <span asp-validation-for="AddressId" class="text-danger"></span>
-            </div>
-
             @* Initialize Leaflet Map and set the view with Denmark's coordinates *@
 
             <partial name="MapDivPartial" />
@@ -61,10 +52,7 @@
                 <label asp-for="Location.Radius" class="control-label"></label>
                 <input id="location-radius" class="form-control" name="Radius" type="number" readonly />
             </div>
-
-            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
         </form>
 
     </div>

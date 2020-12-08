@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.BusinessLogic.Shared;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApplication.BusinessLogic
 {
@@ -40,9 +44,9 @@ namespace WebApplication.BusinessLogic
             name.ThrowIfNull();
 
             var boat = await _context.Boats
-                                        .Include(b => b.Bookings)
-                                            .ThenInclude(b => b.BookingLines)
-                                        .FirstOrDefaultAsync(b => b.Name == name);
+                .Include(b => b.Bookings)
+                    .ThenInclude(b => b.BookingLines)
+                .FirstOrDefaultAsync(b => b.Name == name);
 
             boat.ThrowIfNull();
 
@@ -52,8 +56,9 @@ namespace WebApplication.BusinessLogic
         public async Task<IEnumerable<Boat>> GetAll()
         {
             var boats = await _context.Boats
-                                        .Include(b => b.Bookings)
-                                        .ToListAsync();
+                .Include(boat => boat.Bookings)
+                .Include(boat => boat.BoatOwner)
+                .ToListAsync();
             return boats;
         }
 

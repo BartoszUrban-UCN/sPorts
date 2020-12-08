@@ -68,7 +68,7 @@ namespace WebApplication.Tests.Utils
                     using (var context = CreateContext())
                     {
                         context.Database.EnsureDeleted();
-                        DbInitializer.InitializeDb(context);
+                        DbInitializer.SeedDb(context);
                     }
                     _databaseInitialized = true;
                 }

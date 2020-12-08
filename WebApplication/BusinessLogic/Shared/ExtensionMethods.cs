@@ -1,7 +1,32 @@
 ﻿using System;
+using Microsoft.AspNetCore.Builder;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApplication.BusinessLogic.Shared
 {
+    public class ExceptionHandlerMiddleware
+    {
+        private readonly RequestDelegate _next;
+        public ExceptionHandlerMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+        public async Task InvokeAsync(HttpContext httpContext)
+        {
+            await _next(httpContext);
+            if (httpContext.Response.StatusCode == 404)
+            { }
+        }
+    }
+    public static class IApplicationBuilderExtensions
+    {
+        public static IApplicationBuilder UseSPortsExceptionHandler(this IApplicationBuilder @this)
+        {
+            return @this.UseMiddleware<ExceptionHandlerMiddleware>();
+        }
+    }
+
     public static class IntExtensions
     {
         public static bool IsValidId(this int? @this)

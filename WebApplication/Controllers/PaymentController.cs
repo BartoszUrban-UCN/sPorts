@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Interfaces;
-using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
 
@@ -49,31 +48,6 @@ namespace WebApplication.Controllers
 
             return View(payment);
         }
-        public async Task<IActionResult> CreateFromBooking()
-        {
-            //Session 
-            //var booking = HttpContext.Session.Get<Booking>("Booking");
-            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
-            sessionBooking = await _bookingService.LoadSpots(sessionBooking);
-            var booking = await _bookingService.ValidateShoppingCart(sessionBooking);
-
-            if (booking.BookingReferenceNo != 0)
-            {
-                await _bookingService.SaveBooking(booking);
-                //HttpContext.Session.Set("Booking", new Booking());
-                HttpContext.Session.Clear();
-                var payment = await _paymentService.CreateFromBooking(booking);
-                ViewData["BookingId"] = booking.BookingId;
-                ViewData["bookingTotalPrice"] = booking.TotalPrice;
-                //return View("~/Views/Payment/CreateFromBooking.cshtml", payment);
-                return await Create(payment);
-            }
-            else
-            {
-                return View();
-            }
-        }
-
 
         // GET: Payment/Create
         public IActionResult Create()

@@ -1,12 +1,20 @@
-﻿using System;
-using System.Linq;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
+using WebApplication.BusinessLogic;
+using System.Threading.Tasks;
 using WebApplication.Models;
+using System.Linq;
+using System;
 
 namespace WebApplication.Data
 {
-    public class DbInitializer
+    public static class DbInitializer
     {
-        public static void InitializeDb(SportsContext context)
+        public static async Task InitializeDb(IServiceProvider serviceProvider, SportsContext context)
+        {
+            SeedDb(context);
+        }
+        public static void SeedDb(SportsContext context)
         {
             //TODO: Remove in Release :)
             context.Database.EnsureDeleted();
@@ -49,10 +57,10 @@ namespace WebApplication.Data
             {
                 var persons = new Person[]
                 {
-                    new Person{FirstName="Bartosz", LastName="Urban", Email="bartosz@email.com", Password="123456", AddressId=1},
-                    new Person{FirstName="Dragos", LastName="Ionescu", Email="dragos@email.com", Password="123456", AddressId=1},
-                    new Person{FirstName="Peter", LastName="Boelt", Email="peter@email.com", Password="123456", AddressId=2},
-                    new Person{FirstName="Zach", LastName="Horatau", Email="zaharia@email.com", Password="123456", AddressId=2}
+                    new Person{FirstName="Bartosz", LastName="Urban", Email="bartosz@email.com", AddressId=1},
+                    new Person{FirstName="Dragos", LastName="Ionescu", Email="dragos@email.com", AddressId=1},
+                    new Person{FirstName="Peter", LastName="Boelt", Email="peter@email.com", AddressId=2},
+                    new Person{FirstName="Zach", LastName="Horatau", Email="zaharia@email.com", AddressId=2}
                 };
 
                 context.Persons.AddRange(persons);
@@ -66,6 +74,7 @@ namespace WebApplication.Data
                     new MarinaOwner{ PersonId=1 },
                     new MarinaOwner{ PersonId=2 },
                     new MarinaOwner{ PersonId=3 },
+                    new MarinaOwner{ PersonId=4 },
                 };
 
                 context.MarinaOwners.AddRange(marinaOwners);
@@ -160,7 +169,7 @@ namespace WebApplication.Data
                     new BookingLine {Ongoing = false, BookingId = 3, SpotId= 1, DiscountedTotalPrice = 10},
                     new BookingLine {Ongoing = false, BookingId = 3, SpotId= 2, DiscountedTotalPrice = 10},
                     new BookingLine {Ongoing = false, BookingId = 3, SpotId= 3, DiscountedTotalPrice = 10},
-                    
+
                     // Ongoing: False
                     new BookingLine {Ongoing = false, BookingId = 4, SpotId= 1, DiscountedTotalPrice = 19},
                     new BookingLine {Ongoing = false, BookingId = 4, SpotId= 2, DiscountedTotalPrice = 11},
@@ -178,6 +187,32 @@ namespace WebApplication.Data
                 context.BookingLines.AddRange(bookingLines);
                 context.SaveChanges();
             }
+        }
+
+        public static async Task<int> EnsureMarinaOwner(IServiceProvider serviceProvider,
+                                                            string testUserPw, string UserEmail)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<Person>>();
+            var userService = serviceProvider.GetRequiredService<UserService>();
+
+            var user = await userManager.FindByEmailAsync(UserEmail);
+            if (user == null)
+            {
+                user = new Person
+                {
+                    Email = UserEmail,
+                    EmailConfirmed = true
+                };
+                var marinaOwner = await userService.MakePersonMarinaOwner(user);
+
+                await userManager.CreateAsync(user, testUserPw);
+                await userManager.AddToRoleAsync(user, "MarinaOwner");
+            }
+
+            if (user == null)
+                throw new Exception("Not strong password.");
+
+            return user.Id;
         }
     }
 }

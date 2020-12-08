@@ -5,8 +5,10 @@ using WebApplication.Models;
 
 namespace WebApplication.BusinessLogic
 {
-    public interface IBookingService : ICRUD<Booking>
+    public interface IBookingService : ICRUD<Booking>, IBookingFormService
     {
+        Task<Booking> CreateEmptyBooking();
+
         Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot);
 
         Task<Booking> LoadSpots(Booking booking);
@@ -23,6 +25,8 @@ namespace WebApplication.BusinessLogic
 
         Task<bool> ConfirmSpotBooked(int bookingLineId);
 
+        Task<bool> CancelSpotBooked(int bookingLineId);
+
         Task CancelBooking(int? id);
 
         Task<Booking> ValidateShoppingCart(Booking booking);
@@ -31,9 +35,8 @@ namespace WebApplication.BusinessLogic
 
         Booking CartRemoveBookingLine(Booking booking, DateTime startDate);
 
-        Task<List<KeyValuePair<Marina, int>>> GetAllAvailableSpotsCount(IList<int> marinaIds, int boatId, DateTime startDate, DateTime endDate);
-
         double CalculateTotalPrice(Booking booking);
+
         double CalculateTotalDiscount(Booking booking);
     }
 }

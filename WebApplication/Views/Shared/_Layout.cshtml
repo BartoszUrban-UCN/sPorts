@@ -16,34 +16,55 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/logo.png" /></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img style="max-height:15vh; height:auto; width:auto; max-width:15vh" src="~/logo.png" /></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy"><i class="fas fa-user-secret"></i> Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Spot" asp-action="Index"><i class="fas fa-map-marker-alt"></i> Spots</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Marina" asp-action="Index"><i class="fas fa-anchor"></i> Marinas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="Index"><i class="fas fa-shopping-basket"></i> Book</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="BoatOwner" asp-action="Index"><i class="fas fa-user"></i> BoatOwner</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="ShoppingCart"><i class="fas fa-cart-plus"></i> Shopping Cart</a>
-                        </li>
+                        @{
+                            // Grab the current logged in user, which will either be anon or logged in user
+                            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+
+                            // If the user is a boat owner, the navbar will contain the booking process option and the shopping cart
+                            if (currentUser.IsInRole("BoatOwner"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Boat" asp-action="Index"><i class="fas fa-ship"></i> Boats</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="Index"><i class="fas fa-shopping-basket"></i> Book</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BookingFlow" asp-action="ShoppingCart"><i class="fas fa-cart-plus"></i> Shopping Cart</a> 
+                                </li>
+                            }
+
+                            // If the user is a marina owner, we should display navbar options for accessing his owned spots and marinas
+                            if (currentUser.IsInRole("MarinaOwner"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Spot" asp-action="Index"><i class="fas fa-map-marker-alt"></i> Spots</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Marina" asp-action="Index"><i class="fas fa-anchor"></i> Marinas</a>
+                                </li>
+                            }
+
+                            // If the user is a manager, he should be able to see navbar options of managing boat and marina owners
+                            if (currentUser.IsInRole("Manager"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BoatOwner" asp-action="Index"><i class="fas fa-user"></i> BoatOwner</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="MarinaOwner" asp-action="Index"><i class="fas fa-user"></i> MarinaOwner</a>
+                                </li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>
