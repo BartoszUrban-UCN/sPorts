@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
@@ -167,6 +170,7 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> BookingsByMarinaOwner()
         {
             var bookingLines = await _bookingLineService.GetAll();
+            bookingLines = new List<BookingLine>(bookingLines.ToList().FindAll(bl => bl.StartDate > DateTime.Now.AddDays(2)));
 
             // User is fully authorized to all content if he is a manager or admin
             var isFullyAuthorized =
@@ -189,6 +193,7 @@ namespace WebApplication.Controllers
 
                 // Filter results so that they only see their spots in bookings
                 bookingLines = await _marinaOwnerService.GetBookingLines(marinaOwner.MarinaOwnerId);
+                bookingLines = new List<BookingLine>(bookingLines.ToList().FindAll(bl => bl.StartDate > DateTime.Now.AddDays(2)));
 
                 // Return a view that only displays that marina owner's spots to confirm / cancel
                 return View(bookingLines);
