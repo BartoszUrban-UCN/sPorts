@@ -86,6 +86,9 @@ namespace WebApplication
 
             // Electron Setup
             Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+
+            // Stripe payment gateway Setup
+            Stripe.StripeConfiguration.ApiKey = "sk_test_51HwQzXFX3jJVK0RybqLl9m5xVOzUVLs5g5tAwyNM4IiNGtsc0ppOTCFiRG5KVYBQgchgtivwKhemjQz5ohKSVhio00TpqPXKyi";
         }
 
         // This method gets called by the runtime. Use this method to add
