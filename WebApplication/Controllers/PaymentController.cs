@@ -173,10 +173,15 @@ namespace WebApplication.Controllers
             return View(result);
         }
 
+        /// <summary>
+        /// Provides stripe's payment gateway with information about the order
+        /// </summary>
+        /// <returns></returns>
         [Route("create-payement-session")]
         [HttpPost]
-        public ActionResult InitiateStripePayment()
+        public async Task<IActionResult> InitiateStripePayment()
         {
+            // Load the session booking
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
 
             if (sessionBooking == null)
@@ -185,8 +190,13 @@ namespace WebApplication.Controllers
                 sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             }
 
+            // Load the session booking's spots for the displaying of information
+            sessionBooking = await _bookingService.LoadSpots(sessionBooking);
+
+            // Convert from BookingLines to Stripe's SessionLineItemOptions class
             var sessionLines = ConvertBookingLinesToSessionLines(bookingLines: sessionBooking.BookingLines);
 
+            // Set up Stripe's payment session options
             var options = new SessionCreateOptions
             {
                 BillingAddressCollection = "required",
@@ -204,6 +214,7 @@ namespace WebApplication.Controllers
             return Json(new { id = session.Id });
         }
 
+        // Method name is completely awful please change if you have any better idea
         private List<SessionLineItemOptions> ConvertBookingLinesToSessionLines(IEnumerable<BookingLine> bookingLines)
         {
             var sessionLineItemOptions = new List<SessionLineItemOptions>();
