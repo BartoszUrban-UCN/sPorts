@@ -109,37 +109,47 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> ShoppingCart()
         {
-            var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+            // User is fully authorized to all content if he is a manager or admin
+            var isAuthorized =
+                User.IsInRole(RoleName.Administrator) ||
+                User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
 
-            if (sessionBooking == null)
+            if (isAuthorized)
             {
-                HttpContext.Session.Set("Booking", new Booking());
+                var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+
+                if (sessionBooking == null)
+                {
+                    HttpContext.Session.Set("Booking", new Booking());
+                    sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+                }
+
+                sessionBooking = await _bookingService.LoadSpots(sessionBooking);
+
+                var validBooking = await _bookingService.ValidateShoppingCart(sessionBooking);
+
+                var totalPrice = _bookingService.CalculateTotalPrice(validBooking);
+                validBooking.TotalPrice = totalPrice;
+
+                var appliedDiscounts = _bookingService.CalculateTotalDiscount(validBooking);
+
+                var marinaBLineDict = _bookingService.FilterLinesByMarina(validBooking);
+
+                ViewData["MarinaBLineDict"] = marinaBLineDict;
+                ViewData["AppliedDiscounts"] = appliedDiscounts;
+
                 sessionBooking = HttpContext.Session.Get<Booking>("Booking");
+                byte cartHasChanged = (byte)(validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1);
+                ViewData["CartHasChanged"] = cartHasChanged;
+                if (cartHasChanged == 1)
+                {
+                    HttpContext.Session.Set("Booking", validBooking);
+                }
+
+                return View(validBooking);
             }
 
-            sessionBooking = await _bookingService.LoadSpots(sessionBooking);
-
-            var validBooking = await _bookingService.ValidateShoppingCart(sessionBooking);
-
-            var totalPrice = _bookingService.CalculateTotalPrice(validBooking);
-            validBooking.TotalPrice = totalPrice;
-
-            var appliedDiscounts = _bookingService.CalculateTotalDiscount(validBooking);
-
-            var marinaBLineDict = _bookingService.FilterLinesByMarina(validBooking);
-
-            ViewData["MarinaBLineDict"] = marinaBLineDict;
-            ViewData["AppliedDiscounts"] = appliedDiscounts;
-
-            sessionBooking = HttpContext.Session.Get<Booking>("Booking");
-            byte cartHasChanged = (byte)(validBooking.BookingLines.Count == sessionBooking.BookingLines.Count ? 0 : 1);
-            ViewData["CartHasChanged"] = cartHasChanged;
-            if (cartHasChanged == 1)
-            {
-                HttpContext.Session.Set("Booking", validBooking);
-            }
-
-            return View(validBooking);
+            return Forbid();
         }
 
         public async Task<IActionResult> SaveBooking()

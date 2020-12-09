@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic.Shared;
@@ -9,8 +10,13 @@ namespace WebApplication.BusinessLogic
 {
     public class BookingLineService : ServiceBase, IBookingLineService
     {
-        public BookingLineService(SportsContext context) : base(context)
-        { }
+
+        private readonly IBookingFormService _bookingFormService;
+
+        public BookingLineService(SportsContext context, IBookingFormService bookingFormService) : base(context)
+        {
+            _bookingFormService = bookingFormService;
+        }
 
         public async Task<int> Create(BookingLine bookingLine)
         {
@@ -29,6 +35,10 @@ namespace WebApplication.BusinessLogic
                                                 .ThenInclude(s => s.Marina)
                                                     .ThenInclude(m => m.MarinaOwner)
                                                         .ThenInclude(m => m.Person)
+                                              .Include(b => b.Booking)
+                                                  .ThenInclude(bk => bk.Boat)
+                                                      .ThenInclude(bt => bt.BoatOwner)
+                                                          .ThenInclude(bo => bo.Person)
                                             .FirstOrDefaultAsync(b => b.BookingLineId == id);
 
             bookingLine.ThrowIfNull();
@@ -66,13 +76,21 @@ namespace WebApplication.BusinessLogic
             _context.BookingLines.Remove(bookingLine);
         }
 
-        public async Task AddTime(int? id, int amount)
+        public async Task<bool> AddTime(int? id, int amount)
         {
             var bookingLine = await GetSingle(id);
+            var newEndDate = bookingLine.EndDate.AddDays(amount);
 
-            bookingLine.EndDate = bookingLine.EndDate.AddSeconds(amount);
+            List<Spot> availableSpots = new List<Spot>(await _bookingFormService.GetAvailableSpots(bookingLine.Spot.Marina.MarinaId, bookingLine.Booking.BoatId, bookingLine.StartDate, newEndDate));
 
-            _context.Update(bookingLine);
+            if (bookingLine.StartDate > DateTime.Now && bookingLine.EndDate < DateTime.Now && availableSpots.Contains(bookingLine.Spot))
+            {
+                bookingLine.EndDate = bookingLine.EndDate.AddDays(amount);
+                _context.Update(bookingLine);
+                return true;
+            }
+            else
+                return false;
         }
 
         public async Task CancelBookingLine(int? id)

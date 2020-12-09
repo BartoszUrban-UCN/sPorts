@@ -7,6 +7,6 @@ namespace WebApplication.BusinessLogic
     {
         Task CancelBookingLine(int? id);
 
-        Task AddTime(int? id, int amount);
+        Task<bool> AddTime(int? id, int amount);
     }
 }
