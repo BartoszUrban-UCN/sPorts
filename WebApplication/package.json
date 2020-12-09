@@ -1,0 +1,11 @@
+{
+  "name": "myproject",
+  "version": "1.0.0",
+  "devDependencies": {
+    "jquery-validation": "^1.19.2",
+    "leaflet": "^1.7.1"
+  },
+  "dependencies": {
+    "jquery": "^3.5.1"
+  }
+}

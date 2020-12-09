@@ -1,3 +1,4 @@
+using ElectronNET.API;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,13 +14,12 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.Authorization.BoatOwner;
-using Microsoft.AspNetCore.Authorization.Policy;
 
 namespace WebApplication
 {
@@ -83,6 +83,9 @@ namespace WebApplication
             {
                 swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "sPorts API v1");
             });
+
+            // Electron Setup
+            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
         }
 
         // This method gets called by the runtime. Use this method to add
@@ -187,8 +190,6 @@ namespace WebApplication
 
             // Adds all services in the Business Layer for dependency injection
             services.AddBusinessServices();
-
-            
         }
     }
 }
