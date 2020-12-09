@@ -1,0 +1,38 @@
+﻿@page
+@model WebApplication.Areas.Identity.Pages.Account.Manage.ApiKeyModel
+@{
+    ViewData["Title"] = "API Token";
+    ViewData["ActivePage"] = ManageNavPages.ApiKey;
+}
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<p>
+    To use our API you need to authenticate yourself with this JSON Web Token. You need to include it in a "cookie" header with every request.
+</p>
+<div id="secretInfo" style="display: none;">@Model.Token</div>
+<button type="button" id="btnCopy" class="btn btn-primary">Copy your token</button>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        console.log('cookie', document.cookie);
+
+        var $body = document.getElementsByTagName('body')[0];
+        var $btnCopy = document.getElementById('btnCopy');
+        var secretInfo = document.getElementById('secretInfo').innerHTML;
+
+        var copyToClipboard = function (secretInfo) {
+            var $tempInput = document.createElement('INPUT');
+            $body.appendChild($tempInput);
+            $tempInput.setAttribute('value', secretInfo)
+            $tempInput.select();
+            document.execCommand('copy');
+            $body.removeChild($tempInput);
+        }
+
+        $btnCopy.addEventListener('click', function (ev) {
+            copyToClipboard(secretInfo);
+        });
+    </script>
+}
