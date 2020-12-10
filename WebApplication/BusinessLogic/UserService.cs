@@ -23,15 +23,6 @@ namespace WebApplication.BusinessLogic
             _context = context;
         }
 
-        //public override Task<IdentityResult> AddToRoleAsync(Person user, string role)
-        //{
-        //    if (role == "BoatOwner")
-        //    {
-        //    }
-
-        //    return base.AddToRoleAsync(user, role);
-        //}
-
         public async Task<BoatOwner> MakePersonBoatOwner(Person person)
         {
             person.ThrowIfNull();
