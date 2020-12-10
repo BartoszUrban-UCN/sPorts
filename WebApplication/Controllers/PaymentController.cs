@@ -15,6 +15,7 @@ using System.Collections.Generic;
 
 namespace WebApplication.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class PaymentController : Controller
     {
         private readonly SportsContext _context;

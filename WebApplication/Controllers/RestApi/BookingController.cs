@@ -81,8 +81,8 @@ namespace WebApplication.Controllers.RestApi
         }
 
         /// <summary>
-        /// Validates the information input once again
-        /// Creates or updates booking and bookingLine based on data from the wizard
+        /// Validates the information input once again Creates or updates
+        /// booking and bookingLine based on data from the wizard
         /// </summary>
         /// <param name="boatId"></param>
         /// <param name="spotId"></param>
@@ -124,8 +124,9 @@ namespace WebApplication.Controllers.RestApi
                 // And the selected dates are valid
                 if (HelperMethods.AreDatesValid(startDate, endDate))
                 {
-                    // Next 5 lines make sure that no dates overlap in the booking's booking lines
-                    // You cannot physically be in two places at the same time
+                    // Next 5 lines make sure that no dates overlap in the
+                    // booking's booking lines You cannot physically be in two
+                    // places at the same time
                     bool areBookingLinesDatesValid = true;
 
                     foreach (BookingLine bookingLine in booking.BookingLines)
@@ -140,7 +141,6 @@ namespace WebApplication.Controllers.RestApi
                         // Add bookingLine to the booking lines inside the booking
                         booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
                     }
-
                 }
             }
 
@@ -189,7 +189,6 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
-
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] string start)
         {
@@ -204,6 +203,7 @@ namespace WebApplication.Controllers.RestApi
             return Ok(booking);
         }
 
+        [HttpGet("InvalidBookings")]
         public async Task<ActionResult<IEnumerable<BookingLine>>> InvalidBookingLines()
         {
             var booking = HttpContext.Session.Get<Booking>("Booking");
@@ -223,7 +223,7 @@ namespace WebApplication.Controllers.RestApi
         [HttpPost("CreateSampleBooking")]
         public async Task<ActionResult<bool>> CreateSampleBooking()
         {
-            //Session 
+            //Session
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             var booking = new Booking();
 

@@ -7,6 +7,7 @@ using WebApplication.Models;
 namespace WebApplication.Controllers
 {
     [AllowAnonymous]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

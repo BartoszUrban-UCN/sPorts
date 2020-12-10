@@ -13,6 +13,7 @@ using WebApplication.Models;
 namespace WebApplication.Controllers
 {
     [Authorize(Roles = "Manager")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class MarinaOwnerController : Controller
     {
         private readonly IMarinaOwnerService _marinaOwnerService;

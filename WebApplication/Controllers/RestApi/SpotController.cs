@@ -28,6 +28,10 @@ namespace WebApplication.Controllers.RestApi
             _authorizationService = authorizationService;
         }
 
+        /// <summary>
+        /// Gets all spots with associations
+        /// </summary>
+        /// <returns>A list of spots that the user is authorized to see</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Spot>>> GetSpots()
         {
@@ -44,20 +48,42 @@ namespace WebApplication.Controllers.RestApi
             return StatusCode(403);
         }
 
+        /// <summary>
+        /// Gets a single spot by Id with associations
+        /// </summary>
+        /// <param name="id">The id of the spot</param>
+        /// <returns>
+        /// A spot if it exists and the user is authorized to see it
+        /// </returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Spot>> GetSpot(int id)
         {
             var spot = await _spotService.GetSingle(id);
-            var isAuthorized = await _authorizationService.AuthorizeAsync(User, spot, Operation.Read);
-            if (isAuthorized.Succeeded)
+            if (spot is not null)
             {
-                return Ok(spot);
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, spot, Operation.Read);
+                if (isAuthorized.Succeeded)
+                {
+                    return Ok(spot);
+                }
+                else
+                {
+                    return StatusCode(403);
+                }
             }
-
-            return StatusCode(403);
+            else
+            {
+                return NotFound();
+            }
         }
 
-        [HttpPut]
+        /// <summary>
+        /// Updates the spot under the given Id
+        /// </summary>
+        /// <param name="id">The id of the spot</param>
+        /// <param name="spot">Updated spot information</param>
+        /// <returns>Status code 204 if the update succeeded</returns>
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutSpot(int id, Spot spot)
         {
             if (id != spot.SpotId)
@@ -83,6 +109,11 @@ namespace WebApplication.Controllers.RestApi
             return NoContent();
         }
 
+        /// <summary>
+        /// Creates a spot
+        /// </summary>
+        /// <param name="spot">The spot schema to create</param>
+        /// <returns>The created spot with the id</returns>
         [HttpPost]
         public async Task<ActionResult<Spot>> PostSpot(Spot spot)
         {
@@ -106,6 +137,11 @@ namespace WebApplication.Controllers.RestApi
             return CreatedAtAction("GetSpot", new { id = spot.SpotId }, spot);
         }
 
+        /// <summary>
+        /// Deletes the spot under the given id
+        /// </summary>
+        /// <param name="id">The id of the spot</param>
+        /// <returns>204 if the delete succeeded</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSpot(int id)
         {
