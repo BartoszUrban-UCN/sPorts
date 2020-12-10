@@ -1,10 +1,9 @@
 using ElectronNET.API;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -121,11 +120,7 @@ namespace WebApplication
 
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbString)));
 
-            // Authentication and Identity
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
-
+            // Add and Configure Identity
             services.AddIdentity<Person, Role>()
                 .AddEntityFrameworkStores<SportsContext>()
                 .AddDefaultTokenProviders()
@@ -152,6 +147,23 @@ namespace WebApplication
                 options.Lockout.AllowedForNewUsers = true;
             });
 
+            // Adds JWT Authentication
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options));
+
+            // Adds authorization
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                   .RequireAuthenticatedUser()
+                   .Build();
+            });
+
+            // Adds all authorization services
+            services.AddAuthorizationServices();
+            // Adds all authorization handlers
+            services.AddAuthorizationHandlers();
+
             // Swagger service
             services.AddSwaggerGen(swagger =>
             {
@@ -177,19 +189,6 @@ namespace WebApplication
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 swagger.IncludeXmlComments(xmlPath);
             });
-
-            // Adds authorization and authorization handlers
-            services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                   .RequireAuthenticatedUser()
-                   .Build();
-            });
-
-            // Adds all needed authorization services
-            services.AddAuthorizationServices();
-            // Adds all necessary authorization handlers
-            services.AddAuthorizationHandlers();
 
             // Adds all services in the Business Layer for dependency injection
             services.AddBusinessServices();
