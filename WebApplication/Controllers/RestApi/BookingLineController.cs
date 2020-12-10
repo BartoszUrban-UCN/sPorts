@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 
 namespace WebApplication.Controllers.RestApi
 {
@@ -9,12 +8,10 @@ namespace WebApplication.Controllers.RestApi
     [ApiController]
     public class BookingLineController : ControllerBase
     {
-        private readonly SportsContext _context;
         private readonly IBookingLineService _bookingLineService;
 
-        public BookingLineController(SportsContext context, IBookingLineService bookingLineService)
+        public BookingLineController(IBookingLineService bookingLineService)
         {
-            _context = context;
             _bookingLineService = bookingLineService;
         }
 

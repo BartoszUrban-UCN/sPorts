@@ -3,20 +3,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 
 namespace WebApplication.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BookingLineController : Controller
     {
-        private readonly SportsContext _context;
         private readonly IBookingLineService _bookingLineService;
-        public BookingLineController(SportsContext context, IBookingLineService bookingLineService)
+
+        public BookingLineController(IBookingLineService bookingLineService)
         {
-            _context = context;
             _bookingLineService = bookingLineService;
         }
+
         public async Task<IActionResult> Details(int? id, string message = "")
         {
             var bookingLine = await _bookingLineService.GetSingle(id);
