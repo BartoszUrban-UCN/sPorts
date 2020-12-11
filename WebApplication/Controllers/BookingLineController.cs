@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using WebApplication.Authorization;
@@ -10,18 +11,31 @@ namespace WebApplication.Controllers
     public class BookingLineController : Controller
     {
         private readonly IBookingLineService _bookingLineService;
+        private readonly IBookingFormService _bookingFormService;
+        private readonly IBoatService _boatService;
 
-        public BookingLineController(IBookingLineService bookingLineService)
+        public BookingLineController(IBookingLineService bookingLineService, IBookingFormService bookingFormService, IBoatService boatService)
         {
             _bookingLineService = bookingLineService;
+            _bookingFormService = bookingFormService;
+            _boatService = boatService;
         }
 
         public async Task<IActionResult> Details(int? id, string message = "")
         {
-            var bookingLine = await _bookingLineService.GetSingle(id);
-            ViewData["message"] = message;
+            var isAuthorized =
+               User.IsInRole(RoleName.Administrator) ||
+               User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
 
-            return View(bookingLine);
+            if (isAuthorized)
+            {
+                var bookingLine = await _bookingLineService.GetSingle(id);
+                ViewData["message"] = message;
+
+                return View(bookingLine);
+            }
+
+            return Forbid();
         }
 
         [HttpPost]
@@ -52,14 +66,16 @@ namespace WebApplication.Controllers
                             await _bookingLineService.Save();
                         }
                         else
-                            message = "Someone else has booked the spot after you. Can NOT add more time.";
+                        {
+                            message = "Someone else has booked the spot for that time period. Can NOT add specified time.";
+                        }
                     }
 
                     return RedirectToAction("Details", new { id = id, message = message });
                 }
                 catch (BusinessException ex)
                 {
-                    //return Content(ex.ToString());
+                    return Content(ex.ToString());
                 }
             }
 

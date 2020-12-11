@@ -86,6 +86,7 @@ namespace WebApplication.BusinessLogic
             if (bookingLine.StartDate > DateTime.Now && bookingLine.EndDate < DateTime.Now && availableSpots.Contains(bookingLine.Spot))
             {
                 bookingLine.EndDate = bookingLine.EndDate.AddDays(amount);
+                // update total price of booking and booking line
                 _context.Update(bookingLine);
                 return true;
             }
