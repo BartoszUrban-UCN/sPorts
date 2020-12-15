@@ -7,6 +7,8 @@ namespace WebApplication.BusinessLogic
 {
     public interface IBookingService : ICRUD<Booking>, IBookingFormService
     {
+        Task<BookingLine> AddTime(int? id, int amount);
+
         Task<Booking> CreateEmptyBooking();
 
         Booking CreateBookingLine(Booking booking, DateTime startDate, DateTime endDate, Spot spot);

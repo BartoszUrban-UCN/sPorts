@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
@@ -243,5 +244,48 @@ namespace WebApplication.Controllers.RestApi
 
             return true;
         }
+
+        [HttpPost("{id}/AddTime")]
+        public async Task<IActionResult> AddTime(int? id, [Bind("amount"), Range(1, 7)] byte amount)
+        {
+            var isAuthorized =
+                User.IsInRole(RoleName.Administrator) ||
+                User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
+
+            if (isAuthorized)
+            {
+                try
+                {
+                    string message = "";
+                    if (amount <= 0 || amount > 7)
+                    {
+                        message = "Please enter amount in days between 1 and 7 (including)";
+                    }
+                    else
+                    {
+                        var bookingLine = await _bookingService.AddTime(id, (int)amount);
+
+                        if (bookingLine != null)
+                        {
+                            await CreateBookingLocally(bookingLine.Booking.BoatId, bookingLine.SpotId, bookingLine.StartDate.ToString(), bookingLine.EndDate.ToString());
+                            return RedirectToAction("ShoppingCart", "BookingFlow");
+                        }
+                        else
+                        {
+                            message = "Someone else has booked the spot for that time period. Can NOT add specified time.";
+                        }
+                    }
+
+                    return RedirectToAction("Details", "BookingLine", new { id = id, message = message });
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+
+            return Forbid();
+        }
     }
 }
+

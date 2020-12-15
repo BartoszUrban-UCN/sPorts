@@ -79,14 +79,14 @@
 <div>
     @if (DateTime.Now > Model.StartDate && DateTime.Now < Model.EndDate)
     {
-        <form asp-action="AddTime" asp-route-id="@Model.BookingLineId">
+        <form asp-route-id="@Model.BookingLineId">
             <div class="form-group">
                 <label class="control-label">Amount</label>
                 <input name="amount" class="form-control" type="number" />
             </div>
-            <button id="addtime-button" type="submit" class="btn btn-outline-primary">
+            <button id="addtime-button" type="submit" data-bookingLine-id="@Model.BookingLineId" class="btn btn-outline-primary">
                 <span class=""></span>
-                Add Time (in days)
+                Book More Time (in days)
             </button>
         </form>
     }

@@ -76,7 +76,7 @@ namespace WebApplication.BusinessLogic
             _context.BookingLines.Remove(bookingLine);
         }
 
-        public async Task<bool> AddTime(int? id, int amount)
+        public async Task<BookingLine> AddTime(int? id, int amount)
         {
             var bookingLine = await GetSingle(id);
             var newEndDate = bookingLine.EndDate.AddDays(amount);
@@ -86,12 +86,10 @@ namespace WebApplication.BusinessLogic
             if (bookingLine.StartDate > DateTime.Now && bookingLine.EndDate < DateTime.Now && availableSpots.Contains(bookingLine.Spot))
             {
                 bookingLine.EndDate = bookingLine.EndDate.AddDays(amount);
-                // update total price of booking and booking line
-                _context.Update(bookingLine);
-                return true;
+                return bookingLine;
             }
-            else
-                return false;
+
+            return null;
         }
 
         public async Task CancelBookingLine(int? id)

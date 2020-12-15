@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
@@ -33,50 +31,6 @@ namespace WebApplication.Controllers
                 ViewData["message"] = message;
 
                 return View(bookingLine);
-            }
-
-            return Forbid();
-        }
-
-        [HttpPost]
-        [AutoValidateAntiforgeryToken]
-        [PreventMultipleEvents]
-        public async Task<IActionResult> AddTime(int? id, [Bind("amount"), Range(1, 7)] byte amount)
-        {
-            var isAuthorized =
-                User.IsInRole(RoleName.Administrator) ||
-                User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
-
-            if (isAuthorized)
-            {
-                try
-                {
-                    string message = "";
-                    if (amount <= 0 || amount > 7)
-                    {
-                        message = "Please enter amount in days between 1 and 7 (including)";
-                    }
-                    else
-                    {
-                        var success = await _bookingLineService.AddTime(id, (int)amount);
-
-                        if (success)
-                        {
-                            message = "Time was added to your booking line.";
-                            await _bookingLineService.Save();
-                        }
-                        else
-                        {
-                            message = "Someone else has booked the spot for that time period. Can NOT add specified time.";
-                        }
-                    }
-
-                    return RedirectToAction("Details", new { id = id, message = message });
-                }
-                catch (BusinessException ex)
-                {
-                    return Content(ex.ToString());
-                }
             }
 
             return Forbid();
