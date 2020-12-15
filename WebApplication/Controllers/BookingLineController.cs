@@ -84,15 +84,24 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> Cancel(int id)
         {
-            try
+            var isAuthorized =
+                User.IsInRole(RoleName.Administrator) ||
+                User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
+
+            if (isAuthorized)
             {
-                await _bookingLineService.CancelBookingLine(id);
-                return Content("Cancel");
+                try
+                {
+                    await _bookingLineService.CancelBookingLine(id);
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    throw;
+                }
             }
-            catch (BusinessException ex)
-            {
-                return Content(ex.ToString());
-            }
+
+            return Forbid();
         }
     }
 }

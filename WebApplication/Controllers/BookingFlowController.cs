@@ -181,7 +181,7 @@ namespace WebApplication.Controllers
                 await _paymentService.Create(payment);
                 await _paymentService.Save();
 
-                return RedirectToAction("Index", "Payment");
+                return RedirectToAction("Index", "Booking");
             }
             else
             {
