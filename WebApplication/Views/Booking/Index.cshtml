@@ -5,7 +5,7 @@
 }
 
 <h1>
-    Choose your Booking Man...
+    Your Bookings
 </h1>
 
 <hr />
@@ -14,18 +14,25 @@
         transition: transform 0.2s;
     }
 
-    .card:hover {
-        transform: scale(1.05);
-        transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
-    }
+        .card:hover {
+            transform: scale(1.05);
+            transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+        }
 
-    .card:active {
-        transform: scale(1.03);
-    }
+        .card:active {
+            transform: scale(1.03);
+        }
 </style>
 
+
+@if (!Model.Any())
+{
+    <h3>You do not have any bookings yet 😢</h3>
+    <p>You can book a spot in a marina from the "Book" menu.</p>
+}
 <div class="container-fluid bcontent" style="margin-top: 5rem;">
     <div class="row row-cols-1 row-cols-md-2 no-gutters justify-content-center">
+
         @foreach (var booking in Model)
         {
             <div class="col-md-10 mx-auto" style="margin-bottom: 3rem;">
@@ -34,22 +41,23 @@
                     <div class="row no-gutters">
                         <div class="col-md-5">
                             <img class="card-img"
-                                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.androidapps.com%2Fwp-content%2Fuploads%2F2017%2F05%2Fbook.jpg&f=1&nofb=1"
-                                alt="A book">
+                                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.androidapps.com%2Fwp-content%2Fuploads%2F2017%2F05%2Fbook.jpg&f=1&nofb=1"
+                                 alt="A book">
                         </div>
                         <div class="col-md-7">
                             <div class="card-body">
-                                <h5 class="card-title">@booking.BookingReferenceNo
-                                </h5>
-                                <p class="card-text">@booking.TotalPrice</p>
-                                <h6 class="card-text">@booking.PaymentStatus</h6>
-                                <h6 class="card-text">@booking.Boat.Name</h6>
-                            </div>
+                                <h5 class="card-title">
+                                    @booking.BookingReferenceNo
+                            </h5>
+                            <p class="card-text">@booking.TotalPrice</p>
+                            <h6 class="card-text">@booking.PaymentStatus</h6>
+                            <h6 class="card-text">@booking.Boat.Name</h6>
                         </div>
                     </div>
                 </div>
             </div>
-        }
+        </div>
+    }
     </div>
 </div>
 
