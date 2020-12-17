@@ -190,6 +190,12 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
+        /// <summary>
+        /// Removes spot from your cart.
+        /// Takes start date of a spot as a unique identifier.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <returns>Booking without the removed spot.</returns>
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] string start)
         {
@@ -213,6 +219,10 @@ namespace WebApplication.Controllers.RestApi
             return Ok(invalidBookingLines);
         }
 
+        /// <summary>
+        /// Clears all spots from your cart.
+        /// </summary>
+        /// <returns>Booking wihtout booking lines / spots.</returns>
         [HttpDelete("ClearCart")]
         public async Task<ActionResult<Booking>> ClearCart()
         {
@@ -221,6 +231,12 @@ namespace WebApplication.Controllers.RestApi
             return booking;
         }
 
+        /// <summary>
+        /// Create booking from your cart.
+        /// Used for simulating concurrency 
+        /// e.g. other user has booked your items ... how will the system react to that?
+        /// </summary>
+        /// <returns>Boolean whether it has successfully booked items from your cart.</returns>
         [HttpPost("CreateSampleBooking")]
         public async Task<ActionResult<bool>> CreateSampleBooking()
         {
@@ -245,6 +261,14 @@ namespace WebApplication.Controllers.RestApi
             return true;
         }
 
+        /// <summary>
+        /// When user plans to stay longer in the marina, method will create new booking in the cart
+        /// based on the attributes of a spot and marina user wants to stay longer in.
+        /// Have NOT yet been tested.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="amount"></param>
+        /// <returns>View</returns>
         [HttpPost("{id}/AddTime")]
         public async Task<IActionResult> AddTime(int? id, [Bind("amount"), Range(1, 7)] byte amount)
         {
