@@ -33,7 +33,8 @@
                             {
                                 <li class="nav-item dropdown">
                                     <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownBoatOwner" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ship"></i> Boat Owner</a>
+                                        <i class="fas fa-ship"></i> Boat Owner
+                                    </a>
 
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownBoatOwner">
                                         <a class="nav-link text-dark dropdown-item" asp-area="" asp-controller="Boat" asp-action="Index"><i class="fas fa-ship"></i> Boats</a>
@@ -50,7 +51,8 @@
                             {
                                 <li class="nav-item dropdown">
                                     <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMarinaOwner" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-anchor"></i> Marina Owner</a>
+                                        <i class="fas fa-anchor"></i> Marina Owner
+                                    </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMarinaOwner">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Spot" asp-action="Index"><i class="fas fa-map-marker-alt"></i> Spots</a>
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Marina" asp-action="Index"><i class="fas fa-anchor"></i> Marinas</a>
@@ -62,12 +64,13 @@
                             if (currentUser.IsInRole("Manager"))
                             {
                                 <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownBoatOwner" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-users"></i> Manage</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownBoatOwner">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="BoatOwner" asp-action="Index"><i class="fas fa-user"></i> Boat Owners</a>
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="MarinaOwner" asp-action="Index"><i class="fas fa-user"></i> Marina Owners</a>
-                                </div>
+                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownBoatOwner" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-users"></i> Manage
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownBoatOwner">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="BoatOwner" asp-action="Index"><i class="fas fa-user"></i> Boat Owners</a>
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="MarinaOwner" asp-action="Index"><i class="fas fa-user"></i> Marina Owners</a>
+                                    </div>
                                 </li>
                             }
                         }
@@ -87,13 +90,12 @@
             &copy; 2020 - sPorts - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <!-- If the require doesn't work, include first the jQuery file
-    <script src="jquery-3.0.0.min.js"></script>-->
-    <script>window.$ = window.jQuery = require('jquery');</script>
+    @*<script>window.$ = window.jQuery = require('jquery');</script>*@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js"></script>
     @RenderSection("Scripts", required: false)
+    <script>if (window.module) module = window.module;</script>
 </body>
 </html>
