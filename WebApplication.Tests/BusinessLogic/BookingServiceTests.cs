@@ -105,6 +105,7 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
+                // arrange
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot() != null;
                 bool expected = true;
                 ILocationService locationService = new LocationService(context);
@@ -115,9 +116,11 @@ namespace WebApplication.Tests.BusinessLogic
                 IBookingService bookingService = new BookingService(context, service, null, pDFService, null);
                 IMarinaOwnerService marinaOwnerService = new MarinaOwnerService(context, service);
 
+                // act
                 var unconfirmedBookingLines = (List<BookingLine>)await marinaOwnerService.GetUnconfirmedBookingLines(1);
                 bool actual = await bookingService.ConfirmSpotBooked(unconfirmedBookingLines.First().BookingLineId);
 
+                // assert
                 Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
