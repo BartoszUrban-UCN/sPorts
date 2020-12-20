@@ -4,12 +4,13 @@
  * @returns {L.Map} - leaflet map object
  */
 function initMap(mapid) {
-	var mymap = L.map(`${mapid}`)
+	var mymap = L.map(`${mapid}`);
 
 	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-		maxZoom: 18,
-		id: 'mapbox/streets-v11',
+		attribution: 'Map data © <a href="https://www.mapbox.com/">Mapbox</a>',
+		minZoom: 4,
+		maxZoom: 21,
+		id: 'mapbox/satellite-streets-v11',
 		tileSize: 512,
 		zoomOffset: -1,
 		accessToken: 'pk.eyJ1IjoiemFja2Zyb3N0IiwiYSI6ImNraGRncmF2dTA1cDcyc2w2dGhua3RwOHoifQ.NKvsgUWbNOT14E-72mHn0w'

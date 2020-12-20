@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ElectronNET.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,13 +12,12 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
 using WebApplication.BusinessLogic.Shared;
 using WebApplication.Data;
 using WebApplication.Models;
-using WebApplication.Authorization.BoatOwner;
-using Microsoft.AspNetCore.Authorization.Policy;
 
 namespace WebApplication
 {
@@ -83,6 +81,12 @@ namespace WebApplication
             {
                 swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "sPorts API v1");
             });
+
+            // Electron Setup
+            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+
+            // Stripe payment gateway Setup
+            Stripe.StripeConfiguration.ApiKey = "sk_test_51HwQzXFX3jJVK0RybqLl9m5xVOzUVLs5g5tAwyNM4IiNGtsc0ppOTCFiRG5KVYBQgchgtivwKhemjQz5ohKSVhio00TpqPXKyi";
         }
 
         // This method gets called by the runtime. Use this method to add
@@ -115,11 +119,7 @@ namespace WebApplication
 
             services.AddDbContext<SportsContext>(options => options.UseSqlServer(Configuration.GetConnectionString(dbString)));
 
-            // Authentication and Identity
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
-
+            // Add and Configure Identity
             services.AddIdentity<Person, Role>()
                 .AddEntityFrameworkStores<SportsContext>()
                 .AddDefaultTokenProviders()
@@ -145,6 +145,23 @@ namespace WebApplication
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
             });
+
+            // Adds JWT Authentication
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options));
+
+            // Adds authorization
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                   .RequireAuthenticatedUser()
+                   .Build();
+            });
+
+            // Adds all authorization services
+            services.AddAuthorizationServices();
+            // Adds all authorization handlers
+            services.AddAuthorizationHandlers();
 
             // Swagger service
             services.AddSwaggerGen(swagger =>
@@ -172,23 +189,8 @@ namespace WebApplication
                 swagger.IncludeXmlComments(xmlPath);
             });
 
-            // Adds authorization and authorization handlers
-            services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                   .RequireAuthenticatedUser()
-                   .Build();
-            });
-
-            // Adds all needed authorization services
-            services.AddAuthorizationServices();
-            // Adds all necessary authorization handlers
-            services.AddAuthorizationHandlers();
-
             // Adds all services in the Business Layer for dependency injection
             services.AddBusinessServices();
-
-            
         }
     }
 }

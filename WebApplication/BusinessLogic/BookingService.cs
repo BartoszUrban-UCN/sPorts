@@ -312,11 +312,10 @@ namespace WebApplication.BusinessLogic
             await _bookingLineService.CancelBookingLine(id);
         }
 
-        public async Task AddTime(int? bookingLineId, int amount)
+        public async Task<BookingLine> AddTime(int? id, int amount)
         {
-            await _bookingLineService.AddTime(bookingLineId, amount);
+            return await _bookingLineService.AddTime(id, amount);
         }
-
         #endregion IBookingLineService
 
         #region IBookingFormService
@@ -400,7 +399,6 @@ namespace WebApplication.BusinessLogic
 
             return booking;
         }
-
         #endregion Manage shoppping cart
     }
 }

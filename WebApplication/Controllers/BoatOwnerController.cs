@@ -5,21 +5,41 @@ using WebApplication.BusinessLogic;
 
 namespace WebApplication.Controllers
 {
-    [Authorize(Roles = "Manager")]
+    [Authorize(Roles = "Manager,BoatOwner")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BoatOwnerController : Controller
     {
         private readonly IBoatOwnerService _boatOwnerService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly UserService _userService;
 
-        public BoatOwnerController(IBoatOwnerService boatOwnerService)
+        public BoatOwnerController(IBoatOwnerService boatOwnerService, IAuthorizationService authorizationService, UserService userService)
         {
             _boatOwnerService = boatOwnerService;
+            _authorizationService = authorizationService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> Index()
         {
             var result = await _boatOwnerService.GetAll();
             return View(result);
+        }
+
+        [Authorize(Roles = "BoatOwner")]
+        public async Task<IActionResult> MyBookings()
+        {
+            var user = await _userService.GetUserAsync(User);
+            try
+            {
+                var currentBoatOwner = _userService.GetBoatOwnerFromPerson(user);
+                var bookings = await _boatOwnerService.GetBookings(currentBoatOwner.BoatOwnerId);
+                return View("~/Views/Booking/Index.cshtml", bookings);
+            }
+            catch (BusinessException)
+            {
+                return View("Error");
+            }
         }
 
         public async Task<IActionResult> GetBookings(int? id)

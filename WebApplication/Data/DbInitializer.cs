@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
-using WebApplication.BusinessLogic;
-using System.Threading.Tasks;
-using WebApplication.Models;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
+using WebApplication.BusinessLogic;
+using WebApplication.Models;
 
 namespace WebApplication.Data
 {
@@ -158,26 +158,26 @@ namespace WebApplication.Data
                 var bookingLines = new BookingLine[]
                 {
                     // Ongoing: True
-                    new BookingLine {Ongoing = true, BookingId = 1, SpotId= 1, DiscountedTotalPrice = 1, Confirmed = true},
-                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 2, DiscountedTotalPrice = 2},
-                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 3, DiscountedTotalPrice = 3},
+                    new BookingLine {Ongoing = true, BookingId = 1, SpotId= 1, DiscountedTotalPrice = 1, Confirmed = true, StartDate = DateTime.Now.AddDays(-1), EndDate = DateTime.Now.AddDays(1)},
+                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 2, DiscountedTotalPrice = 2, StartDate = DateTime.Now.AddDays(-1), EndDate = DateTime.Now.AddDays(1)},
+                    new BookingLine {Ongoing = false, BookingId = 1, SpotId= 3, DiscountedTotalPrice = 3,  StartDate = DateTime.Now.AddDays(3), EndDate = DateTime.Now.AddDays(4)},
                     // Ongoing: False
-                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 1, DiscountedTotalPrice = 4},
-                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 2, DiscountedTotalPrice = 5},
-                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 3, DiscountedTotalPrice = 6},
+                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 1, DiscountedTotalPrice = 4, StartDate = DateTime.Now.AddDays(3), EndDate = DateTime.Now.AddDays(4)},
+                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 2, DiscountedTotalPrice = 5, StartDate = DateTime.Now.AddDays(3), EndDate = DateTime.Now.AddDays(4)},
+                    new BookingLine {Ongoing = false, BookingId = 2, SpotId= 3, DiscountedTotalPrice = 6, StartDate = DateTime.Now.AddDays(5), EndDate = DateTime.Now.AddDays(7)},
                     // Ongoing: False
-                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 1, DiscountedTotalPrice = 10},
-                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 2, DiscountedTotalPrice = 10},
-                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 3, DiscountedTotalPrice = 10},
+                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 1, DiscountedTotalPrice = 10, StartDate = DateTime.Now.AddDays(5), EndDate = DateTime.Now.AddDays(7)},
+                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 2, DiscountedTotalPrice = 10, StartDate = DateTime.Now.AddDays(5), EndDate = DateTime.Now.AddDays(7)},
+                    new BookingLine {Ongoing = false, BookingId = 3, SpotId= 3, DiscountedTotalPrice = 10, StartDate = DateTime.Now.AddDays(5), EndDate = DateTime.Now.AddDays(7)},
 
                     // Ongoing: False
-                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 1, DiscountedTotalPrice = 19},
-                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 2, DiscountedTotalPrice = 11},
-                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 3, DiscountedTotalPrice = 17},
+                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 1, DiscountedTotalPrice = 19, StartDate = DateTime.Now.AddDays(12), EndDate = DateTime.Now.AddDays(15)},
+                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 2, DiscountedTotalPrice = 11, StartDate = DateTime.Now.AddDays(12), EndDate = DateTime.Now.AddDays(15)},
+                    new BookingLine {Ongoing = false, BookingId = 4, SpotId= 3, DiscountedTotalPrice = 17, StartDate = DateTime.Now.AddDays(12), EndDate = DateTime.Now.AddDays(15)},
                     // Ongoing: True
-                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 1, DiscountedTotalPrice = 15},
-                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 3, DiscountedTotalPrice = 16},
-                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 2, DiscountedTotalPrice = 14},
+                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 1, DiscountedTotalPrice = 15, StartDate = DateTime.Now.AddDays(22), EndDate = DateTime.Now.AddDays(25)},
+                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 3, DiscountedTotalPrice = 16, StartDate = DateTime.Now.AddDays(22), EndDate = DateTime.Now.AddDays(25)},
+                    new BookingLine {Ongoing = true, BookingId = 5, SpotId= 2, DiscountedTotalPrice = 14, StartDate = DateTime.Now.AddDays(22), EndDate = DateTime.Now.AddDays(25)},
                     // Ongoing: True
                     new BookingLine {Ongoing = false, BookingId = 6, SpotId= 1, DiscountedTotalPrice = 12},
                     new BookingLine {Ongoing = true, BookingId = 6, SpotId= 2, DiscountedTotalPrice = 13},

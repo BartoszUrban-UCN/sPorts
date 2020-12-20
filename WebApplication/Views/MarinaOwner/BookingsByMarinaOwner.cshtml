@@ -74,16 +74,22 @@ else
                         @Html.DisplayFor(modelItem => item.Confirmed)
                     </td>
                     <td>
-                        <button class="btn btn-outline-success confirmBtn" data-bookingline-id="@item.BookingLineId" type="button">
-                            <span class=""></span>
-                            Confirm
-                        </button>
+                        @if (!item.Confirmed)
+                        {
+                            <button class="btn btn-outline-success confirmBtn" data-bookingline-id="@item.BookingLineId" type="button">
+                                <span class=""></span>
+                                Confirm
+                            </button>
+                        }
                     </td>
                     <td>
-                        <button class="btn btn-outline-danger cancelBtn" data-bookingline-id="@item.BookingLineId" type="button">
-                            <span class=""></span>
-                            Cancel
-                        </button>
+                        @if (item.Confirmed)
+                        {
+                            <button class="btn btn-outline-danger cancelBtn" data-bookingline-id="@item.BookingLineId" type="button">
+                                <span class=""></span>
+                                Cancel
+                            </button>
+                        }
                     </td>
                 </tr>
             }

@@ -11,14 +11,14 @@ namespace WebApplication.Controllers.RestApi
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "MarinaOwner,Manager,Admin")]
-    public class MarinaController : ControllerBase
+    public class SpotController : ControllerBase
     {
         private readonly ISpotService _spotService;
         private readonly IMarinaService _marinaService;
         private readonly UserService _userService;
         private readonly IAuthorizationService _authorizationService;
 
-        public MarinaController(ISpotService spotService, UserService userService,
+        public SpotController(ISpotService spotService, UserService userService,
             IMarinaService marinaService,
             IAuthorizationService authorizationService)
         {
@@ -29,36 +29,36 @@ namespace WebApplication.Controllers.RestApi
         }
 
         /// <summary>
-        /// Gets all marinas with associations
+        /// Gets all spots with associations
         /// </summary>
-        /// <returns>A list of marinas that the user is authorized to see</returns>
+        /// <returns>A list of spots that the user is authorized to see</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Marina>>> GetMarinas()
+        public async Task<ActionResult<IEnumerable<Spot>>> GetSpots()
         {
             var user = await _userService.GetUserAsync(User);
 
             if (await _userService.IsInRoleAsync(user, RoleName.Manager))
             {
-                return Ok(await _marinaService.GetAll());
+                return Ok(await _spotService.GetAll());
             }
             else if (await _userService.IsInRoleAsync(user, RoleName.MarinaOwner))
             {
-                return Ok(await _marinaService.GetAll(_userService.GetMarinaOwnerFromPerson(user).MarinaOwnerId));
+                return Ok(await _spotService.GetAll(_userService.GetMarinaOwnerFromPerson(user).MarinaOwnerId));
             }
             return StatusCode(403);
         }
 
         /// <summary>
-        /// Gets a single marina by Id with associations
+        /// Gets a single spot by Id with associations
         /// </summary>
-        /// <param name="id">The id of the marina</param>
+        /// <param name="id">The id of the spot</param>
         /// <returns>
-        /// A marina if it exists and the user is authorized to see it
+        /// A spot if it exists and the user is authorized to see it
         /// </returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Marina>> GetMarina(int id)
+        public async Task<ActionResult<Spot>> GetSpot(int id)
         {
-            var spot = await _marinaService.GetSingle(id);
+            var spot = await _spotService.GetSingle(id);
             if (spot is not null)
             {
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, spot, Operation.Read);
@@ -78,27 +78,27 @@ namespace WebApplication.Controllers.RestApi
         }
 
         /// <summary>
-        /// Updates the marina under the given Id
+        /// Updates the spot under the given Id
         /// </summary>
-        /// <param name="id">The id of the marina</param>
-        /// <param name="marina">Updated marina information</param>
+        /// <param name="id">The id of the spot</param>
+        /// <param name="spot">Updated spot information</param>
         /// <returns>Status code 204 if the update succeeded</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMarina(int id, Marina marina)
+        public async Task<IActionResult> PutSpot(int id, Spot spot)
         {
-            if (id != marina.MarinaId)
+            if (id != spot.SpotId)
             {
                 return BadRequest();
             }
 
-            var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, spot, Operation.Update);
 
             if (isAuthorized.Succeeded)
             {
-                _marinaService.Update(marina);
+                _spotService.Update(spot);
                 try
                 {
-                    await _marinaService.Save();
+                    await _spotService.Save();
                 }
                 catch (BusinessException ex)
                 {
@@ -110,40 +110,49 @@ namespace WebApplication.Controllers.RestApi
         }
 
         /// <summary>
-        /// Creates a marina
+        /// Creates a spot
         /// </summary>
-        /// <param name="marina">The marina schema to create</param>
-        /// <returns>The created marina with the id</returns>
+        /// <param name="spot">The spot schema to create</param>
+        /// <returns>The created spot with the id</returns>
         [HttpPost]
-        public async Task<ActionResult<Marina>> PostSpot(Marina marina)
+        public async Task<ActionResult<Spot>> PostSpot(Spot spot)
         {
-            if (marina.MarinaId != 0 || marina.Location?.LocationId != 0)
+            if (spot.SpotId != 0 || spot.Location?.LocationId != 0)
             {
                 BadRequest("Do not set the ID");
             }
 
-            await _marinaService.Create(marina);
-            await _marinaService.Save();
+            if (spot.MarinaId is not null)
+            {
+                var marina = await _marinaService.GetSingle(spot.MarinaId);
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, marina, Operation.Update);
+                if (!isAuthorized.Succeeded)
+                {
+                    return StatusCode(403);
+                }
+            }
+            await _spotService.Create(spot);
+            await _spotService.Save();
 
-            return CreatedAtAction("GetSpot", new { id = marina.MarinaId }, marina);
+            return CreatedAtAction("GetSpot", new { id = spot.SpotId }, spot);
         }
 
         /// <summary>
-        /// Deletes the marina under the given id
+        /// Deletes the spot under the given id
         /// </summary>
-        /// <param name="id">The id of the marina</param>
+        /// <param name="id">The id of the spot</param>
         /// <returns>204 if the delete succeeded</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSpot(int id)
         {
-            var marina = _marinaService.GetSingle(id);
+            var spot = _spotService.GetSingle(id);
 
-            var isAuthorized = await _authorizationService.AuthorizeAsync(User, await marina, Operation.Delete);
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, await spot, Operation.Delete);
 
             if (isAuthorized.Succeeded)
             {
-                await _marinaService.Delete(id);
-                await _marinaService.Save();
+                await _spotService.Delete(id);
+                await _spotService.Save();
                 return NoContent();
             }
 

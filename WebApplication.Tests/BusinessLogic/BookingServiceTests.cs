@@ -10,13 +10,13 @@ namespace WebApplication.Tests.BusinessLogic
 {
     public class BookingServiceTests : IClassFixture<SharedDatabaseFixture>
     {
-        public SharedDatabaseFixture Fixture { get; set; }
-
         public BookingServiceTests(SharedDatabaseFixture fixture)
         {
             Fixture = fixture;
             GenerateBookingData.Fixture = fixture;
         }
+
+        public SharedDatabaseFixture Fixture { get; set; }
 
         //[Theory]
         //[ClassData(typeof(GenerateBookingData))]
@@ -62,7 +62,6 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
-
                 bool expected = true;
 
                 IBookingService bookingService = new BookingService(context, null, null, null, null);
@@ -76,17 +75,18 @@ namespace WebApplication.Tests.BusinessLogic
                 Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
-
         }
 
         [Fact]
         public async void GetUnconfirmedBookingLines_Pass()
         {
-
             using (var context = Fixture.CreateContext())
             {
                 bool expected = true;
-                IBookingLineService service = new BookingLineService(context);
+                ILocationService locationService = new LocationService(context);
+                IMarinaService marinaService = new MarinaService(context, locationService);
+                IBookingFormService bookingFormService = new BookingFormService(context, marinaService);
+                IBookingLineService service = new BookingLineService(context, bookingFormService);
                 IMarinaOwnerService marinaOwnerService = new MarinaOwnerService(context, service);
                 Marina marina = context.Marinas.Find(1);
                 MarinaOwner marinaOwner = context.MarinaOwners.Where(mo => mo.MarinaOwnerId == marina.MarinaOwnerId).FirstOrDefault();
@@ -98,7 +98,6 @@ namespace WebApplication.Tests.BusinessLogic
                 Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
-
         }
 
         [Fact]
@@ -106,16 +105,22 @@ namespace WebApplication.Tests.BusinessLogic
         {
             using (var context = Fixture.CreateContext())
             {
+                // arrange
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot() != null;
                 bool expected = true;
-                IBookingLineService service = new BookingLineService(context);
+                ILocationService locationService = new LocationService(context);
+                IMarinaService marinaService = new MarinaService(context, locationService);
+                IBookingFormService bookingFormService = new BookingFormService(context, marinaService);
+                IBookingLineService service = new BookingLineService(context, bookingFormService);
                 IPDFService<Booking> pDFService = new BookingPDFService();
                 IBookingService bookingService = new BookingService(context, service, null, pDFService, null);
                 IMarinaOwnerService marinaOwnerService = new MarinaOwnerService(context, service);
 
+                // act
                 var unconfirmedBookingLines = (List<BookingLine>)await marinaOwnerService.GetUnconfirmedBookingLines(1);
                 bool actual = await bookingService.ConfirmSpotBooked(unconfirmedBookingLines.First().BookingLineId);
 
+                // assert
                 Assert.True(spotsCreated);
                 Assert.Equal(expected, actual);
             }
@@ -128,7 +133,10 @@ namespace WebApplication.Tests.BusinessLogic
             {
                 bool spotsCreated = await GenerateBookingData.CreateBookingWithOneSpot() != null;
                 bool expected = true;
-                IBookingLineService service = new BookingLineService(context);
+                ILocationService locationService = new LocationService(context);
+                IMarinaService marinaService = new MarinaService(context, locationService);
+                IBookingFormService bookingFormService = new BookingFormService(context, marinaService);
+                IBookingLineService service = new BookingLineService(context, bookingFormService);
                 IPDFService<Booking> pDFService = new BookingPDFService();
                 IBookingService bookingService = new BookingService(context, service, null, pDFService, null);
                 IMarinaOwnerService marinaOwnerService = new MarinaOwnerService(context, service);

@@ -139,11 +139,11 @@
                 <br>
                 @if (!nullOrEmpty)
                 {
-                    <a asp-action="SaveBooking" asp-controller="BookingFlow" type="button" class="btn btn-block btn-lg text-center btn-success checkoutBtn">
+                    <a id="checkout-button" class="btn btn-block btn-lg text-center btn-success">
                         <span class=""></span>
                         Checkout (@Model.BookingLines.Count)
                     </a>
-                    <input type="button" class="btn btn-block btn-lg text-center btn-success simulateBtn" value="Simulate Concurrency" data-toggle="modal" data-target="#simulationModal" />
+                    @*<input type="button" class="btn btn-block btn-lg text-center btn-success simulateBtn" value="Simulate Concurrency" data-toggle="modal" data-target="#simulationModal" />*@
                 }
                 else
                 {
@@ -177,4 +177,6 @@
 @section Scripts{
     <script src="~/js/shoppingcart/remove.js"></script>
     <script src="~/js/shoppingcart/checkout.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 }

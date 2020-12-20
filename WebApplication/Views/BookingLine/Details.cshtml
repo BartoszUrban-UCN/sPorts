@@ -2,10 +2,20 @@
 
 @{
     ViewData["Title"] = "Details";
+    string message = ViewData["message"].ToString();
 }
 
 <h1>Details</h1>
-
+@if (!String.IsNullOrEmpty(message))
+{
+    <div class="alert alert-warning alert-dismissible fade show cartAlert" role="alert">
+        <h4 class="alert-heading">BookingLine update!</h4>
+        <strong>Message.</strong> @message
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times</span>
+        </button>
+    </div>
+}
 <div>
     <h4>BookingLine</h4>
     <hr />
@@ -15,6 +25,12 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.BookingLineId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.OriginalTotalPrice)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.OriginalTotalPrice)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AppliedDiscounts)
@@ -41,24 +57,44 @@
             @Html.DisplayFor(model => model.EndDate)
         </dd>
         <dt class="col-sm-2">
+            SpotNumber
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Spot.SpotNumber)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Ongoing)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Ongoing)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Confirmed)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Confirmed)
+        </dd>
     </dl>
 </div>
 <div>
-    <form asp-action="AddTime" asp-route-id="@Model.BookingLineId">
-        <div class="form-group">
-            <label class="control-label">Amount</label>
-            <input name="amount" class="form-control" type="number"/>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Time</button>
-    </form>
+    @if (DateTime.Now > Model.StartDate && DateTime.Now < Model.EndDate)
+    {
+        <form asp-route-id="@Model.BookingLineId">
+            <div class="form-group">
+                <label class="control-label">Amount</label>
+                <input name="amount" class="form-control" type="number" />
+            </div>
+            <button id="addtime-button" type="submit" data-bookingLine-id="@Model.BookingLineId" class="btn btn-outline-primary">
+                <span class=""></span>
+                Book More Time (in days)
+            </button>
+        </form>
+    }
+    <br>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/bookingline/add_time.js"></script>
 }

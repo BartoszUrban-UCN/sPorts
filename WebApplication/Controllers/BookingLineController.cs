@@ -1,54 +1,61 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
-using WebApplication.Data;
 
 namespace WebApplication.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     public class BookingLineController : Controller
     {
-        private readonly SportsContext _context;
         private readonly IBookingLineService _bookingLineService;
-        public BookingLineController(SportsContext context, IBookingLineService bookingLineService)
+        private readonly IBookingFormService _bookingFormService;
+        private readonly IBoatService _boatService;
+
+        public BookingLineController(IBookingLineService bookingLineService, IBookingFormService bookingFormService, IBoatService boatService)
         {
-            _context = context;
             _bookingLineService = bookingLineService;
-        }
-        public async Task<IActionResult> Details(int? id)
-        {
-            var bookingLine = await _bookingLineService.GetSingle(id);
-
-            return View(bookingLine);
+            _bookingFormService = bookingFormService;
+            _boatService = boatService;
         }
 
-        [HttpPost]
-        [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> AddTime(int? id, [Bind("amount")] int amount)
+        public async Task<IActionResult> Details(int? id, string message = "")
         {
-            try
+            var isAuthorized =
+               User.IsInRole(RoleName.Administrator) ||
+               User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
+
+            if (isAuthorized)
             {
-                await _bookingLineService.AddTime(id, amount);
-                await _bookingLineService.Save();
-                return Content("Added");
+                var bookingLine = await _bookingLineService.GetSingle(id);
+                ViewData["message"] = message;
+
+                return View(bookingLine);
             }
-            catch (BusinessException ex)
-            {
-                return Content(ex.ToString());
-            }
+
+            return Forbid();
         }
 
         public async Task<IActionResult> Cancel(int id)
         {
-            try
+            var isAuthorized =
+                User.IsInRole(RoleName.Administrator) ||
+                User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
+
+            if (isAuthorized)
             {
-                await _bookingLineService.CancelBookingLine(id);
-                return Content("Cancel");
+                try
+                {
+                    await _bookingLineService.CancelBookingLine(id);
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    throw;
+                }
             }
-            catch (BusinessException ex)
-            {
-                return Content(ex.ToString());
-            }
+
+            return Forbid();
         }
     }
 }

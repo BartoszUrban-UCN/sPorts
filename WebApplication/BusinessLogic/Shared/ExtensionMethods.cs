@@ -61,7 +61,7 @@ namespace WebApplication.BusinessLogic.Shared
         public static void ThrowIfNull<T>(this T @this)
         {
             if (@this == null)
-                throw new BusinessException("Error", $"{@this.GetType().Name} object is null.");
+                throw new BusinessException("Error", $"{typeof(T).Name} object is null.");
         }
     }
 

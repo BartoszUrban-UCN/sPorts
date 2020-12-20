@@ -21,7 +21,10 @@
                 greeting = "Marina";
         }
 
-        greeting += " Owner";
+        if (greeting.Equals(""))
+            greeting += "User";
+        else
+            greeting += " Owner";
     }
 
     greeting += " " + User.Identity.Name;
@@ -49,10 +52,10 @@
             }
         }
     </div>
-    
 </div>
 
-<script>
+@section Scripts{
+    <script>
     $(window).on("load", function () {
         $("#fadein-title").fadeOut("fast", function () {
             $(this).html("@greeting");
@@ -64,4 +67,5 @@
             $(this).attr("style", "display: flex; flex-direction: column; margin: auto;");
         });
     });
-</script>
+    </script>
+}

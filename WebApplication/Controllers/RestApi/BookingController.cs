@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using WebApplication.Authorization;
 using WebApplication.BusinessLogic;
@@ -81,8 +82,8 @@ namespace WebApplication.Controllers.RestApi
         }
 
         /// <summary>
-        /// Validates the information input once again
-        /// Creates or updates booking and bookingLine based on data from the wizard
+        /// Validates the information input once again Creates or updates
+        /// booking and bookingLine based on data from the wizard
         /// </summary>
         /// <param name="boatId"></param>
         /// <param name="spotId"></param>
@@ -124,8 +125,9 @@ namespace WebApplication.Controllers.RestApi
                 // And the selected dates are valid
                 if (HelperMethods.AreDatesValid(startDate, endDate))
                 {
-                    // Next 5 lines make sure that no dates overlap in the booking's booking lines
-                    // You cannot physically be in two places at the same time
+                    // Next 5 lines make sure that no dates overlap in the
+                    // booking's booking lines You cannot physically be in two
+                    // places at the same time
                     bool areBookingLinesDatesValid = true;
 
                     foreach (BookingLine bookingLine in booking.BookingLines)
@@ -140,7 +142,6 @@ namespace WebApplication.Controllers.RestApi
                         // Add bookingLine to the booking lines inside the booking
                         booking = _bookingService.CreateBookingLine(booking, startDate, endDate, spot);
                     }
-
                 }
             }
 
@@ -189,7 +190,12 @@ namespace WebApplication.Controllers.RestApi
             return success;
         }
 
-
+        /// <summary>
+        /// Removes spot from your cart.
+        /// Takes start date of a spot as a unique identifier.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <returns>Booking without the removed spot.</returns>
         [HttpDelete("RemoveBookingLine")]
         public async Task<ActionResult<Booking>> CartRemoveBookingLine([FromBody] string start)
         {
@@ -204,6 +210,7 @@ namespace WebApplication.Controllers.RestApi
             return Ok(booking);
         }
 
+        [HttpGet("InvalidBookings")]
         public async Task<ActionResult<IEnumerable<BookingLine>>> InvalidBookingLines()
         {
             var booking = HttpContext.Session.Get<Booking>("Booking");
@@ -212,6 +219,10 @@ namespace WebApplication.Controllers.RestApi
             return Ok(invalidBookingLines);
         }
 
+        /// <summary>
+        /// Clears all spots from your cart.
+        /// </summary>
+        /// <returns>Booking wihtout booking lines / spots.</returns>
         [HttpDelete("ClearCart")]
         public async Task<ActionResult<Booking>> ClearCart()
         {
@@ -220,10 +231,16 @@ namespace WebApplication.Controllers.RestApi
             return booking;
         }
 
+        /// <summary>
+        /// Create booking from your cart.
+        /// Used for simulating concurrency 
+        /// e.g. other user has booked your items ... how will the system react to that?
+        /// </summary>
+        /// <returns>Boolean whether it has successfully booked items from your cart.</returns>
         [HttpPost("CreateSampleBooking")]
         public async Task<ActionResult<bool>> CreateSampleBooking()
         {
-            //Session 
+            //Session
             var sessionBooking = HttpContext.Session.Get<Booking>("Booking");
             var booking = new Booking();
 
@@ -243,5 +260,56 @@ namespace WebApplication.Controllers.RestApi
 
             return true;
         }
+
+        /// <summary>
+        /// When user plans to stay longer in the marina, method will create new booking in the cart
+        /// based on the attributes of a spot and marina user wants to stay longer in.
+        /// Have NOT yet been tested.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="amount"></param>
+        /// <returns>View</returns>
+        [HttpPost("{id}/AddTime")]
+        public async Task<IActionResult> AddTime(int? id, [Bind("amount"), Range(1, 7)] byte amount)
+        {
+            var isAuthorized =
+                User.IsInRole(RoleName.Administrator) ||
+                User.IsInRole(RoleName.Manager) || User.IsInRole(RoleName.BoatOwner);
+
+            if (isAuthorized)
+            {
+                try
+                {
+                    string message = "";
+                    if (amount <= 0 || amount > 7)
+                    {
+                        message = "Please enter amount in days between 1 and 7 (including)";
+                    }
+                    else
+                    {
+                        var bookingLine = await _bookingService.AddTime(id, (int)amount);
+
+                        if (bookingLine != null)
+                        {
+                            await CreateBookingLocally(bookingLine.Booking.BoatId, bookingLine.SpotId, bookingLine.StartDate.ToString(), bookingLine.EndDate.ToString());
+                            return RedirectToAction("ShoppingCart", "BookingFlow");
+                        }
+                        else
+                        {
+                            message = "Someone else has booked the spot for that time period. Can NOT add specified time.";
+                        }
+                    }
+
+                    return RedirectToAction("Details", "BookingLine", new { id = id, message = message });
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+
+            return Forbid();
+        }
     }
 }
+

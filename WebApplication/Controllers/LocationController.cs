@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebApplication.BusinessLogic;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
+    [Authorize(Roles = "MarinaOwner")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class LocationController : Controller
     {
         private readonly ILocationService _service;
